@@ -1,14 +1,17 @@
 import { PriorityDot } from "./priority-dot";
 import type { Task } from "@/types";
+import { formatDate } from "@/lib/utils";
 
 interface TaskRowProps {
   task: Task;
   onToggle?: (id: string) => void;
   onOpen?: (task: Task) => void;
+  onDelete?: (id: string) => void;
   showWhen?: boolean;
+  showDate?: boolean;
 }
 
-export function TaskRow({ task, onToggle, onOpen, showWhen }: TaskRowProps) {
+export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate }: TaskRowProps) {
   return (
     <div
       className={"list-row" + (task.isCompleted ? " is-done" : "")}
@@ -52,9 +55,9 @@ export function TaskRow({ task, onToggle, onOpen, showWhen }: TaskRowProps) {
           {task.category}
         </span>
       )}
-      {showWhen && task.date && (
+      {(showWhen || showDate) && task.date && (
         <span className="muted mono" style={{ fontSize: 12, minWidth: 64, textAlign: "right" }}>
-          {task.date}
+          {showDate ? formatDate(task.date, { month: "short", day: "numeric" }) : task.date}
         </span>
       )}
       {task.time && (
@@ -68,6 +71,18 @@ export function TaskRow({ task, onToggle, onOpen, showWhen }: TaskRowProps) {
             <circle cx="9" cy="9" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 11a3 3 0 1 0 0-6M22 20a5 5 0 0 0-4.5-5"/>
           </svg>
         </span>
+      )}
+      {onDelete && (
+        <button
+          className="btn btn-ghost btn-sm btn-icon"
+          style={{ opacity: 0, transition: "opacity 120ms", marginLeft: -4 }}
+          onClick={e => { e.stopPropagation(); onDelete(task.id); }}
+          title="Delete"
+          onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+          onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+        </button>
       )}
     </div>
   );
