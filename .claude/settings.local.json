@@ -15,7 +15,19 @@
       "Bash(node -e \"const a = require\\('@prisma/adapter-pg'\\); console.log\\(Object.keys\\(a\\)\\)\")",
       "Bash(node -e \"const a = require\\('prisma/config'\\); console.log\\(Object.keys\\(a\\)\\)\")",
       "Bash(node -e \"const a = require\\('prisma/config'\\); const c = a.defineConfig\\({}\\); console.log\\(Object.keys\\(c\\)\\)\")",
-      "Bash(node -e \"const {defineConfig} = require\\('prisma/config'\\); const c = defineConfig; console.log\\(c.toString\\(\\).slice\\(0,200\\)\\)\")"
+      "Bash(node -e \"const {defineConfig} = require\\('prisma/config'\\); const c = defineConfig; console.log\\(c.toString\\(\\).slice\\(0,200\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(pg_config --version)",
+      "Bash(psql --version)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(where postgres *)",
+      "Bash(sc query *)",
+      "Bash(cmd.exe *)",
+      "Bash(node *)",
+      "Bash(\"/d/PostgreSQL/bin/psql\" --version)",
+      "Bash(\"/d/PostgreSQL/bin/pg_isready\")",
+      "Bash(/d/PostgreSQL/bin/psql *)"
     ]
   }
 }

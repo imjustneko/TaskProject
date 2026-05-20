@@ -1,0 +1,130 @@
+import { TasksService } from './tasks.service';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import type { SafeUser } from '../users/users.service';
+interface AuthRequest {
+    user: SafeUser;
+}
+export declare class TasksController {
+    private readonly tasks;
+    constructor(tasks: TasksService);
+    create(req: AuthRequest, dto: CreateTaskDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }>;
+    today(req: AuthRequest): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }[]>;
+    plans(req: AuthRequest): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }[]>;
+    history(req: AuthRequest): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }[]>;
+    stats(req: AuthRequest): Promise<{
+        total: number;
+        completed: number;
+        today: number;
+    }>;
+    findOne(req: AuthRequest, id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }>;
+    update(req: AuthRequest, id: string, dto: UpdateTaskDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }>;
+    remove(req: AuthRequest, id: string): Promise<void>;
+    toggleComplete(req: AuthRequest, id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string | null;
+        date: Date | null;
+        time: string | null;
+        category: string | null;
+        priority: import("@prisma/client").$Enums.Priority;
+        isPublic: boolean;
+        isCompleted: boolean;
+        imageUrl: string | null;
+        completedAt: Date | null;
+        userId: string;
+    }>;
+}
+export {};
