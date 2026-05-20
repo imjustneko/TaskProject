@@ -4,7 +4,8 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#ff6b35",
   "dark": false,
   "density": "regular",
-  "showLogin": false
+  "showLogin": false,
+  "adminMode": false
 }/*EDITMODE-END*/;
 
 function applyAccent(hex) {
@@ -26,6 +27,13 @@ function App() {
   const [composeOpen, setComposeOpen] = React.useState(false);
   const [statusOpen, setStatusOpen] = React.useState(false);
   const [showLogin, setShowLogin] = React.useState(t.showLogin);
+  const [adminMode, setAdminMode] = React.useState(t.adminMode);
+
+  // When admin mode toggles, snap route to a sensible default
+  React.useEffect(() => {
+    setAdminMode(t.adminMode);
+    setRoute(t.adminMode ? { name: 'admin-dashboard' } : { name: 'dashboard' });
+  }, [t.adminMode]);
 
   // Apply theme + density + accent
   React.useEffect(() => {
@@ -74,6 +82,12 @@ function App() {
     friend: 'Friend',
     room: 'Room',
     profile: 'Profile',
+    'admin-dashboard': 'Admin',
+    'admin-users':     'Admin',
+    'admin-reports':   'Admin',
+    'admin-rooms':     'Admin',
+    'admin-content':   'Admin',
+    'admin-settings':  'Admin',
   };
 
   let title = topbarTitleMap[route.name];
@@ -84,17 +98,27 @@ function App() {
   } else if (route.name === 'room') {
     const r = ROOMS.find(x => x.id === route.id);
     crumb = r?.name;
+  } else if (route.name.startsWith('admin-')) {
+    crumb = { 'admin-dashboard': 'Overview', 'admin-users': 'Users', 'admin-reports': 'Reports', 'admin-rooms': 'Rooms', 'admin-content': 'Content', 'admin-settings': 'Settings' }[route.name];
   }
 
   return (
     <>
       <div className="app">
-        <Sidebar
-          route={route}
-          setRoute={setRoute}
-          onCompose={() => setComposeOpen(true)}
-          onStatus={() => setStatusOpen(true)}
-        />
+        {adminMode ? (
+          <AdminSidebar
+            route={route}
+            setRoute={setRoute}
+            onExit={() => { setTweak('adminMode', false); }}
+          />
+        ) : (
+          <Sidebar
+            route={route}
+            setRoute={setRoute}
+            onCompose={() => setComposeOpen(true)}
+            onStatus={() => setStatusOpen(true)}
+          />
+        )}
         <div className="main">
           <Topbar
             title={title}
@@ -103,10 +127,15 @@ function App() {
             onToggleTheme={() => setTweak('dark', !t.dark)}
             dark={t.dark}
           >
-            <Button size="sm" icon="sparkle" onClick={() => setStatusOpen(true)}>
-              <span style={{ marginLeft: -2, marginRight: 2 }}>{me.status.emoji}</span>
-              <span className="truncate" style={{ maxWidth: 140 }}>{me.status.label}</span>
-            </Button>
+            {!adminMode && (
+              <Button size="sm" icon="sparkle" onClick={() => setStatusOpen(true)}>
+                <span style={{ marginLeft: -2, marginRight: 2 }}>{me.status.emoji}</span>
+                <span className="truncate" style={{ maxWidth: 140 }}>{me.status.label}</span>
+              </Button>
+            )}
+            {adminMode && (
+              <Badge tone="warn" dot>Admin mode</Badge>
+            )}
           </Topbar>
 
           <div className={route.name === 'room' ? '' : 'view'} style={route.name === 'room' ? { flex: 1, overflow: 'hidden' } : {}}>
@@ -132,6 +161,12 @@ function App() {
               {route.name === 'profile' && (
                 <ProfilePage me={me} onUpdate={updateMe} onStatus={() => setStatusOpen(true)} />
               )}
+              {route.name === 'admin-dashboard' && <AdminDashboard setRoute={setRoute} />}
+              {route.name === 'admin-users'     && <AdminUsersPage />}
+              {route.name === 'admin-reports'   && <AdminReportsPage />}
+              {route.name === 'admin-rooms'     && <AdminPlaceholder title="Rooms"    icon="room" />}
+              {route.name === 'admin-content'   && <AdminPlaceholder title="Content"  icon="archive" />}
+              {route.name === 'admin-settings'  && <AdminPlaceholder title="Settings" icon="settings" />}
             </div>
           </div>
         </div>
@@ -164,6 +199,7 @@ function TweaksPanelMain({ t, setTweak, setShowLogin }) {
         />
       </TweakSection>
       <TweakSection label="Show">
+        <TweakToggle label="Admin panel" value={t.adminMode} onChange={(v) => setTweak('adminMode', v)} />
         <TweakToggle label="Login screen" value={t.showLogin} onChange={(v) => { setTweak('showLogin', v); setShowLogin(v); }} />
         <TweakButton label="Open design plan ↗" secondary onClick={() => window.open('design-plan.html', '_blank')} />
       </TweakSection>
