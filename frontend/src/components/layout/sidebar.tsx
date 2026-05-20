@@ -12,6 +12,7 @@ import { STATUS_META } from "@/types";
 
 const navMain = [
   { href: "/dashboard",    label: "Home",    icon: "home" },
+  { href: "/feed",         label: "Feed",    icon: "globe" },
   { href: "/tasks/today",  label: "Today",   icon: "sun" },
   { href: "/tasks/plans",  label: "Plans",   icon: "calendar" },
   { href: "/friends",      label: "Friends", icon: "users" },
@@ -32,6 +33,7 @@ function SvgIcon({ name, size = 15 }: { name: string; size?: number }) {
     case "plus":     return <svg {...p}><path d="M12 5v14M5 12h14"/></svg>;
     case "chevron-right": return <svg {...p}><path d="m9 6 6 6-6 6"/></svg>;
     case "logout":   return <svg {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>;
+    case "globe":    return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>;
     case "x":        return <svg {...p}><path d="M6 6l12 12M18 6 6 18"/></svg>;
     case "sparkle":  return <svg {...p}><path d="M12 4v6M12 14v6M4 12h6M14 12h6M6 6l4 4M14 14l4 4M18 6l-4 4M10 14l-4 4"/></svg>;
     default:         return null;
