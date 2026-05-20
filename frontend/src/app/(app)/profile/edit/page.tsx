@@ -1,42 +1,61 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { Avatar } from "@/components/ui/avatar";
-import { STATUS_META } from "@/types";
-import type { StatusType } from "@/types";
+import { PageHeader } from "@/components/ui/page-header";
 import api from "@/lib/api";
-import { useState } from "react";
-
-const schema = z.object({
-  displayName: z.string().min(1).max(50),
-  bio: z.string().max(160).optional(),
-});
-type FormData = z.infer<typeof schema>;
+import type { StatusType } from "@/types";
+import { STATUS_META } from "@/types";
 
 const STATUSES: StatusType[] = ["PLAYING", "COOKING", "WALKING", "STUDYING", "READING", "WORKING"];
+
+function Toggle({ value }: { value: boolean }) {
+  const [v, setV] = useState(value);
+  return (
+    <button
+      onClick={() => setV(!v)}
+      style={{
+        width: 36,
+        height: 22,
+        borderRadius: 999,
+        border: 0,
+        padding: 0,
+        background: v ? "var(--accent)" : "var(--border-strong)",
+        position: "relative",
+        cursor: "default",
+        transition: "background 150ms",
+        flexShrink: 0,
+      }}
+    >
+      <span style={{
+        position: "absolute",
+        top: 2,
+        left: v ? 16 : 2,
+        width: 18,
+        height: 18,
+        borderRadius: "50%",
+        background: "#fff",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+        transition: "left 150ms",
+      }} />
+    </button>
+  );
+}
 
 export default function ProfileEditPage() {
   const { user, updateUser } = useAuthStore();
   const [saved, setSaved] = useState(false);
+  const [name, setName] = useState(user?.displayName ?? "");
+  const [bio, setBio] = useState(user?.bio ?? "");
   const [activeStatus, setActiveStatus] = useState<StatusType | null>(
     (user?.status?.type as StatusType) ?? null
   );
   const [customText, setCustomText] = useState(user?.status?.customText ?? "");
 
-  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      displayName: user?.displayName ?? "",
-      bio: user?.bio ?? "",
-    },
-  });
-
   const updateProfile = useMutation({
-    mutationFn: (data: FormData) =>
+    mutationFn: (data: { displayName: string; bio?: string }) =>
       api.patch("/users/me", data).then((r) => r.data),
     onSuccess: (updated) => {
       updateUser(updated);
@@ -45,7 +64,7 @@ export default function ProfileEditPage() {
     },
   });
 
-  const setStatus = useMutation({
+  const setStatusMutation = useMutation({
     mutationFn: (type: StatusType) =>
       api.put("/status", { type, customText: customText || undefined }).then((r) => r.data),
     onSuccess: (status) => {
@@ -63,119 +82,162 @@ export default function ProfileEditPage() {
     },
   });
 
+  const userForAvatar = user
+    ? { displayName: user.displayName, avatarUrl: user.avatarUrl, presence: "online" as const }
+    : null;
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-text-base dark:text-text-base-dark">Профайл засах</h1>
+    <div className="view-narrow">
+      <PageHeader eyebrow="You" title="Profile" subtitle="How you appear to friends in Taskyy." />
 
-      {/* Profile form */}
-      <div className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card shadow-sm p-6">
-        <h2 className="font-semibold text-text-base dark:text-text-base-dark mb-5">Ерөнхий мэдээлэл</h2>
-
-        <div className="flex items-center gap-4 mb-6">
-          <Avatar name={user?.displayName ?? "User"} src={user?.avatarUrl} size="xl" />
-          <div>
-            <button className="h-9 px-4 rounded-input border border-border dark:border-border-dark text-sm font-medium text-text-base dark:text-text-base-dark hover:bg-surface-2 dark:hover:bg-surface-dark-2 transition-colors">
-              Зураг солих
+      {/* Main profile card */}
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="row gap-4" style={{ marginBottom: 22 }}>
+          <Avatar user={userForAvatar} size={64} status onBg="bg" />
+          <div className="flex1">
+            <div style={{ fontSize: 15, fontWeight: 600 }}>{user?.displayName}</div>
+            <div className="muted" style={{ fontSize: 12.5, marginBottom: 8 }}>
+              @{user?.username} · Joined {new Date(user?.createdAt ?? Date.now()).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+            </div>
+            <div className="row gap-2">
+              <button className="btn btn-sm">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>
+                Change photo
+              </button>
+              <button className="btn btn-sm btn-ghost">Remove</button>
+            </div>
+          </div>
+          <div style={{ alignSelf: "flex-start" }}>
+            <button className="btn" onClick={() => setStatusMutation.mutate(activeStatus ?? "WORKING")}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4v6M12 14v6M4 12h6M14 12h6M6 6l4 4M14 14l4 4M18 6l-4 4M10 14l-4 4"/></svg>
+              Update status
             </button>
-            <p className="text-xs text-text-muted dark:text-text-muted-dark mt-1">JPG, PNG — max 5MB</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit((d) => updateProfile.mutate(d))} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-text-base dark:text-text-base-dark">Дэлгэрэнгүй нэр</label>
+        <div className="col gap-4">
+          <div className="grid-2">
+            <div className="field">
+              <label className="field-label">Display name</label>
               <input
-                {...register("displayName")}
-                className="h-11 rounded-input border border-border dark:border-border-dark bg-surface dark:bg-surface-dark px-3 text-sm text-text-base dark:text-text-base-dark focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="input"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
-              {errors.displayName && <p className="text-xs text-error-500">{errors.displayName.message}</p>}
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-text-base dark:text-text-base-dark">Хэрэглэгчийн нэр</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle dark:text-text-subtle-dark text-sm">@</span>
-                <input
-                  value={user?.username ?? ""}
-                  disabled
-                  className="h-11 w-full rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 pl-7 pr-3 text-sm text-text-muted dark:text-text-muted-dark cursor-not-allowed"
-                />
-              </div>
+            <div className="field">
+              <label className="field-label">Handle</label>
+              <input
+                className="input"
+                value={"@" + (user?.username ?? "")}
+                disabled
+                style={{ opacity: 0.6 }}
+              />
             </div>
           </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-text-base dark:text-text-base-dark">Биографи</label>
+          <div className="field">
+            <label className="field-label">Bio</label>
             <textarea
-              {...register("bio")}
-              rows={3}
+              className="textarea"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
               maxLength={160}
-              placeholder="Өөрийгөө товч танилцуулна уу..."
-              className="w-full rounded-input border border-border dark:border-border-dark bg-surface dark:bg-surface-dark px-3 py-2.5 text-sm text-text-base dark:text-text-base-dark resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-
-          <div className="flex justify-end gap-3">
-            {saved && <span className="text-sm text-success-500 flex items-center">✓ Хадгалагдлаа</span>}
+          <div className="row gap-2" style={{ justifyContent: "flex-end" }}>
+            {saved && <span style={{ fontSize: 12, color: "var(--status-online)" }}>Saved!</span>}
+            <button className="btn">Cancel</button>
             <button
-              type="submit"
-              disabled={updateProfile.isPending || !isDirty}
-              className="h-10 px-4 rounded-input bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors disabled:opacity-60"
+              className="btn btn-primary"
+              onClick={() => updateProfile.mutate({ displayName: name, bio })}
+              disabled={updateProfile.isPending}
             >
-              {updateProfile.isPending ? "Хадгалж байна..." : "Хадгалах"}
+              {updateProfile.isPending ? "Saving…" : "Save changes"}
             </button>
           </div>
-        </form>
+        </div>
       </div>
 
-      {/* Status */}
-      <div className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-text-base dark:text-text-base-dark">Одоогийн статус</h2>
+      {/* Status card */}
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="row" style={{ marginBottom: 16 }}>
+          <h3 style={{ flex: 1 }}>Current status</h3>
           {activeStatus && (
             <button
+              className="btn btn-sm btn-ghost"
               onClick={() => clearStatus.mutate()}
-              className="text-xs text-error-500 hover:underline"
+              style={{ color: "var(--status-busy)" }}
             >
-              Устгах
+              Clear
             </button>
           )}
         </div>
-
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 16 }}>
           {STATUSES.map((s) => {
             const m = STATUS_META[s];
             return (
               <button
                 key={s}
-                onClick={() => setStatus.mutate(s)}
-                className={`flex flex-col items-center gap-1.5 p-3 rounded-card border-2 transition-all text-sm font-medium ${
-                  activeStatus === s
-                    ? "border-primary-500 bg-primary-50 dark:bg-primary-700/20 text-primary-600 dark:text-primary-300"
-                    : "border-border dark:border-border-dark hover:border-primary-200 dark:hover:border-primary-700 text-text-muted dark:text-text-muted-dark"
-                }`}
+                className="btn"
+                onClick={() => setStatusMutation.mutate(s)}
+                style={{
+                  flexDirection: "column",
+                  height: 76,
+                  gap: 6,
+                  padding: 8,
+                  borderColor: activeStatus === s ? "var(--accent)" : "var(--border-strong)",
+                  background: activeStatus === s ? "var(--accent-tint)" : "var(--bg-elevated)",
+                }}
               >
-                <span className="text-xl">{m.emoji}</span>
-                <span>{m.label}</span>
+                <span style={{ fontSize: 22 }}>{m.emoji}</span>
+                <span style={{ fontSize: 11.5, color: "var(--text-soft)" }}>{m.label}</span>
               </button>
             );
           })}
         </div>
-
-        <div className="flex gap-2">
+        <div className="row gap-2">
           <input
+            className="input"
+            placeholder="Or write your own status…"
             value={customText}
+            onFocus={() => setActiveStatus("CUSTOM")}
             onChange={(e) => setCustomText(e.target.value)}
-            placeholder="✏️ Өөрийн статус..."
-            className="flex-1 h-10 rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 px-3 text-sm text-text-base dark:text-text-base-dark focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <button
-            onClick={() => setStatus.mutate("CUSTOM")}
+            className="btn btn-accent"
+            onClick={() => setStatusMutation.mutate("CUSTOM")}
             disabled={!customText.trim()}
-            className="h-10 px-4 rounded-input bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors disabled:opacity-60"
           >
-            Тохируулах
+            Set
           </button>
+        </div>
+      </div>
+
+      {/* Privacy card */}
+      <div className="card">
+        <h3 style={{ marginBottom: 6 }}>Privacy</h3>
+        <div className="muted" style={{ fontSize: 13, marginBottom: 16 }}>
+          Control what friends can see by default.
+        </div>
+        <div className="col gap-3">
+          {[
+            { k: "status",  label: "Show my live status",   val: true,  hint: "Friends can see what you're up to right now." },
+            { k: "tasks",   label: "Share shared tasks",     val: true,  hint: "Tasks marked shared appear on your profile feed." },
+            { k: "photos",  label: "Daily memory photos",    val: false, hint: "Photos attached to tasks stay private unless turned on." },
+            { k: "online",  label: "Show online indicator",  val: true,  hint: "A green dot next to your avatar when you're active." },
+          ].map((p) => (
+            <div
+              key={p.k}
+              className="row"
+              style={{ padding: "10px 0", borderBottom: "1px solid var(--border)" }}
+            >
+              <div className="flex1">
+                <div style={{ fontSize: 13.5, fontWeight: 500 }}>{p.label}</div>
+                <div className="muted" style={{ fontSize: 12 }}>{p.hint}</div>
+              </div>
+              <Toggle value={p.val} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
