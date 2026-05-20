@@ -8,6 +8,8 @@ import { FriendsModule } from './friends/friends.module';
 import { StatusModule } from './status/status.module';
 import { MessagesModule } from './messages/messages.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { GatewayModule } from './gateway/gateway.module';
     StatusModule,
     MessagesModule,
     GatewayModule,
+    RoomsModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

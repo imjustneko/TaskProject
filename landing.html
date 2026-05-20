@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Taskyy — calm tasks, together</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --paper: #ffffff;
+      --subtle: #f3f3ef;
+      --warm: #fff5ec;
+      --warm-deep: #ffe9dc;
+      --border: #ececea;
+      --border-strong: #d8d8d4;
+      --text: #14141a;
+      --soft: #3a3a44;
+      --muted: #76767f;
+      --faint: #a3a3aa;
+
+      --accent: #ff6b35;
+      --accent-tint: rgba(255,107,53,0.10);
+      --accent-deep: #d9491a;
+
+      --status-online: #34c759;
+      --status-busy: #ff453a;
+      --status-idle: #ffb340;
+
+      --shadow-1: 0 1px 2px rgba(20,20,26,.04), 0 1px 1px rgba(20,20,26,.02);
+      --shadow-2: 0 4px 16px rgba(20,20,26,.06), 0 1px 3px rgba(20,20,26,.04);
+      --shadow-warm: 0 20px 80px rgba(135, 70, 30, .12), 0 4px 14px rgba(135, 70, 30, .06);
+
+      --r-card: 14px;
+      --r-pill: 999px;
+      --r-mock: 16px;
+
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg); color: var(--text);
+      font-family: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 16px; line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "ss01", "cv11";
+      text-rendering: optimizeLegibility;
+    }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.018em; line-height: 1.15; }
+    h1 { font-size: 64px; letter-spacing: -0.035em; line-height: 1.04; }
+    h2 { font-size: 38px; letter-spacing: -0.028em; line-height: 1.1; }
+    h3 { font-size: 22px; letter-spacing: -0.018em; }
+    h4 { font-size: 15px; }
+    p { margin: 0; color: var(--soft); }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+
+    .mono { font-family: "Geist Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 44px; padding: 0 18px;
+      border-radius: 10px; border: 1px solid var(--border-strong);
+      background: var(--paper); color: var(--text);
+      font-size: 14.5px; font-weight: 500;
+      cursor: default;
+      transition: background 120ms var(--ease), border-color 120ms var(--ease), transform 120ms var(--ease);
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--subtle); transform: translateY(-1px); }
+    .btn-accent {
+      background: var(--text); color: #fff; border-color: var(--text);
+    }
+    .btn-accent:hover { background: #000; }
+    .btn-orange {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+      box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 4px 12px rgba(217, 73, 26, .25);
+    }
+    .btn-orange:hover { background: var(--accent-deep); }
+    .btn-ghost { background: transparent; border-color: transparent; }
+    .btn-ghost:hover { background: var(--subtle); }
+    .btn-sm { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+
+    /* ── Nav ── */
+    .nav-wrap {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in oklab, var(--bg) 80%, transparent);
+      -webkit-backdrop-filter: blur(16px) saturate(150%);
+      backdrop-filter: blur(16px) saturate(150%);
+      border-bottom: 1px solid transparent;
+      transition: border-color 200ms;
+    }
+    .nav-wrap.is-scrolled { border-bottom-color: var(--border); }
+    .nav {
+      max-width: 1180px; margin: 0 auto; padding: 14px 32px;
+      display: flex; align-items: center; gap: 24px;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+    }
+    .brand-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--accent); color: #fff;
+      display: grid; place-items: center;
+      font-weight: 700; font-size: 13px;
+      box-shadow: 0 1px 0 rgba(255,255,255,.22) inset, 0 1px 3px rgba(0,0,0,.12);
+    }
+    .nav-links {
+      display: flex; gap: 4px; margin-left: 32px;
+    }
+    .nav-link {
+      padding: 6px 12px; font-size: 14px; color: var(--soft); border-radius: 7px;
+      cursor: default; transition: background 120ms, color 120ms;
+    }
+    .nav-link:hover { background: var(--subtle); color: var(--text); }
+    .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      padding: 80px 32px 120px;
+      background: linear-gradient(180deg, var(--warm) 0%, var(--bg) 100%);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; inset: 0;
+      background-image:
+        radial-gradient(ellipse 600px 400px at 20% 10%, var(--warm-deep) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 300px at 90% 0%, rgba(255, 180, 130, .35) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1180px; margin: 0 auto; position: relative;
+      display: grid; grid-template-columns: 1.05fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px 6px 8px;
+      border-radius: 999px;
+      background: var(--paper); border: 1px solid var(--border);
+      font-size: 13px; color: var(--soft); margin-bottom: 22px;
+      box-shadow: var(--shadow-1);
+    }
+    .hero-eyebrow .new-pill {
+      padding: 1px 8px; font-size: 11px; font-weight: 600;
+      background: var(--accent); color: #fff;
+      border-radius: 999px; letter-spacing: 0.02em;
+    }
+    .hero h1 { max-width: 580px; }
+    .hero h1 .accent {
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      font-style: italic; font-weight: 500;
+      letter-spacing: -0.035em;
+    }
+    .hero-sub {
+      margin-top: 24px; font-size: 19px; line-height: 1.5;
+      color: var(--soft); max-width: 520px;
+    }
+    .hero-cta { margin-top: 36px; display: flex; gap: 12px; align-items: center; }
+    .hero-fineprint {
+      margin-top: 18px;
+      font-size: 13px; color: var(--muted);
+      display: inline-flex; gap: 14px; align-items: center;
+    }
+    .hero-fineprint span { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* ── Hero visual: mini room mockup ── */
+    .hero-mock {
+      position: relative;
+      transform: rotate(-1deg);
+      transform-origin: center;
+    }
+    .hero-mock-shadow {
+      position: absolute; inset: -20px;
+      background: radial-gradient(ellipse 70% 50% at center, rgba(135, 70, 30, 0.12), transparent 70%);
+      filter: blur(20px);
+      z-index: -1;
+    }
+
+    /* ── Sections ── */
+    .section { padding: 100px 32px; }
+    .section-inner { max-width: 1180px; margin: 0 auto; }
+    .section-paper { background: var(--paper); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .section-warm { background: linear-gradient(180deg, var(--bg) 0%, var(--warm) 50%, var(--bg) 100%); }
+
+    .section-head {
+      max-width: 720px;
+      margin: 0 auto 56px;
+      text-align: center;
+    }
+    .section-head .eyebrow {
+      display: inline-block;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-head p {
+      font-size: 18px; line-height: 1.5;
+      margin-top: 18px; color: var(--soft);
+    }
+
+    /* ── How it works · 3-column ── */
+    .how-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .how-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 28px 26px 24px;
+      position: relative;
+    }
+    .how-card .num {
+      font-family: "Geist Mono", monospace;
+      font-size: 12px; color: var(--faint);
+      margin-bottom: 16px;
+    }
+    .how-card h3 {
+      font-size: 19px; margin-bottom: 8px;
+    }
+    .how-card p { font-size: 14px; line-height: 1.55; }
+    .how-mini {
+      margin-top: 20px;
+      padding: 14px;
+      background: var(--subtle);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Big room showcase ── */
+    .showcase {
+      display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: center;
+    }
+    .showcase-flipped { grid-template-columns: 1.3fr 1fr; }
+    .showcase-flipped .showcase-copy { order: 2; }
+    .showcase-flipped .showcase-visual { order: 1; }
+    .showcase-copy .eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 16px; display: block;
+    }
+    .showcase-copy h2 { max-width: 480px; margin-bottom: 20px; }
+    .showcase-copy p {
+      font-size: 17px; line-height: 1.55;
+      max-width: 460px;
+    }
+    .showcase-bullets {
+      list-style: none; margin: 24px 0 0; padding: 0;
+    }
+    .showcase-bullets li {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 0; border-top: 1px solid var(--border);
+      font-size: 14.5px; color: var(--soft);
+    }
+    .showcase-bullets li:first-child { border-top: 0; padding-top: 4px; }
+    .showcase-bullets .check {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 999px;
+      background: var(--accent-tint); color: var(--accent);
+      display: grid; place-items: center; margin-top: 1px;
+    }
+
+    /* ── Feature row ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .feature {
+      padding: 28px 26px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+    }
+    .feature .ic {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--accent-tint); color: var(--accent);
+      display: grid; place-items: center;
+      margin-bottom: 18px;
+    }
+    .feature h4 { font-size: 16px; margin-bottom: 6px; }
+    .feature p { font-size: 14px; line-height: 1.55; }
+
+    /* ── CTA ── */
+    .cta {
+      background: linear-gradient(160deg, #ffe9dc 0%, #fff5ec 60%, #fafaf7 100%);
+      border-radius: 24px;
+      padding: 72px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      max-width: 1100px;
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: var(--shadow-warm);
+    }
+    .cta::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 600px 300px at 50% 100%, rgba(255, 107, 53, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .cta h2 { max-width: 640px; margin: 0 auto 14px; font-size: 44px; letter-spacing: -0.03em; }
+    .cta p { font-size: 18px; max-width: 520px; margin: 0 auto; color: var(--soft); }
+    .cta-actions {
+      margin-top: 32px; display: flex; gap: 12px; justify-content: center;
+      position: relative;
+    }
+
+    /* ── FAQ ── */
+    .faq {
+      max-width: 760px; margin: 0 auto;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 22px 4px;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-q {
+      font-size: 16px; font-weight: 600;
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: default;
+    }
+    .faq-q .icon-plus { color: var(--muted); transition: transform 200ms var(--ease); }
+    .faq-item[open] .faq-q .icon-plus { transform: rotate(45deg); }
+    .faq-a {
+      margin-top: 12px; font-size: 14.5px; color: var(--soft);
+      line-height: 1.6; max-width: 620px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 64px 32px 40px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .footer-inner {
+      max-width: 1180px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 48px;
+    }
+    .footer-col h5 {
+      font-size: 11.5px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 14px;
+    }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .footer-col li { padding: 5px 0; }
+    .footer-col a {
+      font-size: 14px; color: var(--soft);
+      cursor: default;
+    }
+    .footer-col a:hover { color: var(--text); }
+    .footer-tag {
+      max-width: 280px; font-size: 14px;
+      color: var(--muted); margin-top: 14px; line-height: 1.5;
+    }
+    .footer-bottom {
+      max-width: 1180px; margin: 64px auto 0;
+      padding-top: 24px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px; color: var(--muted);
+    }
+
+    /* ────────────────────────── */
+    /*  MINI-MOCKUP COMPONENTS    */
+    /* ────────────────────────── */
+
+    .mockup {
+      background: var(--paper);
+      border-radius: var(--r-mock);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-2);
+      overflow: hidden;
+      font-size: 13px;
+    }
+    .mockup-titlebar {
+      height: 28px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px;
+      background: var(--subtle);
+      border-bottom: 1px solid var(--border);
+    }
+    .mockup-titlebar i {
+      width: 8px; height: 8px; border-radius: 50%; background: #d3d3cf;
+    }
+    .mockup-titlebar i:nth-child(1) { background: #f5a3a3; }
+    .mockup-titlebar i:nth-child(2) { background: #f5d59c; }
+    .mockup-titlebar i:nth-child(3) { background: #a3d6a3; }
+    .mockup-titlebar .url {
+      margin-left: 12px;
+      font-family: "Geist Mono", monospace;
+      font-size: 10.5px; color: var(--faint);
+    }
+
+    /* Avatar (uses background letter) */
+    .av {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: grid; place-items: center;
+      color: #fff; font-weight: 600; font-size: 9px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .av-online::after {
+      content: ""; position: absolute; right: -1px; bottom: -1px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--status-online);
+      border: 1.5px solid var(--paper);
+    }
+    .av-idle::after {
+      content: ""; position: absolute; right: -1px; bottom: -1px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--status-idle);
+      border: 1.5px solid var(--paper);
+    }
+
+    /* Color tokens for avatars in mockups */
+    .av.c-orange { background: #f97316; }
+    .av.c-blue   { background: #0ea5e9; }
+    .av.c-green  { background: #10b981; }
+    .av.c-purple { background: #a855f7; }
+    .av.c-pink   { background: #ec4899; }
+    .av.c-amber  { background: #f59e0b; }
+    .av.c-teal   { background: #06b6d4; }
+
+    /* Round checkbox */
+    .cbx {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1.5px solid var(--border-strong);
+      background: var(--paper);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .cbx.done {
+      background: var(--accent); border-color: var(--accent);
+    }
+    .cbx.done::after {
+      content: ""; width: 8px; height: 8px;
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7.2 5.8 10 11 4.2'/></svg>") center/contain no-repeat;
+    }
+
+    /* Hero mockup specific: Room view */
+    .hero-mock .mockup { padding: 0; }
+    .room-mock-head {
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 12px; align-items: center;
+    }
+    .room-mock-emoji {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--subtle); border: 1px solid var(--border);
+      display: grid; place-items: center; font-size: 18px;
+    }
+    .room-mock-active {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 7px; border-radius: 999px;
+      font-size: 10px; font-weight: 600;
+      color: var(--status-online);
+      background: color-mix(in oklab, var(--status-online) 14%, transparent);
+    }
+    .room-mock-active i {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--status-online);
+    }
+    .room-mock-task {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .room-mock-task:last-child { border-bottom: 0; }
+    .room-mock-task-title {
+      flex: 1; font-size: 13px; font-weight: 500;
+    }
+    .room-mock-task.done .room-mock-task-title {
+      color: var(--faint); text-decoration: line-through;
+    }
+    .room-mock-stack {
+      display: flex;
+    }
+    .room-mock-stack .av {
+      margin-left: -4px; box-shadow: 0 0 0 2px var(--paper);
+      width: 18px; height: 18px; font-size: 8px;
+    }
+    .room-mock-stack .av:first-child { margin-left: 0; }
+    .room-mock-stack .av.faded { opacity: .3; filter: grayscale(0.7); }
+    .room-mock-count {
+      font-family: "Geist Mono", monospace; font-size: 11px;
+      color: var(--muted); width: 28px; text-align: right;
+    }
+
+    /* Today list mini */
+    .today-mock h4 {
+      padding: 0; margin: 0 0 4px;
+      font-size: 14px; font-weight: 600;
+    }
+    .today-mock-date { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+    .today-mock-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 0;
+    }
+    .today-mock-row + .today-mock-row { border-top: 1px solid var(--border); }
+    .today-mock-row .title { flex: 1; font-size: 12px; color: var(--text); }
+    .today-mock-row.done .title { color: var(--faint); text-decoration: line-through; }
+    .today-mock-row .tag {
+      font-size: 10px; padding: 1px 6px; border-radius: 4px;
+      background: var(--subtle); border: 1px solid var(--border);
+      color: var(--soft); display: inline-flex; align-items: center; gap: 4px;
+    }
+    .today-mock-row .tag i {
+      width: 5px; height: 5px; border-radius: 1px;
+      background: var(--accent);
+    }
+    .today-mock-row .time {
+      font-family: "Geist Mono", monospace; font-size: 10.5px;
+      color: var(--muted);
+    }
+    .pri {
+      width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0;
+    }
+    .pri.high { background: var(--status-busy); }
+    .pri.med  { background: var(--status-idle); }
+    .pri.low  { background: var(--faint); }
+
+    /* Status / friend mini */
+    .friend-mock-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0;
+    }
+    .friend-mock-row + .friend-mock-row { border-top: 1px solid var(--border); }
+    .friend-mock-name { font-size: 12.5px; font-weight: 500; line-height: 1.2; }
+    .friend-mock-status { font-size: 11px; color: var(--muted); line-height: 1.2; margin-top: 1px; }
+
+    /* Daily memory polaroid */
+    .memory-frame {
+      background: var(--paper);
+      padding: 12px 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: var(--shadow-2);
+      display: inline-block;
+    }
+    .memory-img {
+      width: 180px; height: 180px; border-radius: 3px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.3), transparent 50%),
+        linear-gradient(135deg, #f4c98a 0%, #d97757 50%, #6b3e1f 100%);
+    }
+    .memory-cap {
+      margin-top: 10px;
+      font-family: "Geist Mono", monospace; font-size: 10.5px;
+      color: var(--muted); text-align: center;
+    }
+
+    .ic-svg { width: 14px; height: 14px; display: block; }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      h1 { font-size: 44px; }
+      h2 { font-size: 30px; }
+      .hero { padding: 56px 24px 80px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 56px; }
+      .hero-mock { transform: none; max-width: 480px; margin: 0 auto; }
+      .section { padding: 72px 24px; }
+      .how-grid, .features-grid { grid-template-columns: 1fr; }
+      .showcase { grid-template-columns: 1fr; gap: 40px; }
+      .showcase-flipped .showcase-copy { order: 1; }
+      .showcase-flipped .showcase-visual { order: 2; }
+      .nav-links { display: none; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .cta { padding: 48px 24px; }
+      .cta h2 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ─────────────────────────────────────── -->
+<div class="nav-wrap" id="nav">
+  <nav class="nav">
+    <a href="#" class="brand">
+      <span class="brand-mark">T</span>
+      Taskyy
+    </a>
+    <div class="nav-links">
+      <a href="#how" class="nav-link">How it works</a>
+      <a href="#rooms" class="nav-link">Rooms</a>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <a href="index.html" class="btn btn-ghost btn-sm">Open app</a>
+      <a href="index.html" class="btn btn-accent btn-sm">Sign up · free</a>
+    </div>
+  </nav>
+</div>
+
+<!-- ─── Hero ────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <span class="new-pill">NEW</span>
+        Rooms — do daily things together
+      </div>
+      <h1>Calm tasks,<br/><span class="accent">together.</span></h1>
+      <p class="hero-sub">
+        A quiet place for your daily to-dos, where you can also see what your friends are up to — and do the small things side by side.
+      </p>
+      <div class="hero-cta">
+        <a href="index.html" class="btn btn-orange" style="height:48px;padding:0 22px;font-size:15px;">
+          Get started — it's free
+          <svg class="ic-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="design-plan.html" class="btn" style="height:48px;padding:0 18px;font-size:15px;">See the plan</a>
+      </div>
+      <div class="hero-fineprint">
+        <span>
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+          Free forever
+        </span>
+        <span>
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+          No nags, no streaks
+        </span>
+        <span>
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+          Light &amp; dark
+        </span>
+      </div>
+    </div>
+
+    <!-- Hero mockup: Room view in miniature -->
+    <div class="hero-mock">
+      <div class="hero-mock-shadow"></div>
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <i></i><i></i><i></i>
+          <span class="url">taskyy.app / rooms / morning-pages</span>
+        </div>
+        <div class="room-mock-head">
+          <div class="room-mock-emoji">☀️</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;color:var(--faint);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Room</div>
+            <div style="font-size:15px;font-weight:600;">Morning Pages</div>
+          </div>
+          <div class="room-mock-active">
+            <i></i> 2 active
+          </div>
+        </div>
+        <div class="room-mock-task done">
+          <span class="cbx done"></span>
+          <span class="room-mock-task-title">25-min freewrite</span>
+          <div class="room-mock-stack">
+            <span class="av c-orange">M</span>
+            <span class="av c-blue">L</span>
+            <span class="av c-purple">P</span>
+            <span class="av c-amber faded">T</span>
+          </div>
+          <span class="room-mock-count">3/4</span>
+        </div>
+        <div class="room-mock-task done">
+          <span class="cbx done"></span>
+          <span class="room-mock-task-title">3 lines of gratitude</span>
+          <div class="room-mock-stack">
+            <span class="av c-orange">M</span>
+            <span class="av c-blue">L</span>
+            <span class="av c-purple faded">P</span>
+            <span class="av c-amber faded">T</span>
+          </div>
+          <span class="room-mock-count">2/4</span>
+        </div>
+        <div class="room-mock-task">
+          <span class="cbx"></span>
+          <span class="room-mock-task-title">One sentence intention</span>
+          <div class="room-mock-stack">
+            <span class="av c-orange faded">M</span>
+            <span class="av c-blue">L</span>
+            <span class="av c-purple faded">P</span>
+            <span class="av c-amber faded">T</span>
+          </div>
+          <span class="room-mock-count">1/4</span>
+        </div>
+        <div style="padding: 12px 18px; border-top: 1px solid var(--border); background: var(--subtle); display: flex; align-items: center; gap: 8px;">
+          <span class="av c-blue" style="width:18px;height:18px;font-size:8px;">L</span>
+          <span style="font-size:11.5px;color:var(--soft);"><b style="color:var(--text);">Liora</b> rolling in 2 min — kettle on ☕</span>
+          <span style="margin-left:auto;font-family:'Geist Mono',monospace;font-size:10px;color:var(--faint);">8:06</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How it works ────────────────────────────── -->
+<section class="section section-paper" id="how">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Three small habits, one quiet app.</h2>
+      <p>
+        Most productivity tools are lonely. Most social apps make you perform. Taskyy puts low-stakes shared activity at the center of getting things done.
+      </p>
+    </div>
+
+    <div class="how-grid">
+
+      <!-- 01 -->
+      <div class="how-card">
+        <div class="num">01</div>
+        <h3>Plan your day, gently</h3>
+        <p>Today, plans, someday. Add a task in two taps. No deadlines that nag, no streaks that shame.</p>
+        <div class="how-mini today-mock">
+          <h4>Today</h4>
+          <div class="today-mock-date">Wed, May 21</div>
+          <div class="today-mock-row done">
+            <span class="cbx done"></span>
+            <span class="pri med"></span>
+            <span class="title">Review onboarding flow</span>
+            <span class="tag"><i></i>Design</span>
+          </div>
+          <div class="today-mock-row">
+            <span class="cbx"></span>
+            <span class="pri high"></span>
+            <span class="title">Call Mom</span>
+            <span class="time">7:00pm</span>
+          </div>
+          <div class="today-mock-row">
+            <span class="cbx"></span>
+            <span class="pri low"></span>
+            <span class="title">5km easy run</span>
+            <span class="time">5:30pm</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 -->
+      <div class="how-card">
+        <div class="num">02</div>
+        <h3>Show what you're up to</h3>
+        <p>Pick a status — reading, walking, cooking — or write your own. Friends see it without you DMing them.</p>
+        <div class="how-mini">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">Friends · now</div>
+          <div class="friend-mock-row">
+            <span class="av c-blue av-online">A</span>
+            <div style="flex:1;min-width:0;">
+              <div class="friend-mock-name">Asher</div>
+              <div class="friend-mock-status">🎮 Elden Ring</div>
+            </div>
+          </div>
+          <div class="friend-mock-row">
+            <span class="av c-green av-online">P</span>
+            <div style="flex:1;min-width:0;">
+              <div class="friend-mock-name">Priya</div>
+              <div class="friend-mock-status">🚶 On a walk · 32 min</div>
+            </div>
+          </div>
+          <div class="friend-mock-row">
+            <span class="av c-amber av-idle">T</span>
+            <div style="flex:1;min-width:0;">
+              <div class="friend-mock-name">Theo</div>
+              <div class="friend-mock-status">📖 Demon Copperhead</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 -->
+      <div class="how-card">
+        <div class="num">03</div>
+        <h3>Do things together</h3>
+        <p>Make a room for the thing you keep meaning to do. Read together, run together, write together. Tick boxes side by side.</p>
+        <div class="how-mini">
+          <div class="room-mock-task" style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+            <span class="cbx done"></span>
+            <span class="room-mock-task-title" style="font-size:12.5px;">Chapter 8</span>
+            <div class="room-mock-stack">
+              <span class="av c-orange">M</span>
+              <span class="av c-blue">L</span>
+              <span class="av c-purple">P</span>
+            </div>
+          </div>
+          <div class="room-mock-task" style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+            <span class="cbx done"></span>
+            <span class="room-mock-task-title" style="font-size:12.5px;">Chapter 9</span>
+            <div class="room-mock-stack">
+              <span class="av c-orange">M</span>
+              <span class="av c-blue">L</span>
+              <span class="av c-purple faded">P</span>
+            </div>
+          </div>
+          <div class="room-mock-task" style="padding: 8px 0;">
+            <span class="cbx"></span>
+            <span class="room-mock-task-title" style="font-size:12.5px;">Chapter 10</span>
+            <div class="room-mock-stack">
+              <span class="av c-orange faded">M</span>
+              <span class="av c-blue faded">L</span>
+              <span class="av c-purple faded">P</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Showcase: Rooms ─────────────────────────── -->
+<section class="section section-warm" id="rooms">
+  <div class="section-inner">
+    <div class="showcase">
+      <div class="showcase-copy">
+        <span class="eyebrow">Rooms</span>
+        <h2>Reading. Running. Writing.<br/>Same thing — together.</h2>
+        <p>
+          A room is a small shared checklist with a chat. Three runs a week. Three chapters by Friday. A page in your morning journal. Each member ticks their own boxes; you see the room come alive as the day goes.
+        </p>
+        <ul class="showcase-bullets">
+          <li>
+            <div class="check">
+              <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            </div>
+            <div><b style="color:var(--text);">Per-member progress.</b> See who's caught up, who's behind, no public shaming.</div>
+          </li>
+          <li>
+            <div class="check">
+              <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            </div>
+            <div><b style="color:var(--text);">Built-in chat.</b> Cheer each other on, no need to message separately.</div>
+          </li>
+          <li>
+            <div class="check">
+              <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            </div>
+            <div><b style="color:var(--text);">Invite-only.</b> Rooms aren't public feeds. Just you and the people who said yes.</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="showcase-visual">
+        <div class="mockup" style="box-shadow: var(--shadow-warm);">
+          <div class="mockup-titlebar">
+            <i></i><i></i><i></i>
+            <span class="url">taskyy.app / rooms / couch-to-5k</span>
+          </div>
+          <div class="room-mock-head" style="padding: 18px 20px;">
+            <div class="room-mock-emoji" style="width: 44px; height: 44px; font-size: 22px;">🏃</div>
+            <div style="flex:1;">
+              <div style="font-size:11px;color:var(--faint);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Room · Week 4</div>
+              <div style="font-size:16px;font-weight:600;">Couch to 5K</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;">3 members · Three runs a week, accountability check-ins.</div>
+            </div>
+          </div>
+          <div style="padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--subtle);">
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px;">
+              <span>Your progress this week</span>
+              <span class="mono">1/3 · 33%</span>
+            </div>
+            <div style="height:5px;border-radius:999px;background:var(--border);overflow:hidden;">
+              <div style="width:33%;height:100%;background:var(--accent);"></div>
+            </div>
+          </div>
+
+          <div class="room-mock-task done">
+            <span class="cbx done"></span>
+            <div style="flex:1;">
+              <div class="room-mock-task-title">Run 1 · 20 min easy</div>
+              <div class="room-mock-stack" style="margin-top:6px;">
+                <span class="av c-orange">M</span>
+                <span class="av c-green">P</span>
+                <span class="av c-pink">Y</span>
+              </div>
+            </div>
+            <span class="room-mock-count">3/3</span>
+          </div>
+          <div class="room-mock-task">
+            <span class="cbx"></span>
+            <div style="flex:1;">
+              <div class="room-mock-task-title">Run 2 · intervals</div>
+              <div class="room-mock-stack" style="margin-top:6px;">
+                <span class="av c-orange faded">M</span>
+                <span class="av c-green">P</span>
+                <span class="av c-pink faded">Y</span>
+              </div>
+            </div>
+            <span class="room-mock-count">1/3</span>
+          </div>
+          <div class="room-mock-task">
+            <span class="cbx"></span>
+            <div style="flex:1;">
+              <div class="room-mock-task-title">Run 3 · long run</div>
+              <div class="room-mock-stack" style="margin-top:6px;">
+                <span class="av c-orange faded">M</span>
+                <span class="av c-green faded">P</span>
+                <span class="av c-pink faded">Y</span>
+              </div>
+            </div>
+            <span class="room-mock-count">0/3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Showcase: Daily Memory ──────────────────── -->
+<section class="section section-paper">
+  <div class="section-inner">
+    <div class="showcase showcase-flipped">
+      <div class="showcase-visual">
+        <div style="display:flex;gap:16px;justify-content:center;align-items:flex-end;">
+          <div class="memory-frame" style="transform: rotate(-3deg);">
+            <div class="memory-img" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.3), transparent 50%), linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #92400e 100%);"></div>
+            <div class="memory-cap">MON · sourdough day</div>
+          </div>
+          <div class="memory-frame" style="transform: rotate(2deg); margin-bottom: 18px;">
+            <div class="memory-img" style="width:200px;height:200px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.3), transparent 50%), linear-gradient(135deg, #a7f3d0 0%, #10b981 50%, #064e3b 100%);"></div>
+            <div class="memory-cap">TUE · 5km run · river</div>
+          </div>
+          <div class="memory-frame" style="transform: rotate(-1deg);">
+            <div class="memory-img" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.3), transparent 50%), linear-gradient(135deg, #fbcfe8 0%, #ec4899 50%, #831843 100%);"></div>
+            <div class="memory-cap">WED · friend dinner</div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-copy">
+        <span class="eyebrow">Daily memory</span>
+        <h2>The week, looking back.</h2>
+        <p>
+          Snap a photo when you finish a task — your morning coffee, today's sketch, the trail at golden hour. Taskyy quietly threads them into a small visual diary you can look back on (and share, only if you want to).
+        </p>
+        <ul class="showcase-bullets">
+          <li>
+            <div class="check">
+              <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            </div>
+            <div><b style="color:var(--text);">Private by default.</b> Memories stay yours unless you turn sharing on.</div>
+          </li>
+          <li>
+            <div class="check">
+              <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            </div>
+            <div><b style="color:var(--text);">Weekly recap.</b> Sunday email of what you got done — gentle, never a guilt trip.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Features grid ───────────────────────────── -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Everything else</span>
+      <h2>Calm by design.</h2>
+      <p>No streaks. No badges. No notifications that pretend to be urgent.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature">
+        <div class="ic">
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>
+        </div>
+        <h4>Light &amp; dark</h4>
+        <p>Two themes, both calm. Auto-switch with your system or set it manually.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 5 2 12v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7l-3.5-7z"/><path d="M22 12h-6l-2 3h-4l-2-3H2"/></svg>
+        </div>
+        <h4>Categories &amp; priority</h4>
+        <p>Color-coded categories and three priorities — enough structure, never overwhelming.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.5-3.5"/></svg>
+        </div>
+        <h4>Quick capture</h4>
+        <p>Hit <span style="font-family:'Geist Mono',monospace;font-size:11px;padding:1px 5px;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:4px;color:var(--muted);background:var(--paper);">N</span> anywhere to add a task in two seconds.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </div>
+        <h4>Friend DMs</h4>
+        <p>1:1 chat with anyone in your circle. No groups, no servers, no noise.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </div>
+        <h4>Privacy first</h4>
+        <p>Status, shared tasks, memories — every signal is opt-in, and you can mute anything.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">
+          <svg class="ic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+        </div>
+        <h4>Calendar view</h4>
+        <p>Glance at the week ahead. Drag a task to reschedule it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─────────────────────────────────────── -->
+<section class="section section-paper" id="faq">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">FAQ</span>
+      <h2>A few questions, answered.</h2>
+    </div>
+
+    <div class="faq">
+      <details class="faq-item" open>
+        <summary class="faq-q">
+          Is Taskyy really free?
+          <svg class="icon-plus" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </summary>
+        <div class="faq-a">Yes. Daily tasks, rooms, friends, chat, and dark mode are free forever. A paid plan is coming for power-user extras like room templates, longer history, and richer recaps — never for anything that locks you in.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Do I need to add my friends for it to work?
+          <svg class="icon-plus" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </summary>
+        <div class="faq-a">No. Taskyy is a complete to-do app on its own. The social features quietly turn on when you add even one friend.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Can other people see what I'm doing?
+          <svg class="icon-plus" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </summary>
+        <div class="faq-a">Only the things you explicitly share — your status, tasks you mark as "shared", and rooms you've joined. The default is private.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          Is there a mobile app?
+          <svg class="icon-plus" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </summary>
+        <div class="faq-a">A responsive web app today; native iOS and Android in the next couple of months.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          How is this different from Notion / Todoist / Discord?
+          <svg class="icon-plus" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </summary>
+        <div class="faq-a">Notion is a workspace. Todoist is a solo to-do list. Discord is a hangout. Taskyy is the smallest possible thing that gets you and a friend or two doing daily small things together — and nothing else.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─────────────────────────────────────── -->
+<section class="section" style="padding-bottom: 120px;">
+  <div class="cta">
+    <h2>Get the small things done.<br/>With people you like.</h2>
+    <p>Sign up in 30 seconds. Add a task. Add a friend. See what happens.</p>
+    <div class="cta-actions">
+      <a href="index.html" class="btn btn-orange" style="height:48px;padding:0 24px;font-size:15px;">
+        Get started — it's free
+        <svg class="ic-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a href="design-plan.html" class="btn" style="height:48px;padding:0 18px;font-size:15px;">Read the plan</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ──────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <a href="#" class="brand">
+        <span class="brand-mark">T</span>
+        Taskyy
+      </a>
+      <p class="footer-tag">Calm tasks, together. Built quietly in Brooklyn, San Francisco, and Lisbon.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <ul>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#rooms">Rooms</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="index.html">Open the app</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Changelog</a></li>
+        <li><a href="#">Hiring</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <ul>
+        <li><a href="design-plan.html">Design plan</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Status</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Taskyy. All rights reserved.</span>
+    <span style="display:inline-flex;gap:16px;">
+      <a href="#">Twitter</a>
+      <a href="#">Mastodon</a>
+      <a href="#">Bluesky</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // Subtle nav border on scroll
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+</body>
+</html>
