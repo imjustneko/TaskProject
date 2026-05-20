@@ -27,7 +27,12 @@
       "Bash(node *)",
       "Bash(\"/d/PostgreSQL/bin/psql\" --version)",
       "Bash(\"/d/PostgreSQL/bin/pg_isready\")",
-      "Bash(/d/PostgreSQL/bin/psql *)"
+      "Bash(/d/PostgreSQL/bin/psql *)",
+      "Bash(PGPASSWORD=neko123 /d/PostgreSQL/bin/psql *)",
+      "Bash(PGPASSWORD=neko123 npx prisma migrate dev --name init)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:neko123@localhost:5432/taskyy\" npx prisma migrate dev --name init)",
+      "Bash(pkill -f \"nest start\")",
+      "Bash(pkill -f \"next dev\")"
     ]
   }
 }
