@@ -6,7 +6,16 @@
       "Bash(npm install *)",
       "Bash(npx next *)",
       "Bash(git add *)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(npx tsc *)",
+      "Bash(echo 'DATABASE_URL=\"postgresql://postgres:password@localhost:5432/taskyy\"')",
+      "Bash(echo 'JWT_SECRET=\"dev-secret\"')",
+      "Bash(echo 'JWT_REFRESH_SECRET=\"dev-refresh-secret\"')",
+      "Bash(npx prisma *)",
+      "Bash(node -e \"const a = require\\('@prisma/adapter-pg'\\); console.log\\(Object.keys\\(a\\)\\)\")",
+      "Bash(node -e \"const a = require\\('prisma/config'\\); console.log\\(Object.keys\\(a\\)\\)\")",
+      "Bash(node -e \"const a = require\\('prisma/config'\\); const c = a.defineConfig\\({}\\); console.log\\(Object.keys\\(c\\)\\)\")",
+      "Bash(node -e \"const {defineConfig} = require\\('prisma/config'\\); const c = defineConfig; console.log\\(c.toString\\(\\).slice\\(0,200\\)\\)\")"
     ]
   }
 }
