@@ -1,0 +1,216 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum StatusType {
+  PLAYING
+  COOKING
+  WALKING
+  STUDYING
+  READING
+  WORKING
+  CUSTOM
+  OFFLINE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+enum RoomRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
+
+enum NotificationType {
+  FRIEND_REQUEST
+  FRIEND_ACCEPTED
+  ROOM_INVITE
+  TASK_REMINDER
+  MENTION
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  displayName  String
+  passwordHash String
+  avatarUrl    String?
+  bio          String?
+  role         Role     @default(USER)
+  isBlocked    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  status           UserStatus?
+  tasks            Task[]
+  sentRequests     Friend[]       @relation("Requester")
+  receivedRequests Friend[]       @relation("Recipient")
+  sentMessages     Message[]
+  roomMembers      RoomMember[]
+  notifications    Notification[]
+
+  @@map("users")
+}
+
+model UserStatus {
+  id         String     @id @default(cuid())
+  userId     String     @unique
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       StatusType
+  customText String?
+  emoji      String?
+  updatedAt  DateTime   @updatedAt
+
+  @@map("user_statuses")
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  date        DateTime?
+  time        String?
+  category    String?
+  priority    Priority  @default(MEDIUM)
+  isCompleted Boolean   @default(false)
+  isPublic    Boolean   @default(false)
+  imageUrl    String?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  roomTask RoomTask?
+
+  @@index([userId, isCompleted])
+  @@index([userId, date])
+  @@map("tasks")
+}
+
+model Friend {
+  id          String       @id @default(cuid())
+  requesterId String
+  recipientId String
+  status      FriendStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  requester User @relation("Requester", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipient User @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, recipientId])
+  @@index([recipientId, status])
+  @@map("friends")
+}
+
+model Room {
+  id           String      @id @default(cuid())
+  name         String
+  description  String?
+  activityType StatusType?
+  createdById  String
+  isPublic     Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  members  RoomMember[]
+  tasks    RoomTask[]
+  messages Message[]
+
+  @@map("rooms")
+}
+
+model RoomMember {
+  id       String   @id @default(cuid())
+  roomId   String
+  userId   String
+  role     RoomRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@map("room_members")
+}
+
+model RoomTask {
+  id          String   @id @default(cuid())
+  roomId      String
+  taskId      String   @unique
+  completedBy String[] @default([])
+  createdAt   DateTime @default(now())
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("room_tasks")
+}
+
+model Message {
+  id          String      @id @default(cuid())
+  senderId    String
+  content     String?
+  imageUrl    String?
+  type        MessageType @default(TEXT)
+  roomId      String?
+  recipientId String?
+  isDeleted   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  room   Room? @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, createdAt])
+  @@index([senderId, recipientId, createdAt])
+  @@map("messages")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  type        NotificationType
+  fromId      String?
+  referenceId String?
+  isRead      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
