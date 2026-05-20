@@ -4,7 +4,9 @@
       "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git)",
       "Bash(npx @nestjs/cli new backend --package-manager npm --skip-git)",
       "Bash(npm install *)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(git add *)",
+      "Bash(git check-ignore *)"
     ]
   }
 }
