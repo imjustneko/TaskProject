@@ -18,18 +18,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[var(--bg)]">
-        <div className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent animate-spin" />
+      <div style={{ display: "grid", placeItems: "center", height: "100vh", background: "var(--bg)" }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: "50%",
+          border: "2px solid var(--accent)",
+          borderTopColor: "transparent",
+          animation: "spin 0.7s linear infinite",
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--bg)]">
+    <div className="app">
       <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+      <div className="main">
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <div className="view">
+          {children}
+        </div>
       </div>
     </div>
   );

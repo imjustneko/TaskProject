@@ -1,65 +1,68 @@
-import Image from "next/image";
-import { cn, getInitials } from "@/lib/utils";
-import type { StatusType } from "@/types";
+// hueFor — deterministic color from a name string
+export function hueFor(name: string): string {
+  if (!name) return "#888";
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 55%, 48%)`;
+}
 
-const sizes = {
-  sm:  { container: "h-8 w-8 text-xs",   dot: "h-2.5 w-2.5" },
-  md:  { container: "h-10 w-10 text-sm",  dot: "h-3 w-3" },
-  lg:  { container: "h-14 w-14 text-base",dot: "h-3.5 w-3.5" },
-  xl:  { container: "h-20 w-20 text-xl",  dot: "h-4 w-4" },
-  "2xl":{ container: "h-28 w-28 text-3xl",dot: "h-4 w-4" },
-};
-
-const statusColors: Record<StatusType, string> = {
-  PLAYING:  "bg-status-playing",
-  COOKING:  "bg-status-cooking",
-  WALKING:  "bg-status-walking",
-  STUDYING: "bg-status-studying",
-  READING:  "bg-status-reading",
-  WORKING:  "bg-status-working",
-  CUSTOM:   "bg-status-custom",
-  OFFLINE:  "bg-status-offline",
-};
+interface AvatarUser {
+  id?: string;
+  displayName?: string;
+  name?: string;
+  username?: string;
+  avatarUrl?: string | null;
+  status?: {
+    type?: string;
+    presence?: string;
+    emoji?: string;
+    label?: string;
+    customText?: string;
+  } | null;
+  presence?: string;
+}
 
 interface AvatarProps {
+  user?: AvatarUser | null;
+  name?: string;
   src?: string | null;
-  name: string;
-  size?: keyof typeof sizes;
-  status?: StatusType;
+  size?: number;
+  status?: boolean;
+  onBg?: "subtle" | "bg" | "elevated";
   className?: string;
 }
 
-export function Avatar({ src, name, size = "md", status, className }: AvatarProps) {
-  const s = sizes[size];
+export function Avatar({ user, name: nameProp, src: srcProp, size = 32, status = false, onBg, className }: AvatarProps) {
+  const resolvedName = user?.displayName ?? user?.name ?? nameProp ?? "?";
+  const resolvedSrc = user?.avatarUrl ?? srcProp;
+  const bg = hueFor(resolvedName);
+  const initials = resolvedName
+    .split(" ")
+    .map((p: string) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  const presence = user?.presence ?? user?.status?.presence;
+  const fontSize = Math.max(10, size * 0.38);
+
   return (
-    <div className={cn("relative inline-flex shrink-0", className)}>
-      <div
-        className={cn(
-          "rounded-full overflow-hidden bg-primary-100 dark:bg-primary-700 flex items-center justify-center font-semibold text-primary-600 dark:text-primary-200",
-          s.container
-        )}
-      >
-        {src ? (
-          <Image
-            src={src}
-            alt={name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 80px, 112px"
-          />
+    <div
+      className={`avatar${className ? " " + className : ""}`}
+      data-on-bg={onBg}
+      style={{ width: size, height: size, fontSize }}
+    >
+      <div className="avatar-inner" style={{ background: resolvedSrc ? undefined : bg }}>
+        {resolvedSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={resolvedSrc} alt={resolvedName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
-          getInitials(name)
+          initials
         )}
       </div>
-      {status && status !== "OFFLINE" && (
-        <span
-          className={cn(
-            "absolute bottom-0 right-0 rounded-full border-2 border-surface dark:border-surface-dark",
-            s.dot,
-            statusColors[status]
-          )}
-        />
-      )}
+      {status && presence && <span className="avatar-status" data-s={presence} />}
     </div>
   );
 }

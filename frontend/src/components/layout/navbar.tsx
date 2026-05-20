@@ -1,88 +1,65 @@
 "use client";
 
-import { Bell, Search, Sun, Moon, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState, useRef, useEffect } from "react";
-import { Avatar } from "@/components/ui/avatar";
-import { useAuthStore } from "@/stores/authStore";
-import { useLogout } from "@/hooks/useAuth";
+import { usePathname } from "next/navigation";
+
+function Icon({ name, size = 14 }: { name: string; size?: number }) {
+  const props = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.7,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  switch (name) {
+    case "search": return <svg {...props}><circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.5-3.5"/></svg>;
+    case "bell":   return <svg {...props}><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2.5h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>;
+    case "sun":    return <svg {...props}><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>;
+    case "moon":   return <svg {...props}><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>;
+    default:       return null;
+  }
+}
+
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard": "Home",
+  "/tasks/today": "Today",
+  "/tasks/plans": "Plans",
+  "/friends": "Friends",
+  "/profile/edit": "Profile",
+  "/rooms": "Rooms",
+};
 
 export function Navbar() {
-  const { theme, setTheme } = useTheme();
-  const { user } = useAuthStore();
-  const logout = useLogout();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme, setTheme } = useTheme();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  const title = PAGE_TITLES[pathname] ?? "Taskyy";
 
   return (
-    <header className="h-16 shrink-0 flex items-center gap-4 px-6 border-b border-border dark:border-border-dark bg-surface dark:bg-surface-dark">
-      <div className="flex-1 max-w-xs">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-subtle dark:text-text-subtle-dark" />
-          <input
-            type="search"
-            placeholder="Search..."
-            className="h-9 w-full rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 pl-9 pr-3 text-sm placeholder:text-text-subtle dark:placeholder:text-text-subtle-dark focus:outline-none focus:ring-2 focus:ring-primary-500 text-text-base dark:text-text-base-dark"
-          />
-        </div>
+    <div className="topbar">
+      <div className="row gap-2">
+        <span className="topbar-title">{title}</span>
       </div>
-
-      <div className="ml-auto flex items-center gap-2">
+      <div className="topbar-spacer" />
+      <div className="row gap-2">
+        <div className="input-search" style={{ width: 220 }}>
+          <Icon name="search" size={14} />
+          <input className="input" placeholder="Search…" style={{ height: 32, fontSize: 13 }} />
+        </div>
+        <button className="btn btn-ghost btn-sm btn-icon">
+          <Icon name="bell" size={14} />
+        </button>
         <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="h-9 w-9 rounded-input flex items-center justify-center text-text-muted dark:text-text-muted-dark hover:bg-surface-2 dark:hover:bg-surface-dark-2 transition-colors"
-          aria-label="Toggle theme"
+          className="btn btn-ghost btn-sm btn-icon"
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          title="Toggle theme"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <Icon name={resolvedTheme === "dark" ? "sun" : "moon"} size={14} />
         </button>
-
-        <button className="relative h-9 w-9 rounded-input flex items-center justify-center text-text-muted dark:text-text-muted-dark hover:bg-surface-2 dark:hover:bg-surface-dark-2 transition-colors">
-          <Bell className="h-4 w-4" />
-        </button>
-
-        {/* User menu */}
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="flex items-center gap-2 rounded-input px-2 py-1 hover:bg-surface-2 dark:hover:bg-surface-dark-2 transition-colors"
-          >
-            <Avatar name={user?.displayName ?? "User"} src={user?.avatarUrl} size="sm" />
-            <span className="hidden sm:block text-sm font-medium text-text-base dark:text-text-base-dark max-w-[120px] truncate">
-              {user?.displayName}
-            </span>
-          </button>
-
-          {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-48 rounded-card border border-border dark:border-border-dark bg-surface dark:bg-surface-dark shadow-lg z-50 py-1">
-              <div className="px-3 py-2 border-b border-border dark:border-border-dark">
-                <p className="text-sm font-medium text-text-base dark:text-text-base-dark truncate">
-                  {user?.displayName}
-                </p>
-                <p className="text-xs text-text-muted dark:text-text-muted-dark truncate">
-                  @{user?.username}
-                </p>
-              </div>
-              <button
-                onClick={() => { logout(); setMenuOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-error-500 hover:bg-error-500/10 transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
       </div>
-    </header>
+    </div>
   );
 }

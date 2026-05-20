@@ -1,213 +1,189 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTodayTasks, useCreateTask, useToggleTask, useDeleteTask } from "@/hooks/useTasks";
-import { PRIORITY_META } from "@/types";
-import { Plus, Trash2, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useTodayTasks, useCreateTask, useToggleTask } from "@/hooks/useTasks";
+import { PageHeader } from "@/components/ui/page-header";
+import { TaskRow } from "@/components/ui/task-row";
 
-const schema = z.object({
-  title: z.string().min(1, "Гарчиг оруулна уу"),
-  description: z.string().optional(),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
-  category: z.string().optional(),
-  time: z.string().optional(),
-});
-type FormData = z.infer<typeof schema>;
+function CreateTaskModal({
+  open,
+  onClose,
+  onCreate,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onCreate: (data: { title: string; description?: string; priority?: string; time?: string; category?: string }) => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [priority, setPriority] = useState("MEDIUM");
+  const [time, setTime] = useState("");
+
+  if (!open) return null;
+
+  const save = () => {
+    if (!title.trim()) return;
+    onCreate({ title: title.trim(), description: desc || undefined, priority, time: time || undefined });
+    setTitle(""); setDesc(""); setPriority("MEDIUM"); setTime("");
+    onClose();
+  };
+
+  return (
+    <div className="modal-back" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-hd">
+          <h2>New task</h2>
+          <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div className="col gap-4">
+          <input
+            className="input"
+            style={{ fontSize: 15, height: 40, fontWeight: 500 }}
+            placeholder="What's the task?"
+            autoFocus
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && save()}
+          />
+          <textarea
+            className="textarea"
+            placeholder="Notes (optional)"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+            rows={3}
+          />
+          <div className="grid-2">
+            <div className="field">
+              <label className="field-label">Priority</label>
+              <div className="row gap-2">
+                {[
+                  { k: "HIGH", label: "High" },
+                  { k: "MEDIUM", label: "Med" },
+                  { k: "LOW", label: "Low" },
+                ].map((p) => (
+                  <button
+                    key={p.k}
+                    className="btn btn-sm"
+                    onClick={() => setPriority(p.k)}
+                    style={{
+                      flex: 1,
+                      borderColor: priority === p.k ? "var(--accent)" : "var(--border-strong)",
+                      background: priority === p.k ? "var(--accent-tint)" : "var(--bg-elevated)",
+                      color: priority === p.k ? "var(--accent)" : "var(--text-soft)",
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="field">
+              <label className="field-label">Time</label>
+              <input className="input" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            </div>
+          </div>
+          <div className="row" style={{ justifyContent: "flex-end", gap: 8, marginTop: 4 }}>
+            <button className="btn" onClick={onClose}>Cancel</button>
+            <button
+              className="btn btn-accent"
+              onClick={save}
+              disabled={!title.trim()}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+              Add task
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function TodayTasksPage() {
-  const { data: tasks = [], isLoading } = useTodayTasks();
+  const { data: tasks = [] } = useTodayTasks();
   const createTask = useCreateTask();
   const toggle = useToggleTask();
-  const remove = useDeleteTask();
-  const [showForm, setShowForm] = useState(false);
-  const [filter, setFilter] = useState<"all" | "pending" | "done">("all");
+  const [showModal, setShowModal] = useState(false);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { priority: "MEDIUM" },
-  });
+  const done = tasks.filter((t) => t.isCompleted);
+  const todo = tasks.filter((t) => !t.isCompleted);
+  const date = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
-  const onSubmit = (data: FormData) => {
-    createTask.mutate(data, {
-      onSuccess: () => { reset(); setShowForm(false); },
+  const handleCreate = (data: { title: string; description?: string; priority?: string; time?: string }) => {
+    createTask.mutate({
+      title: data.title,
+      description: data.description,
+      priority: (data.priority as "LOW" | "MEDIUM" | "HIGH" | "URGENT") ?? "MEDIUM",
+      time: data.time,
     });
   };
 
-  const filtered = tasks.filter((t) => {
-    if (filter === "pending") return !t.isCompleted;
-    if (filter === "done") return t.isCompleted;
-    return true;
-  });
-
-  const completed = tasks.filter((t) => t.isCompleted).length;
-  const pct = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
-
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-text-base dark:text-text-base-dark">Өнөөдөр</h1>
-          <p className="text-sm text-text-muted dark:text-text-muted-dark mt-0.5">
-            {new Date().toLocaleDateString("mn-MN", { weekday: "long", month: "long", day: "numeric" })}
-          </p>
-        </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="h-10 px-4 rounded-input bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" /> Нэмэх
+    <div className="view-narrow">
+      <PageHeader
+        eyebrow="Today"
+        title={date}
+        subtitle={`${todo.length} task${todo.length === 1 ? "" : "s"} remaining`}
+      >
+        <button className="btn btn-accent" onClick={() => setShowModal(true)}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          New task
         </button>
-      </div>
+      </PageHeader>
 
-      {/* Progress */}
-      <div className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-5 shadow-sm mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-text-base dark:text-text-base-dark">Ахиц</span>
-          <span className="text-sm text-text-muted dark:text-text-muted-dark">{completed}/{tasks.length} дууслаа · {pct}%</span>
-        </div>
-        <div className="h-2.5 bg-surface-2 dark:bg-surface-dark-2 rounded-full overflow-hidden">
-          <div className="h-full bg-primary-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-        </div>
-      </div>
-
-      {/* Create form */}
-      {showForm && (
-        <div className="bg-surface dark:bg-surface-dark border border-primary-200 dark:border-primary-700 rounded-card p-5 shadow-md mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-text-base dark:text-text-base-dark">Шинэ даалгавар</h3>
-            <button onClick={() => { setShowForm(false); reset(); }} className="text-text-muted dark:text-text-muted-dark hover:text-text-base dark:hover:text-text-base-dark">
-              <X className="h-4 w-4" />
-            </button>
+      <div className="col gap-6">
+        {/* To do section */}
+        <div>
+          <div className="row" style={{ marginBottom: 8 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+              To do
+            </span>
+            <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>{todo.length}</span>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-            <div>
-              <input
-                {...register("title")}
-                placeholder="Даалгаврын гарчиг..."
-                autoFocus
-                className="h-10 w-full rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 px-3 text-sm text-text-base dark:text-text-base-dark placeholder:text-text-subtle dark:placeholder:text-text-subtle-dark focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              {errors.title && <p className="text-xs text-error-500 mt-1">{errors.title.message}</p>}
+          {todo.length === 0 ? (
+            <div style={{
+              display: "flex", flexDirection: "column", alignItems: "center",
+              gap: 10, padding: "40px 20px", color: "var(--text-muted)",
+            }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, display: "grid", placeItems: "center",
+                background: "var(--bg-subtle)", color: "var(--text-muted)",
+              }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+              </div>
+              <div style={{ fontWeight: 600, color: "var(--text)" }}>All clear</div>
+              <div style={{ fontSize: 12.5, textAlign: "center", maxWidth: 320 }}>You&apos;ve checked off every task for today. Treat yourself.</div>
             </div>
-            <input
-              {...register("description")}
-              placeholder="Тайлбар (заавал биш)..."
-              className="h-10 w-full rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 px-3 text-sm text-text-base dark:text-text-base-dark placeholder:text-text-subtle dark:placeholder:text-text-subtle-dark focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
-            <div className="flex gap-3">
-              <select
-                {...register("priority")}
-                className="h-10 flex-1 rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 px-3 text-sm text-text-base dark:text-text-base-dark focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="LOW">🟢 Бага</option>
-                <option value="MEDIUM">🟡 Дунд</option>
-                <option value="HIGH">🔴 Өндөр</option>
-                <option value="URGENT">🚨 Яаралтай</option>
-              </select>
-              <input
-                {...register("time")}
-                type="time"
-                className="h-10 rounded-input border border-border dark:border-border-dark bg-surface-2 dark:bg-surface-dark-2 px-3 text-sm text-text-base dark:text-text-base-dark focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
+          ) : (
+            <div className="list">
+              {todo.map((t) => (
+                <TaskRow key={t.id} task={t} onToggle={(id) => toggle.mutate(id)} />
+              ))}
             </div>
-            <div className="flex justify-end gap-2">
-              <button type="button" onClick={() => { setShowForm(false); reset(); }} className="h-9 px-4 rounded-input border border-border dark:border-border-dark text-sm text-text-base dark:text-text-base-dark hover:bg-surface-2 dark:hover:bg-surface-dark-2 transition-colors">
-                Цуцлах
-              </button>
-              <button type="submit" disabled={createTask.isPending} className="h-9 px-4 rounded-input bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors disabled:opacity-60">
-                {createTask.isPending ? "Хадгалж байна..." : "Нэмэх"}
-              </button>
-            </div>
-          </form>
+          )}
         </div>
-      )}
 
-      {/* Filters */}
-      <div className="flex gap-1 p-1 bg-surface-2 dark:bg-surface-dark-2 rounded-card w-fit mb-4">
-        {(["all", "pending", "done"] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={cn(
-              "px-3 py-1.5 text-sm rounded-input transition-colors font-medium",
-              filter === f
-                ? "bg-surface dark:bg-surface-dark shadow-sm text-text-base dark:text-text-base-dark"
-                : "text-text-muted dark:text-text-muted-dark hover:text-text-base dark:hover:text-text-base-dark"
-            )}
-          >
-            {f === "all" ? "Бүгд" : f === "pending" ? "Хүлээгдэж байна" : "Дууссан"}
-          </button>
-        ))}
+        {/* Completed section */}
+        {done.length > 0 && (
+          <div>
+            <div className="row" style={{ marginBottom: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                Completed
+              </span>
+              <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>{done.length}</span>
+            </div>
+            <div className="list">
+              {done.map((t) => (
+                <TaskRow key={t.id} task={t} onToggle={(id) => toggle.mutate(id)} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Task list */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => <div key={i} className="h-14 bg-surface-2 dark:bg-surface-dark-2 rounded-card animate-pulse" />)}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-12 shadow-sm text-center">
-          <p className="text-4xl mb-3">✅</p>
-          <h3 className="font-semibold text-text-base dark:text-text-base-dark mb-1">Даалгавар байхгүй</h3>
-          <p className="text-sm text-text-muted dark:text-text-muted-dark">Шинэ даалгавар нэмэх товч дарна уу.</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {filtered.map((task) => (
-            <div
-              key={task.id}
-              className={cn(
-                "group flex items-center gap-3 p-4 rounded-card border shadow-sm transition-all",
-                task.isCompleted
-                  ? "border-border dark:border-border-dark bg-surface-2/50 dark:bg-surface-dark-2/50"
-                  : "border-border dark:border-border-dark bg-surface dark:bg-surface-dark hover:border-primary-200 dark:hover:border-primary-700"
-              )}
-            >
-              <button
-                onClick={() => toggle.mutate(task.id)}
-                className={cn(
-                  "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                  task.isCompleted
-                    ? "bg-primary-500 border-primary-500"
-                    : "border-border dark:border-border-dark hover:border-primary-500"
-                )}
-              >
-                {task.isCompleted && (
-                  <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </button>
-              <div className="flex-1 min-w-0">
-                <p className={cn("text-sm font-medium truncate", task.isCompleted ? "line-through text-text-muted dark:text-text-muted-dark" : "text-text-base dark:text-text-base-dark")}>
-                  {task.title}
-                </p>
-                {task.description && (
-                  <p className="text-xs text-text-muted dark:text-text-muted-dark truncate mt-0.5">{task.description}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {task.time && (
-                  <span className="text-xs text-text-muted dark:text-text-muted-dark">{task.time}</span>
-                )}
-                <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", PRIORITY_META[task.priority].bg, PRIORITY_META[task.priority].color)}>
-                  {PRIORITY_META[task.priority].label}
-                </span>
-                <button
-                  onClick={() => remove.mutate(task.id)}
-                  className="opacity-0 group-hover:opacity-100 text-text-subtle dark:text-text-subtle-dark hover:text-error-500 transition-all"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <CreateTaskModal open={showModal} onClose={() => setShowModal(false)} onCreate={handleCreate} />
     </div>
   );
 }
