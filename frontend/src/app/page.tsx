@@ -137,7 +137,7 @@ export default function LandingPage() {
                   <div style={{ fontSize:15,fontWeight:600 }}>Өглөөний бичих</div>
                 </div>
                 <div style={{ display:"inline-flex",alignItems:"center",gap:5,padding:"2px 7px",borderRadius:999,fontSize:10,fontWeight:600,color:"var(--status-online)",background:"color-mix(in oklab,var(--status-online) 14%,transparent)" }}>
-                  <i style={{ width:5,height:5,borderRadius:"50%",background:"var(--status-online)",display:"block" }}/> 2 active
+                  <i style={{ width:5,height:5,borderRadius:"50%",background:"var(--status-online)",display:"block" }}/> 2 идэвхтэй
                 </div>
               </div>
               {[

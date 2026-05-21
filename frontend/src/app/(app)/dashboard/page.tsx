@@ -29,7 +29,7 @@ function greeting() {
 function StreakCard({ current, best }: { current: number; best: number }) {
   const today = new Date().getDay();
   const todayIdx = today === 0 ? 6 : today - 1;
-  const labels = ["M", "T", "W", "T", "F", "S", "S"];
+  const labels = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"];
   // estimate weekly from streak (simplified visual)
   const weekly = labels.map((_, i) => {
     if (i > todayIdx) return 0;
@@ -64,7 +64,7 @@ function StreakCard({ current, best }: { current: number; best: number }) {
             letterSpacing: "-0.04em", fontVariantNumeric: "tabular-nums",
           }}>{current}</span>
           <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}>
-            day{current === 1 ? "" : "s"}
+            өдөр
           </span>
         </div>
         <div style={{ flex: 1 }} />

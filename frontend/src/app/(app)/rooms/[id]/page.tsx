@@ -330,7 +330,7 @@ function RoomChat({ roomId, emojis }: { roomId: string; emojis: RoomEmoji[] }) {
   return (
     <div className="card" style={{ display:"flex",flexDirection:"column",padding:0,overflow:"hidden" }}>
       <div style={{ padding:"14px 16px",borderBottom:"1px solid var(--border)",fontWeight:600,fontSize:14 }}>
-        # chat
+        # чат
       </div>
       <div style={{ flex:1,overflowY:"auto",padding:"12px 16px",display:"flex",flexDirection:"column",gap:4 }}>
         {messages.length === 0 ? (

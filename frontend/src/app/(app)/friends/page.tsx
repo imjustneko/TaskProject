@@ -185,7 +185,7 @@ export default function FriendsPage() {
                   <div style={{ fontSize: 14, fontWeight: 600 }}>{f.displayName}</div>
                   {isPartner && (
                     <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 999, background: "rgba(99,102,241,0.12)", color: "var(--accent)", fontWeight: 600 }}>
-                      🤝 Partner
+                      🤝 Партнер
                     </span>
                   )}
                 </div>

@@ -52,7 +52,7 @@ function LabelRow({ label, onDelete, onUpdate }: {
     <div className="row gap-3" style={{ padding: "10px 0", borderBottom: "1px solid var(--border)" }}>
       <div style={{ width: 12, height: 12, borderRadius: "50%", background: label.color, flexShrink: 0, marginTop: 1 }} />
       <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{label.name}</span>
-      <span className="muted" style={{ fontSize: 12 }}>{label._count?.tasks ?? 0} task</span>
+      <span className="muted" style={{ fontSize: 12 }}>{label._count?.tasks ?? 0} таск</span>
       <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setEditing(true)}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       </button>
@@ -122,7 +122,7 @@ export default function LabelsPage() {
           <LabelRow
             key={l.id}
             label={l}
-            onDelete={() => deleteLabel.mutate(l.id, { onSuccess: () => toast.show("Label устгагдлаа") })}
+            onDelete={() => deleteLabel.mutate(l.id, { onSuccess: () => toast.show("Шошго устгагдлаа") })}
             onUpdate={(n, c) => updateLabel.mutate({ id: l.id, name: n, color: c }, { onSuccess: () => toast.show("Шинэчлэгдлээ") })}
           />
         ))}

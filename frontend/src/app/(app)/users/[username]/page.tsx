@@ -86,7 +86,7 @@ function UserProfile({ username }: { username: string }) {
                 <h1 style={{ fontSize:22 }}>{user.displayName}</h1>
                 {isPartner && (
                   <span style={{ fontSize:11,padding:"2px 8px",borderRadius:999,background:"rgba(99,102,241,0.12)",color:"var(--accent)",fontWeight:600 }}>
-                    🤝 Partner
+                    🤝 Партнер
                   </span>
                 )}
               </div>
@@ -123,7 +123,7 @@ function UserProfile({ username }: { username: string }) {
                     })}
                     disabled={sendPartnerReq.isPending}
                   >
-                    🤝 Partner
+                    🤝 Партнер
                   </button>
                 )}
               </div>
