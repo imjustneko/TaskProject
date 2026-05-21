@@ -1,5 +1,5 @@
 export declare class UpdateProfileDto {
     displayName?: string;
     bio?: string;
-    avatarUrl?: string;
+    avatarUrl?: string | null;
 }

@@ -13,6 +13,6 @@ export declare class UsersService {
     updateProfile(id: string, data: {
         displayName?: string;
         bio?: string;
-        avatarUrl?: string;
+        avatarUrl?: string | null;
     }): Promise<SafeUser>;
 }

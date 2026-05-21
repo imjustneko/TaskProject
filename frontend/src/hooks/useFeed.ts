@@ -8,6 +8,8 @@ export interface FeedPost {
   userId: string;
   content?: string;
   imageUrl?: string;
+  taskId?: string;
+  task?: { id: string; title: string; isCompleted: boolean; completedAt?: string; priority: string } | null;
   createdAt: string;
   likedByMe: boolean;
   likesCount: number;
@@ -18,6 +20,7 @@ export interface FeedPost {
     displayName: string;
     avatarUrl?: string;
     status?: { type: string; customText?: string; emoji?: string } | null;
+    userEmojis?: { name: string; imageUrl: string }[];
   };
 }
 
@@ -39,7 +42,7 @@ export function useFeed() {
 export function useCreatePost() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: { content?: string; imageUrl?: string }) =>
+    mutationFn: (data: { content?: string; imageUrl?: string; taskId?: string }) =>
       api.post<FeedPost>("/posts", data).then(r => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["feed"] }),
   });

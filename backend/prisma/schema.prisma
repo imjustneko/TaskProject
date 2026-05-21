@@ -58,6 +58,12 @@ enum NotificationType {
   MENTION
 }
 
+enum LogStatus {
+  DONE
+  FAILED
+  SKIPPED
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model User {
@@ -75,6 +81,8 @@ model User {
 
   status           UserStatus?
   tasks            Task[]
+  taskLogs         TaskLog[]
+  labels           Label[]
   sentRequests     Friend[]       @relation("Requester")
   receivedRequests Friend[]       @relation("Recipient")
   sentMessages     Message[]
@@ -83,6 +91,7 @@ model User {
   posts            Post[]
   postLikes        PostLike[]
   postComments     PostComment[]
+  userEmojis       UserEmoji[]
 
   @@map("users")
 }
@@ -117,6 +126,9 @@ model Task {
   updatedAt   DateTime  @updatedAt
 
   roomTask RoomTask?
+  logs     TaskLog[]
+  posts    Post[]
+  labels   TaskLabel[]
 
   @@index([userId, isCompleted])
   @@index([userId, date])
@@ -152,6 +164,7 @@ model Room {
   members  RoomMember[]
   tasks    RoomTask[]
   messages Message[]
+  emojis   RoomEmoji[]
 
   @@map("rooms")
 }
@@ -175,12 +188,28 @@ model RoomTask {
   roomId      String
   taskId      String   @unique
   completedBy String[] @default([])
+  failedBy    String[] @default([])
+  skippedBy   String[] @default([])
   createdAt   DateTime @default(now())
 
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@map("room_tasks")
+}
+
+model RoomEmoji {
+  id        String   @id @default(cuid())
+  roomId    String
+  name      String
+  imageUrl  String
+  addedById String
+  createdAt DateTime @default(now())
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, name])
+  @@map("room_emojis")
 }
 
 model Message {
@@ -222,16 +251,74 @@ model Post {
   userId    String
   content   String?
   imageUrl  String?
+  taskId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task     Task?         @relation(fields: [taskId], references: [id], onDelete: SetNull)
   likes    PostLike[]
   comments PostComment[]
 
   @@index([userId])
   @@index([createdAt(sort: Desc)])
   @@map("posts")
+}
+
+model TaskLog {
+  id        String    @id @default(cuid())
+  taskId    String
+  userId    String
+  date      DateTime
+  status    LogStatus
+  note      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId, date])
+  @@index([userId, date])
+  @@map("task_logs")
+}
+
+model UserEmoji {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+  @@map("user_emojis")
+}
+
+model Label {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  color     String   @default("#6366f1")
+  createdAt DateTime @default(now())
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks TaskLabel[]
+
+  @@unique([userId, name])
+  @@map("labels")
+}
+
+model TaskLabel {
+  taskId  String
+  labelId String
+
+  task  Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, labelId])
+  @@map("task_labels")
 }
 
 model PostLike {

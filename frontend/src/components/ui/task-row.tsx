@@ -2,16 +2,21 @@ import { PriorityDot } from "./priority-dot";
 import type { Task } from "@/types";
 import { formatDate } from "@/lib/utils";
 
+interface TaskWithLabels extends Task {
+  labels?: { label: { id: string; name: string; color: string } }[];
+}
+
 interface TaskRowProps {
-  task: Task;
+  task: TaskWithLabels;
   onToggle?: (id: string) => void;
   onOpen?: (task: Task) => void;
   onDelete?: (id: string) => void;
   showWhen?: boolean;
   showDate?: boolean;
+  showStatus?: boolean;
 }
 
-export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate }: TaskRowProps) {
+export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate, showStatus }: TaskRowProps) {
   return (
     <div
       className={"list-row" + (task.isCompleted ? " is-done" : "")}
@@ -38,23 +43,22 @@ export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate }
         </div>
       </div>
       {task.category && (
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 5,
-            padding: "1px 7px 1px 6px",
-            borderRadius: 5,
-            fontSize: 11,
-            fontWeight: 500,
-            color: "var(--text-soft)",
-            background: "var(--bg-subtle)",
-            border: "1px solid var(--border)",
-          }}
-        >
+        <span style={{ display:"inline-flex",alignItems:"center",gap:5,padding:"1px 7px 1px 6px",borderRadius:5,fontSize:11,fontWeight:500,color:"var(--text-soft)",background:"var(--bg-subtle)",border:"1px solid var(--border)" }}>
           {task.category}
         </span>
       )}
+      {task.labels?.map(tl => (
+        <span key={tl.label.id} style={{
+          display:"inline-flex",alignItems:"center",gap:4,padding:"1px 7px",borderRadius:20,fontSize:11,fontWeight:500,
+          color: tl.label.color,
+          background: `${tl.label.color}18`,
+          border: `1px solid ${tl.label.color}44`,
+          flexShrink: 0,
+        }}>
+          <div style={{ width:6,height:6,borderRadius:"50%",background:tl.label.color,flexShrink:0 }}/>
+          {tl.label.name}
+        </span>
+      ))}
       {(showWhen || showDate) && task.date && (
         <span className="muted mono" style={{ fontSize: 12, minWidth: 64, textAlign: "right" }}>
           {showDate ? formatDate(task.date, { month: "short", day: "numeric" }) : task.date}
@@ -64,6 +68,30 @@ export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate }
         <span className="muted mono" style={{ fontSize: 12, minWidth: 44, textAlign: "right" }}>
           {task.time}
         </span>
+      )}
+      {showStatus && (
+        task.isCompleted ? (
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "1px 7px", borderRadius: 5, fontSize: 11, fontWeight: 500,
+            color: "#16a34a",
+            background: "rgba(34,197,94,0.12)",
+            flexShrink: 0,
+          }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            Дууссан
+          </span>
+        ) : (
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "1px 7px", borderRadius: 5, fontSize: 11, fontWeight: 500,
+            color: "var(--text-muted)",
+            background: "var(--bg-subtle)",
+            flexShrink: 0,
+          }}>
+            Хүлээгдэж байна
+          </span>
+        )
       )}
       {task.isPublic && (
         <span title="Public task" className="muted" style={{ display: "inline-flex" }}>

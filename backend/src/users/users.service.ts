@@ -66,9 +66,30 @@ export class UsersService {
     return users.map(this.sanitize);
   }
 
+  async getEmojis(userId: string) {
+    return this.prisma.userEmoji.findMany({
+      where: { userId },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async addEmoji(userId: string, name: string, imageUrl: string) {
+    return this.prisma.userEmoji.upsert({
+      where: { userId_name: { userId, name } },
+      create: { userId, name, imageUrl },
+      update: { imageUrl },
+    });
+  }
+
+  async deleteEmoji(id: string, userId: string) {
+    const emoji = await this.prisma.userEmoji.findUnique({ where: { id } });
+    if (!emoji || emoji.userId !== userId) return;
+    await this.prisma.userEmoji.delete({ where: { id } });
+  }
+
   async updateProfile(
     id: string,
-    data: { displayName?: string; bio?: string; avatarUrl?: string },
+    data: { displayName?: string; bio?: string; avatarUrl?: string | null },
   ): Promise<SafeUser> {
     const user = await this.prisma.user.update({
       where: { id },

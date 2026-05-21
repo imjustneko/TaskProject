@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTodayTasks, useToggleTask, useTaskStats, usePlansTasks } from "@/hooks/useTasks";
+import { useTodayTasks, useToggleTask, useTaskStats, usePlansTasks, useStreak } from "@/hooks/useTasks";
 import { useFriends } from "@/hooks/useFriends";
 import { useAuthStore } from "@/stores/authStore";
 import { PageHeader } from "@/components/ui/page-header";
@@ -50,6 +50,7 @@ export default function DashboardPage() {
   const { data: todayTasks = [] } = useTodayTasks();
   const { data: plansTasks = [] } = usePlansTasks();
   const { data: stats } = useTaskStats();
+  const { data: streak } = useStreak();
   const { data: friends = [] } = useFriends();
   const toggle = useToggleTask();
 
@@ -158,6 +159,36 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
+
+          {/* Streak card */}
+          {streak !== undefined && (
+            <div className="card">
+              <div className="card-hd"><h3>Streak</h3></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ textAlign: "center", padding: "10px 0" }}>
+                  <div style={{ fontSize: 28, marginBottom: 2 }}>🔥</div>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: streak.current > 0 ? "#f97316" : "var(--text-muted)" }}>
+                    {streak.current}
+                  </div>
+                  <div className="muted" style={{ fontSize: 11.5 }}>Одоогийн streak</div>
+                </div>
+                <div style={{ textAlign: "center", padding: "10px 0" }}>
+                  <div style={{ fontSize: 28, marginBottom: 2 }}>🏆</div>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: "var(--accent)" }}>{streak.best}</div>
+                  <div className="muted" style={{ fontSize: 11.5 }}>Хамгийн дээд</div>
+                </div>
+              </div>
+              {streak.current > 0 && (
+                <div style={{
+                  marginTop: 8, padding: "6px 10px", borderRadius: 8,
+                  background: "rgba(249,115,22,0.1)", fontSize: 12,
+                  color: "#f97316", textAlign: "center",
+                }}>
+                  🔥 {streak.current} өдөр дараалж таск хийлээ!
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Stats card */}
           {stats && (

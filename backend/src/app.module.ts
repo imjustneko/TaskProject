@@ -11,6 +11,7 @@ import { GatewayModule } from './gateway/gateway.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { AdminModule } from './admin/admin.module';
 import { PostsModule } from './posts/posts.module';
+import { LabelsModule } from './labels/labels.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PostsModule } from './posts/posts.module';
     RoomsModule,
     AdminModule,
     PostsModule,
+    LabelsModule,
   ],
 })
 export class AppModule {}

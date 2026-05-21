@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { usePlansTasks, useToggleTask, useDeleteTask, useCreateTask } from "@/hooks/useTasks";
+import { useToast } from "@/components/ui/toast";
 import { PageHeader } from "@/components/ui/page-header";
 import { TaskRow } from "@/components/ui/task-row";
 import { formatDate } from "@/lib/utils";
@@ -94,7 +95,10 @@ function CreatePlanModal({ open, onClose, onCreate }: {
 
 export default function PlansPage() {
   const { data: tasks = [], isLoading } = usePlansTasks();
-  const toggle = useToggleTask();
+  const toast = useToast();
+  const toggle = useToggleTask((task: Task) => {
+    toast.show(`"${task.title}" дууссан!`);
+  });
   const remove = useDeleteTask();
   const create = useCreateTask();
   const [showModal, setShowModal] = useState(false);
@@ -140,7 +144,7 @@ export default function PlansPage() {
                   <TaskRow key={t.id} task={t}
                     onToggle={id => toggle.mutate(id)}
                     onDelete={id => remove.mutate(id)}
-                    showDate />
+                    showDate showStatus />
                 ))}
               </div>
             </div>

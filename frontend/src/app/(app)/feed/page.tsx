@@ -5,7 +5,10 @@ import {
   useFeed, useCreatePost, useToggleLike, useDeletePost,
   usePostComments, useAddComment, type FeedPost,
 } from "@/hooks/useFeed";
+import { useTodayTasks } from "@/hooks/useTasks";
+import { useUserEmojis } from "@/hooks/useUserEmojis";
 import { useAuthStore } from "@/stores/authStore";
+import { useToast } from "@/components/ui/toast";
 import { Avatar } from "@/components/ui/avatar";
 import { STATUS_META } from "@/types";
 import type { StatusType } from "@/types";
@@ -19,33 +22,57 @@ function timeAgo(date: string): string {
   return `${Math.floor(s / 86400)}d`;
 }
 
+/* ── Parse message with user emojis ── */
+function parseWithEmojis(content: string, emojis: { name: string; imageUrl: string }[]): React.ReactNode[] {
+  if (!emojis.length) return [content];
+  const map = Object.fromEntries(emojis.map(e => [e.name, e.imageUrl]));
+  const parts = content.split(/:([a-z0-9_]+):/g);
+  return parts.map((p, i) => {
+    if (i % 2 === 1 && map[p]) {
+      return <img key={i} src={map[p]} alt={`:${p}:`} title={`:${p}:`} style={{ width:20,height:20,objectFit:"contain",verticalAlign:"middle",display:"inline" }} />;
+    }
+    return p;
+  });
+}
+
 /* ── Compose box ── */
 function ComposeBox() {
   const { user } = useAuthStore();
+  const toast = useToast();
   const [text, setText] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [showImg, setShowImg] = useState(false);
+  const [showTaskPicker, setShowTaskPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const createPost = useCreatePost();
+  const { data: myTasks = [] } = useTodayTasks();
+  const { data: myEmojis = [] } = useUserEmojis();
 
-  const submit = () => {
-    if (!text.trim() && !imgUrl.trim()) return;
-    createPost.mutate(
-      { content: text.trim() || undefined, imageUrl: imgUrl.trim() || undefined },
-      { onSuccess: () => { setText(""); setImgUrl(""); setShowImg(false); } }
-    );
+  const selectedTask = myTasks.find(t => t.id === selectedTaskId);
+
+  const insertEmoji = (name: string) => {
+    setText(t => t + `:${name}: `);
+    setShowEmojiPicker(false);
+    textareaRef.current?.focus();
   };
 
-  const statusMeta = user?.status ? STATUS_META[user.status.type as StatusType] : null;
+  const submit = () => {
+    if (!text.trim() && !imgUrl.trim() && !selectedTaskId) return;
+    createPost.mutate(
+      { content: text.trim() || undefined, imageUrl: imgUrl.trim() || undefined, taskId: selectedTaskId || undefined },
+      { onSuccess: () => { setText(""); setImgUrl(""); setShowImg(false); setSelectedTaskId(null); toast.show("Нийтлэв!"); } }
+    );
+  };
 
   return (
     <div className="card" style={{ marginBottom: 12, padding: 16 }}>
       <div className="row gap-3" style={{ alignItems: "flex-start" }}>
-        <Avatar
-          user={{ displayName: user?.displayName ?? "U", avatarUrl: user?.avatarUrl }}
-          size={40}
-        />
+        <Avatar user={{ displayName: user?.displayName ?? "U", avatarUrl: user?.avatarUrl }} size={40} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <textarea
+            ref={textareaRef}
             value={text}
             onChange={e => setText(e.target.value)}
             placeholder="Юу бодож байна вэ?"
@@ -56,20 +83,14 @@ function ComposeBox() {
               background: "transparent", font: "inherit", fontSize: 15,
               color: "var(--text)", lineHeight: 1.5,
             }}
-            onKeyDown={e => {
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
-            }}
+            onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit(); }}
           />
 
+          {/* Image URL input */}
           {showImg && (
             <div style={{ marginTop: 8 }}>
-              <input
-                className="input"
-                style={{ fontSize: 13, height: 34 }}
-                placeholder="Зургийн URL хаяг…"
-                value={imgUrl}
-                onChange={e => setImgUrl(e.target.value)}
-              />
+              <input className="input" style={{ fontSize: 13, height: 34 }}
+                placeholder="Зургийн URL хаяг…" value={imgUrl} onChange={e => setImgUrl(e.target.value)} />
               {imgUrl && (
                 <div style={{ marginTop: 8, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -80,21 +101,93 @@ function ComposeBox() {
             </div>
           )}
 
+          {/* Task picker */}
+          {showTaskPicker && (
+            <div style={{ marginTop: 8, border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden", maxHeight: 200, overflowY: "auto" }}>
+              {myTasks.length === 0 ? (
+                <div style={{ padding: "12px 14px", fontSize: 13, color: "var(--text-muted)" }}>Өнөөдрийн таск байхгүй</div>
+              ) : myTasks.map(t => (
+                <div
+                  key={t.id}
+                  onClick={() => { setSelectedTaskId(selectedTaskId === t.id ? null : t.id); setShowTaskPicker(false); }}
+                  style={{
+                    padding: "10px 14px", fontSize: 13.5, cursor: "default",
+                    background: selectedTaskId === t.id ? "var(--accent-tint)" : "var(--bg-elevated)",
+                    color: selectedTaskId === t.id ? "var(--accent)" : "var(--text)",
+                    borderBottom: "1px solid var(--border)",
+                    display: "flex", alignItems: "center", gap: 8,
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={t.isCompleted?"#16a34a":"var(--text-muted)"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    {t.isCompleted ? <path d="m4 12 5 5L20 6"/> : <circle cx="12" cy="12" r="9"/>}
+                  </svg>
+                  {t.title}
+                  {t.isCompleted && <span style={{ marginLeft: "auto", fontSize: 10, color: "#16a34a", background: "rgba(34,197,94,0.12)", padding: "1px 6px", borderRadius: 4 }}>Дууссан</span>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Selected task preview */}
+          {selectedTask && (
+            <div style={{
+              marginTop: 8, padding: "8px 12px", borderRadius: 8,
+              background: "var(--bg-subtle)", border: "1px solid var(--border)",
+              display: "flex", alignItems: "center", gap: 8,
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={selectedTask.isCompleted?"#16a34a":"var(--accent)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {selectedTask.isCompleted ? <path d="m4 12 5 5L20 6"/> : <circle cx="12" cy="12" r="9"/>}
+              </svg>
+              <span style={{ fontSize: 13, flex: 1 }}>{selectedTask.title}</span>
+              <span style={{ fontSize: 11, color: selectedTask.isCompleted?"#16a34a":"var(--accent)", fontWeight: 500 }}>
+                {selectedTask.isCompleted ? "✓ Дууссан" : "Хийгдэж байна"}
+              </span>
+              <button className="btn btn-ghost btn-sm btn-icon" style={{ padding: 0, width: 18, height: 18 }}
+                onClick={() => setSelectedTaskId(null)}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* Emoji picker */}
+          {showEmojiPicker && myEmojis.length > 0 && (
+            <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 4, padding: "8px", background: "var(--bg-subtle)", borderRadius: 10, border: "1px solid var(--border)" }}>
+              {myEmojis.map(em => (
+                <button key={em.id} title={`:${em.name}:`} onClick={() => insertEmoji(em.name)}
+                  style={{ width:32,height:32,borderRadius:6,border:"1px solid var(--border)",background:"var(--bg-elevated)",padding:3,cursor:"default" }}>
+                  <img src={em.imageUrl} alt={em.name} style={{ width:"100%",height:"100%",objectFit:"contain" }} />
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="row" style={{ marginTop: 10, justifyContent: "space-between" }}>
             <div className="row gap-1">
-              {/* Image button */}
-              <button
-                className="btn btn-ghost btn-sm btn-icon"
-                onClick={() => setShowImg(v => !v)}
-                title="Зураг нэмэх"
-                style={{ color: showImg ? "var(--accent)" : "var(--text-muted)" }}
-              >
+              {/* Image */}
+              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setShowImg(v=>!v)} title="Зураг нэмэх"
+                style={{ color: showImg?"var(--accent)":"var(--text-muted)" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3.5" y="4.5" width="17" height="15" rx="2"/>
-                  <circle cx="9" cy="10" r="1.5"/>
-                  <path d="m4 18 5-5 4 4 3-3 4 4"/>
+                  <rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/>
                 </svg>
               </button>
+
+              {/* Task attach */}
+              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setShowTaskPicker(v=>!v); setShowEmojiPicker(false); }} title="Таск хавсаргах"
+                style={{ color: selectedTaskId?"var(--accent)":"var(--text-muted)" }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m4 12 5 5L20 6"/>
+                </svg>
+              </button>
+
+              {/* Emoji */}
+              {myEmojis.length > 0 && (
+                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setShowEmojiPicker(v=>!v); setShowTaskPicker(false); }} title="Custom emoji"
+                  style={{ color: showEmojiPicker?"var(--accent)":"var(--text-muted)" }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                  </svg>
+                </button>
+              )}
 
               {text.length > 0 && (
                 <span style={{ fontSize: 11, color: text.length > 450 ? "var(--status-busy)" : "var(--text-faint)", padding: "0 4px" }}>
@@ -106,7 +199,7 @@ function ComposeBox() {
             <button
               className="btn btn-accent btn-sm"
               onClick={submit}
-              disabled={(!text.trim() && !imgUrl.trim()) || createPost.isPending}
+              disabled={(!text.trim() && !imgUrl.trim() && !selectedTaskId) || createPost.isPending}
               style={{ minWidth: 70 }}
             >
               {createPost.isPending ? "…" : "Нийтлэх"}
@@ -218,10 +311,38 @@ function PostCard({ post }: { post: FeedPost }) {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Content with emoji support */}
       {post.content && (
-        <div style={{ fontSize: 15, lineHeight: 1.55, color: "var(--text)", marginBottom: post.imageUrl ? 10 : 12, whiteSpace: "pre-wrap" }}>
-          {post.content}
+        <div style={{ fontSize: 15, lineHeight: 1.55, color: "var(--text)", marginBottom: (post.imageUrl || post.task) ? 10 : 12, whiteSpace: "pre-wrap" }}>
+          {parseWithEmojis(post.content, post.user.userEmojis ?? [])}
+        </div>
+      )}
+
+      {/* Attached task */}
+      {post.task && (
+        <div style={{
+          marginBottom: post.imageUrl ? 10 : 12,
+          padding: "10px 14px", borderRadius: 10,
+          border: "1px solid var(--border)", background: "var(--bg-subtle)",
+          display: "flex", alignItems: "center", gap: 10,
+        }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 6, flexShrink: 0,
+            background: post.task.isCompleted ? "rgba(34,197,94,0.15)" : "var(--accent-tint)",
+            display: "grid", placeItems: "center",
+          }}>
+            {post.task.isCompleted ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/></svg>
+            )}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 500 }}>{post.task.title}</div>
+            <div style={{ fontSize: 11.5, color: post.task.isCompleted?"#16a34a":"var(--text-muted)", marginTop: 1 }}>
+              {post.task.isCompleted ? "✓ Дууссан" : "Хийгдэж байна"}
+            </div>
+          </div>
         </div>
       )}
 

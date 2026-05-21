@@ -83,6 +83,7 @@ export interface Room {
   createdAt: string;
   members: RoomMember[];
   tasks: RoomTask[];
+  emojis?: RoomEmoji[];
 }
 
 export interface RoomMember {
@@ -99,6 +100,17 @@ export interface RoomTask {
   roomId: string;
   task: Task;
   completedBy: string[];
+  failedBy: string[];
+  skippedBy: string[];
+}
+
+export interface RoomEmoji {
+  id: string;
+  roomId: string;
+  name: string;
+  imageUrl: string;
+  addedById: string;
+  createdAt: string;
 }
 
 export interface Message {

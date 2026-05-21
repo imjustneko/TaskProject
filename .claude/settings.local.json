@@ -33,7 +33,13 @@
       "Bash(DATABASE_URL=\"postgresql://postgres:neko123@localhost:5432/taskyy\" npx prisma migrate dev --name init)",
       "Bash(pkill -f \"nest start\")",
       "Bash(pkill -f \"next dev\")",
-      "Bash(DATABASE_URL=\"postgresql://postgres:neko123@localhost:5432/taskyy\" npx prisma migrate dev --name add_posts)"
+      "Bash(DATABASE_URL=\"postgresql://postgres:neko123@localhost:5432/taskyy\" npx prisma migrate dev --name add_posts)",
+      "Bash(echo \"Backend PID: $!\")",
+      "Bash(echo \"Frontend PID: $!\")",
+      "Bash(dir /s /b \"A:\\\\Projects\\\\Different Project\\\\TaskProject\\\\backend\\\\*.prisma\")",
+      "Bash(npx ts-node *)",
+      "Bash(curl -s http://localhost:3001/api/labels -H \"Authorization: Bearer test\")",
+      "Bash(curl -s http://localhost:3001/api/rooms)"
     ]
   }
 }

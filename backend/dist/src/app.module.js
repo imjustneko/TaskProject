@@ -17,6 +17,9 @@ const friends_module_1 = require("./friends/friends.module");
 const status_module_1 = require("./status/status.module");
 const messages_module_1 = require("./messages/messages.module");
 const gateway_module_1 = require("./gateway/gateway.module");
+const rooms_module_1 = require("./rooms/rooms.module");
+const admin_module_1 = require("./admin/admin.module");
+const posts_module_1 = require("./posts/posts.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,6 +35,9 @@ exports.AppModule = AppModule = __decorate([
             status_module_1.StatusModule,
             messages_module_1.MessagesModule,
             gateway_module_1.GatewayModule,
+            rooms_module_1.RoomsModule,
+            admin_module_1.AdminModule,
+            posts_module_1.PostsModule,
         ],
     })
 ], AppModule);

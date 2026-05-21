@@ -16,6 +16,10 @@ class CreatePostDto {
   @IsOptional()
   @IsString()
   imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  taskId?: string;
 }
 
 class AddCommentDto {
@@ -44,7 +48,7 @@ export class PostsController {
 
   @Post()
   create(@Request() req: AuthRequest, @Body() dto: CreatePostDto) {
-    return this.posts.create(req.user.id, dto.content, dto.imageUrl);
+    return this.posts.create(req.user.id, dto.content, dto.imageUrl, dto.taskId);
   }
 
   @Delete(':id')

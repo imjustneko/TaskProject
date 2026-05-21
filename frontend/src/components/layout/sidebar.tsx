@@ -11,12 +11,14 @@ import type { StatusType } from "@/types";
 import { STATUS_META } from "@/types";
 
 const navMain = [
-  { href: "/dashboard",    label: "Home",    icon: "home" },
-  { href: "/feed",         label: "Feed",    icon: "globe" },
-  { href: "/tasks/today",  label: "Today",   icon: "sun" },
-  { href: "/tasks/plans",  label: "Plans",   icon: "calendar" },
-  { href: "/friends",      label: "Friends", icon: "users" },
-  { href: "/profile/edit", label: "Profile", icon: "edit" },
+  { href: "/dashboard",      label: "Home",      icon: "home" },
+  { href: "/feed",           label: "Feed",      icon: "globe" },
+  { href: "/tasks/today",    label: "Today",     icon: "sun" },
+  { href: "/tasks/plans",    label: "Plans",     icon: "calendar" },
+  { href: "/tasks/report",   label: "Report",    icon: "chart" },
+  { href: "/friends",        label: "Friends",   icon: "users" },
+  { href: "/profile/edit",   label: "Profile",   icon: "edit" },
+  { href: "/profile/labels", label: "Labels",    icon: "tag" },
 ];
 
 const STATUS_LIST: StatusType[] = ["PLAYING","COOKING","WALKING","STUDYING","READING","WORKING"];
@@ -36,6 +38,8 @@ function SvgIcon({ name, size = 15 }: { name: string; size?: number }) {
     case "globe":    return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>;
     case "x":        return <svg {...p}><path d="M6 6l12 12M18 6 6 18"/></svg>;
     case "sparkle":  return <svg {...p}><path d="M12 4v6M12 14v6M4 12h6M14 12h6M6 6l4 4M14 14l4 4M18 6l-4 4M10 14l-4 4"/></svg>;
+    case "chart":    return <svg {...p}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V9M12 17v-5M15 17v-8"/></svg>;
+    case "tag":      return <svg {...p}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
     default:         return null;
   }
 }

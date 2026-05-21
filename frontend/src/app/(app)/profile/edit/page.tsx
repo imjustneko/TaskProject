@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/ui/page-header";
+import { useToast } from "@/components/ui/toast";
 import api from "@/lib/api";
 import type { StatusType } from "@/types";
 import { STATUS_META } from "@/types";
@@ -46,6 +47,7 @@ function Toggle({ value }: { value: boolean }) {
 
 export default function ProfileEditPage() {
   const { user, updateUser } = useAuthStore();
+  const toast = useToast();
   const [saved, setSaved] = useState(false);
   const [name, setName] = useState(user?.displayName ?? "");
   const [bio, setBio] = useState(user?.bio ?? "");
@@ -53,6 +55,8 @@ export default function ProfileEditPage() {
     (user?.status?.type as StatusType) ?? null
   );
   const [customText, setCustomText] = useState(user?.status?.customText ?? "");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const updateProfile = useMutation({
     mutationFn: (data: { displayName: string; bio?: string }) =>
@@ -60,7 +64,41 @@ export default function ProfileEditPage() {
     onSuccess: (updated) => {
       updateUser(updated);
       setSaved(true);
+      toast.show("Profile saved!");
       setTimeout(() => setSaved(false), 2000);
+    },
+  });
+
+  const uploadAvatar = useMutation({
+    mutationFn: (file: File) => {
+      const form = new FormData();
+      form.append("file", file);
+      return api.post("/users/me/avatar", form).then((r) => r.data);
+    },
+    onSuccess: (updated) => {
+      updateUser(updated);
+      toast.show("Profile photo updated!");
+    },
+    onError: () => {
+      toast.show("Failed to upload photo", "error");
+      setAvatarPreview(null);
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const preview = URL.createObjectURL(file);
+    setAvatarPreview(preview);
+    uploadAvatar.mutate(file);
+  };
+
+  const removeAvatar = useMutation({
+    mutationFn: () => api.patch("/users/me", { avatarUrl: null }).then((r) => r.data),
+    onSuccess: (updated) => {
+      updateUser(updated);
+      setAvatarPreview(null);
+      toast.show("Photo removed");
     },
   });
 
@@ -82,29 +120,63 @@ export default function ProfileEditPage() {
     },
   });
 
+  const avatarUrl = avatarPreview ?? user?.avatarUrl;
   const userForAvatar = user
-    ? { displayName: user.displayName, avatarUrl: user.avatarUrl, presence: "online" as const }
+    ? { displayName: user.displayName, avatarUrl, presence: "online" as const }
     : null;
 
   return (
     <div className="view-narrow">
       <PageHeader eyebrow="You" title="Profile" subtitle="How you appear to friends in Taskyy." />
 
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+
       {/* Main profile card */}
       <div className="card" style={{ marginBottom: 20 }}>
         <div className="row gap-4" style={{ marginBottom: 22 }}>
-          <Avatar user={userForAvatar} size={64} status onBg="bg" />
+          <div style={{ position: "relative" }}>
+            <Avatar user={userForAvatar} size={64} status onBg="bg" />
+            {uploadAvatar.isPending && (
+              <div style={{
+                position: "absolute", inset: 0, borderRadius: "50%",
+                background: "rgba(0,0,0,0.45)", display: "grid", placeItems: "center",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "spin 0.8s linear infinite" }}>
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                </svg>
+              </div>
+            )}
+          </div>
           <div className="flex1">
             <div style={{ fontSize: 15, fontWeight: 600 }}>{user?.displayName}</div>
             <div className="muted" style={{ fontSize: 12.5, marginBottom: 8 }}>
               @{user?.username} · Joined {new Date(user?.createdAt ?? Date.now()).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
             </div>
             <div className="row gap-2">
-              <button className="btn btn-sm">
+              <button
+                className="btn btn-sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadAvatar.isPending}
+              >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>
-                Change photo
+                {uploadAvatar.isPending ? "Uploading…" : "Change photo"}
               </button>
-              <button className="btn btn-sm btn-ghost">Remove</button>
+              {avatarUrl && (
+                <button
+                  className="btn btn-sm btn-ghost"
+                  onClick={() => removeAvatar.mutate()}
+                  disabled={removeAvatar.isPending}
+                >
+                  Remove
+                </button>
+              )}
             </div>
           </div>
           <div style={{ alignSelf: "flex-start" }}>
@@ -240,6 +312,7 @@ export default function ProfileEditPage() {
           ))}
         </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

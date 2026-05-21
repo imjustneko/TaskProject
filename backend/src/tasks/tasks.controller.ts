@@ -1,16 +1,15 @@
 import {
   Controller, Get, Post, Patch, Delete,
-  Body, Param, UseGuards, Request,
+  Body, Param, UseGuards, Request, Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { SafeUser } from '../users/users.service';
+import type { LogStatus } from '@prisma/client';
 
-interface AuthRequest {
-  user: SafeUser;
-}
+interface AuthRequest { user: SafeUser }
 
 @UseGuards(JwtAuthGuard)
 @Controller('tasks')
@@ -40,6 +39,40 @@ export class TasksController {
   @Get('stats')
   stats(@Request() req: AuthRequest) {
     return this.tasks.getStats(req.user.id);
+  }
+
+  @Get('streak')
+  streak(@Request() req: AuthRequest) {
+    return this.tasks.getStreak(req.user.id);
+  }
+
+  @Get('logs/daily')
+  getDailyLogs(
+    @Request() req: AuthRequest,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.tasks.getDailyLogs(req.user.id, from, to);
+  }
+
+  @Get('logs/today')
+  getTodayLogs(@Request() req: AuthRequest) {
+    return this.tasks.getTodayLogs(req.user.id);
+  }
+
+  @Post(':id/log')
+  setDailyStatus(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body('status') status: LogStatus,
+    @Body('note') note?: string,
+  ) {
+    return this.tasks.setDailyStatus(id, req.user.id, status, note);
+  }
+
+  @Delete(':id/log')
+  clearDailyStatus(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.tasks.clearDailyStatus(id, req.user.id);
   }
 
   @Get(':id')

@@ -29,3 +29,21 @@ export function useConversations() {
     refetchInterval: 5000,
   });
 }
+
+export function useMessages(roomId: string) {
+  return useQuery({
+    queryKey: ["messages", "room", roomId],
+    queryFn: () => api.get<Message[]>(`/messages/room/${roomId}`).then(r => r.data.reverse()),
+    enabled: !!roomId,
+    refetchInterval: 3000,
+  });
+}
+
+export function useSendRoomMessage(roomId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (content: string) =>
+      api.post<Message>(`/messages/room/${roomId}`, { content }).then(r => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["messages", "room", roomId] }),
+  });
+}

@@ -14,6 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const users_service_1 = require("./users.service");
 const update_profile_dto_1 = require("./dto/update-profile.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
@@ -27,6 +30,14 @@ let UsersController = class UsersController {
     }
     updateMe(req, dto) {
         return this.users.updateProfile(req.user.id, dto);
+    }
+    async uploadAvatar(req, file) {
+        if (!file)
+            throw new common_1.BadRequestException('No file uploaded');
+        const port = process.env.PORT ?? 3001;
+        const baseUrl = `${req.protocol}://${req.hostname}:${port}`;
+        const avatarUrl = `${baseUrl}/uploads/avatars/${file.filename}`;
+        return this.users.updateProfile(req.user.id, { avatarUrl });
     }
     search(req, q) {
         return this.users.search(q ?? '', req.user.id);
@@ -51,6 +62,30 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_profile_dto_1.UpdateProfileDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "updateMe", null);
+__decorate([
+    (0, common_1.Post)('me/avatar'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: (0, path_1.join)(process.cwd(), 'uploads', 'avatars'),
+            filename: (_, file, cb) => {
+                const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                cb(null, `${unique}${(0, path_1.extname)(file.originalname)}`);
+            },
+        }),
+        limits: { fileSize: 5 * 1024 * 1024 },
+        fileFilter: (_, file, cb) => {
+            if (file.mimetype.startsWith('image/'))
+                cb(null, true);
+            else
+                cb(new common_1.BadRequestException('Only image files are allowed'), false);
+        },
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "uploadAvatar", null);
 __decorate([
     (0, common_1.Get)('search'),
     __param(0, (0, common_1.Request)()),
