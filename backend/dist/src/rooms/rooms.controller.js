@@ -14,6 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoomsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const rooms_service_1 = require("./rooms.service");
 const create_room_dto_1 = require("./dto/create-room.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
@@ -28,8 +31,14 @@ let RoomsController = class RoomsController {
     list(req) {
         return this.rooms.getMyRooms(req.user.id);
     }
+    publicRooms(req) {
+        return this.rooms.getPublicRooms(req.user.id);
+    }
     findOne(req, id) {
         return this.rooms.getRoom(id, req.user.id);
+    }
+    join(req, id) {
+        return this.rooms.join(id, req.user.id);
     }
     invite(req, id, userId) {
         return this.rooms.invite(id, req.user.id, userId);
@@ -43,8 +52,27 @@ let RoomsController = class RoomsController {
     addTask(req, id, title) {
         return this.rooms.addTask(id, req.user.id, title);
     }
+    setTaskStatus(req, id, taskId, status) {
+        return this.rooms.setTaskStatus(id, taskId, req.user.id, status);
+    }
     toggleTask(req, id, taskId) {
-        return this.rooms.toggleTaskCompletion(id, taskId, req.user.id);
+        return this.rooms.setTaskStatus(id, taskId, req.user.id, 'DONE');
+    }
+    listEmojis(id) {
+        return this.rooms.getEmojis(id);
+    }
+    async addEmoji(req, id, name, file) {
+        if (!file)
+            throw new common_1.BadRequestException('No file uploaded');
+        if (!name?.trim())
+            throw new common_1.BadRequestException('Emoji name required');
+        const port = process.env.PORT ?? 3001;
+        const baseUrl = `${req.protocol}://${req.hostname}:${port}`;
+        const imageUrl = `${baseUrl}/uploads/emojis/${file.filename}`;
+        return this.rooms.addEmoji(id, req.user.id, name.trim().toLowerCase().replace(/\s+/g, '_'), imageUrl);
+    }
+    deleteEmoji(req, emojiId) {
+        return this.rooms.deleteEmoji(emojiId, req.user.id);
     }
 };
 exports.RoomsController = RoomsController;
@@ -64,6 +92,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RoomsController.prototype, "list", null);
 __decorate([
+    (0, common_1.Get)('public'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], RoomsController.prototype, "publicRooms", null);
+__decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)('id')),
@@ -71,6 +106,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], RoomsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(':id/join'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], RoomsController.prototype, "join", null);
 __decorate([
     (0, common_1.Post)(':id/invite/:userId'),
     __param(0, (0, common_1.Request)()),
@@ -108,6 +151,16 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RoomsController.prototype, "addTask", null);
 __decorate([
+    (0, common_1.Post)(':id/tasks/:taskId/status'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Param)('taskId')),
+    __param(3, (0, common_1.Body)('status')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", void 0)
+], RoomsController.prototype, "setTaskStatus", null);
+__decorate([
     (0, common_1.Post)(':id/tasks/:taskId/complete'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)('id')),
@@ -116,6 +169,47 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], RoomsController.prototype, "toggleTask", null);
+__decorate([
+    (0, common_1.Get)(':id/emojis'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], RoomsController.prototype, "listEmojis", null);
+__decorate([
+    (0, common_1.Post)(':id/emojis'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: (0, path_1.join)(process.cwd(), 'uploads', 'emojis'),
+            filename: (_, file, cb) => {
+                cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`);
+            },
+        }),
+        limits: { fileSize: 256 * 1024 },
+        fileFilter: (_, file, cb) => {
+            if (file.mimetype.startsWith('image/'))
+                cb(null, true);
+            else
+                cb(new common_1.BadRequestException('Only image files'), false);
+        },
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)('name')),
+    __param(3, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], RoomsController.prototype, "addEmoji", null);
+__decorate([
+    (0, common_1.Delete)(':id/emojis/:emojiId'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('emojiId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], RoomsController.prototype, "deleteEmoji", null);
 exports.RoomsController = RoomsController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('rooms'),

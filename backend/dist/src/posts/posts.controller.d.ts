@@ -3,6 +3,7 @@ import type { SafeUser } from '../users/users.service';
 declare class CreatePostDto {
     content?: string;
     imageUrl?: string;
+    taskId?: string;
 }
 declare class AddCommentDto {
     content: string;
@@ -36,8 +37,9 @@ export declare class PostsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string | null;
         userId: string;
+        imageUrl: string | null;
+        taskId: string | null;
         content: string | null;
     }[]>;
     getUserPosts(req: AuthRequest, userId: string): Promise<{
@@ -63,11 +65,17 @@ export declare class PostsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string | null;
         userId: string;
+        imageUrl: string | null;
+        taskId: string | null;
         content: string | null;
     }[]>;
     create(req: AuthRequest, dto: CreatePostDto): Promise<{
+        likedByMe: boolean;
+        likesCount: number;
+        commentsCount: number;
+        likes: undefined;
+        _count: undefined;
         user: {
             id: string;
             username: string;
@@ -82,16 +90,12 @@ export declare class PostsController {
                 emoji: string | null;
             } | null;
         };
-        _count: {
-            comments: number;
-            likes: number;
-        };
-    } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string | null;
         userId: string;
+        imageUrl: string | null;
+        taskId: string | null;
         content: string | null;
     }>;
     delete(req: AuthRequest, id: string): Promise<void>;

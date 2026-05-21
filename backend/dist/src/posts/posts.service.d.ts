@@ -25,8 +25,9 @@ export declare class PostsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string | null;
         userId: string;
+        imageUrl: string | null;
+        taskId: string | null;
         content: string | null;
     }[]>;
     getUserPosts(targetUserId: string, currentUserId: string): Promise<{
@@ -52,11 +53,17 @@ export declare class PostsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string | null;
         userId: string;
+        imageUrl: string | null;
+        taskId: string | null;
         content: string | null;
     }[]>;
-    create(userId: string, content?: string, imageUrl?: string): Promise<{
+    create(userId: string, content?: string, imageUrl?: string, taskId?: string): Promise<{
+        likedByMe: boolean;
+        likesCount: number;
+        commentsCount: number;
+        likes: undefined;
+        _count: undefined;
         user: {
             id: string;
             username: string;
@@ -71,16 +78,12 @@ export declare class PostsService {
                 emoji: string | null;
             } | null;
         };
-        _count: {
-            comments: number;
-            likes: number;
-        };
-    } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string | null;
         userId: string;
+        imageUrl: string | null;
+        taskId: string | null;
         content: string | null;
     }>;
     delete(postId: string, userId: string): Promise<void>;

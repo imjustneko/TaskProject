@@ -39,7 +39,19 @@
       "Bash(dir /s /b \"A:\\\\Projects\\\\Different Project\\\\TaskProject\\\\backend\\\\*.prisma\")",
       "Bash(npx ts-node *)",
       "Bash(curl -s http://localhost:3001/api/labels -H \"Authorization: Bearer test\")",
-      "Bash(curl -s http://localhost:3001/api/rooms)"
+      "Bash(curl -s http://localhost:3001/api/rooms)",
+      "Bash(curl *)",
+      "Bash(netstat -ano)",
+      "Bash(cmd /c \"netstat -ano | findstr :3001\")",
+      "Bash(netstat -tlnp)",
+      "Bash(pkill -f \"ts-node\")",
+      "Bash(fuser -k 3001/tcp)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(kill -9 1179)",
+      "Bash(kill -9 2400)",
+      "Bash(/c/Windows/System32/taskkill.exe /F /IM node.exe)",
+      "Bash(\"/c/Windows/System32/taskkill.exe\" //F //IM node.exe)",
+      "Bash(echo \"Frontend starting, PID: $!\")"
     ]
   }
 }

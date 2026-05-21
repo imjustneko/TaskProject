@@ -74,7 +74,10 @@ export class PostsService {
     }
     const post = await this.prisma.post.create({
       data: { userId, content: content?.trim(), imageUrl, taskId: taskId || undefined },
-      include: POST_INCLUDE(userId),
+      include: {
+        user: { select: AUTHOR_SELECT },
+        _count: { select: { likes: true, comments: true } },
+      },
     });
     return {
       ...post,

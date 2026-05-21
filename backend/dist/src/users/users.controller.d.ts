@@ -11,6 +11,21 @@ export declare class UsersController {
     me(req: AuthRequest): SafeUser;
     updateMe(req: AuthRequest, dto: UpdateProfileDto): Promise<SafeUser>;
     uploadAvatar(req: AuthRequest, file: Express.Multer.File): Promise<SafeUser>;
+    listEmojis(req: AuthRequest): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        userId: string;
+        imageUrl: string;
+    }[]>;
+    addEmoji(req: AuthRequest, name: string, file: Express.Multer.File): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        userId: string;
+        imageUrl: string;
+    }>;
+    deleteEmoji(req: AuthRequest, id: string): Promise<void>;
     search(req: AuthRequest, q: string): Promise<SafeUser[]>;
     getByUsername(username: string): Promise<SafeUser | null>;
 }

@@ -7,4 +7,5 @@ export declare class CreateTaskDto {
     category?: string;
     priority?: Priority;
     isPublic?: boolean;
+    labelIds?: string[];
 }

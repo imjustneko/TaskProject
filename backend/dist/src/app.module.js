@@ -20,6 +20,7 @@ const gateway_module_1 = require("./gateway/gateway.module");
 const rooms_module_1 = require("./rooms/rooms.module");
 const admin_module_1 = require("./admin/admin.module");
 const posts_module_1 = require("./posts/posts.module");
+const labels_module_1 = require("./labels/labels.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -38,6 +39,7 @@ exports.AppModule = AppModule = __decorate([
             rooms_module_1.RoomsModule,
             admin_module_1.AdminModule,
             posts_module_1.PostsModule,
+            labels_module_1.LabelsModule,
         ],
     })
 ], AppModule);

@@ -70,6 +70,25 @@ let UsersService = class UsersService {
         });
         return users.map(this.sanitize);
     }
+    async getEmojis(userId) {
+        return this.prisma.userEmoji.findMany({
+            where: { userId },
+            orderBy: { name: 'asc' },
+        });
+    }
+    async addEmoji(userId, name, imageUrl) {
+        return this.prisma.userEmoji.upsert({
+            where: { userId_name: { userId, name } },
+            create: { userId, name, imageUrl },
+            update: { imageUrl },
+        });
+    }
+    async deleteEmoji(id, userId) {
+        const emoji = await this.prisma.userEmoji.findUnique({ where: { id } });
+        if (!emoji || emoji.userId !== userId)
+            return;
+        await this.prisma.userEmoji.delete({ where: { id } });
+    }
     async updateProfile(id, data) {
         const user = await this.prisma.user.update({
             where: { id },

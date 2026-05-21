@@ -20,6 +20,7 @@ const class_validator_1 = require("class-validator");
 class CreatePostDto {
     content;
     imageUrl;
+    taskId;
 }
 __decorate([
     (0, class_validator_1.IsOptional)(),
@@ -32,6 +33,11 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreatePostDto.prototype, "imageUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreatePostDto.prototype, "taskId", void 0);
 class AddCommentDto {
     content;
 }
@@ -53,7 +59,7 @@ let PostsController = class PostsController {
         return this.posts.getUserPosts(userId, req.user.id);
     }
     create(req, dto) {
-        return this.posts.create(req.user.id, dto.content, dto.imageUrl);
+        return this.posts.create(req.user.id, dto.content, dto.imageUrl, dto.taskId);
     }
     delete(req, id) {
         return this.posts.delete(id, req.user.id);

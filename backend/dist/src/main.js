@@ -40,9 +40,11 @@ const path_1 = require("path");
 const fs = __importStar(require("fs"));
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { logger: ['error', 'warn', 'log', 'debug'] });
-    const uploadsDir = (0, path_1.join)(process.cwd(), 'uploads', 'avatars');
-    if (!fs.existsSync(uploadsDir))
-        fs.mkdirSync(uploadsDir, { recursive: true });
+    for (const sub of ['avatars', 'emojis']) {
+        const dir = (0, path_1.join)(process.cwd(), 'uploads', sub);
+        if (!fs.existsSync(dir))
+            fs.mkdirSync(dir, { recursive: true });
+    }
     app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), { prefix: '/uploads' });
     app.setGlobalPrefix('api');
     app.enableCors({

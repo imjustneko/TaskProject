@@ -17,7 +17,13 @@ const AUTHOR_SELECT = {
     status: true,
 };
 const POST_INCLUDE = (userId) => ({
-    user: { select: AUTHOR_SELECT },
+    user: {
+        select: {
+            ...AUTHOR_SELECT,
+            userEmojis: { select: { name: true, imageUrl: true } },
+        },
+    },
+    task: { select: { id: true, title: true, isCompleted: true, completedAt: true, priority: true } },
     _count: { select: { likes: true, comments: true } },
     likes: userId ? { where: { userId }, select: { id: true } } : false,
 });
@@ -66,17 +72,25 @@ let PostsService = class PostsService {
             _count: undefined,
         }));
     }
-    async create(userId, content, imageUrl) {
-        if (!content?.trim() && !imageUrl) {
-            throw new common_1.BadRequestException('Post must have text or image');
+    async create(userId, content, imageUrl, taskId) {
+        if (!content?.trim() && !imageUrl && !taskId) {
+            throw new common_1.BadRequestException('Post must have text, image, or task');
         }
-        return this.prisma.post.create({
-            data: { userId, content: content?.trim(), imageUrl },
+        const post = await this.prisma.post.create({
+            data: { userId, content: content?.trim(), imageUrl, taskId: taskId || undefined },
             include: {
                 user: { select: AUTHOR_SELECT },
                 _count: { select: { likes: true, comments: true } },
             },
         });
+        return {
+            ...post,
+            likedByMe: false,
+            likesCount: post._count.likes,
+            commentsCount: post._count.comments,
+            likes: undefined,
+            _count: undefined,
+        };
     }
     async delete(postId, userId) {
         const post = await this.prisma.post.findUnique({ where: { id: postId } });

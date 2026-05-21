@@ -38,6 +38,21 @@ let TasksController = class TasksController {
     stats(req) {
         return this.tasks.getStats(req.user.id);
     }
+    streak(req) {
+        return this.tasks.getStreak(req.user.id);
+    }
+    getDailyLogs(req, from, to) {
+        return this.tasks.getDailyLogs(req.user.id, from, to);
+    }
+    getTodayLogs(req) {
+        return this.tasks.getTodayLogs(req.user.id);
+    }
+    setDailyStatus(req, id, status, note) {
+        return this.tasks.setDailyStatus(id, req.user.id, status, note);
+    }
+    clearDailyStatus(req, id) {
+        return this.tasks.clearDailyStatus(id, req.user.id);
+    }
     findOne(req, id) {
         return this.tasks.findById(id, req.user.id);
     }
@@ -88,6 +103,47 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], TasksController.prototype, "stats", null);
+__decorate([
+    (0, common_1.Get)('streak'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], TasksController.prototype, "streak", null);
+__decorate([
+    (0, common_1.Get)('logs/daily'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('from')),
+    __param(2, (0, common_1.Query)('to')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", void 0)
+], TasksController.prototype, "getDailyLogs", null);
+__decorate([
+    (0, common_1.Get)('logs/today'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], TasksController.prototype, "getTodayLogs", null);
+__decorate([
+    (0, common_1.Post)(':id/log'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)('status')),
+    __param(3, (0, common_1.Body)('note')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", void 0)
+], TasksController.prototype, "setDailyStatus", null);
+__decorate([
+    (0, common_1.Delete)(':id/log'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], TasksController.prototype, "clearDailyStatus", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Request)()),

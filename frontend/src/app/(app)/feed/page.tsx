@@ -62,7 +62,13 @@ function ComposeBox() {
     if (!text.trim() && !imgUrl.trim() && !selectedTaskId) return;
     createPost.mutate(
       { content: text.trim() || undefined, imageUrl: imgUrl.trim() || undefined, taskId: selectedTaskId || undefined },
-      { onSuccess: () => { setText(""); setImgUrl(""); setShowImg(false); setSelectedTaskId(null); toast.show("Нийтлэв!"); } }
+      {
+        onSuccess: () => { setText(""); setImgUrl(""); setShowImg(false); setSelectedTaskId(null); toast.show("Нийтлэв!"); },
+        onError: (e: unknown) => {
+          const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+          toast.show(typeof msg === "string" ? msg : "Нийтлэж чадсангүй. Backend-г дахин эхлүүлнэ үү.", "error");
+        },
+      }
     );
   };
 

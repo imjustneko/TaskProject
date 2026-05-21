@@ -1,7 +1,8 @@
+import type { Request as ExpressRequest } from 'express';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import type { SafeUser } from '../users/users.service';
-interface AuthRequest {
+interface AuthRequest extends ExpressRequest {
     user: SafeUser;
 }
 export declare class RoomsController {
@@ -13,6 +14,8 @@ export declare class RoomsController {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string;
+                imageUrl: string | null;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -21,19 +24,25 @@ export declare class RoomsController {
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
                 isCompleted: boolean;
-                imageUrl: string | null;
                 completedAt: Date | null;
-                userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
-            roomId: string;
             taskId: string;
+            roomId: string;
             completedBy: string[];
             failedBy: string[];
             skippedBy: string[];
         })[];
+        emojis: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            imageUrl: string;
+            roomId: string;
+            addedById: string;
+        }[];
         members: ({
             user: {
                 id: string;
@@ -72,6 +81,8 @@ export declare class RoomsController {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string;
+                imageUrl: string | null;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -80,19 +91,92 @@ export declare class RoomsController {
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
                 isCompleted: boolean;
-                imageUrl: string | null;
                 completedAt: Date | null;
-                userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
-            roomId: string;
             taskId: string;
+            roomId: string;
             completedBy: string[];
             failedBy: string[];
             skippedBy: string[];
         })[];
+        emojis: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            imageUrl: string;
+            roomId: string;
+            addedById: string;
+        }[];
+        members: ({
+            user: {
+                id: string;
+                username: string;
+                displayName: string;
+                avatarUrl: string | null;
+                status: {
+                    id: string;
+                    updatedAt: Date;
+                    userId: string;
+                    type: import("@prisma/client").$Enums.StatusType;
+                    customText: string | null;
+                    emoji: string | null;
+                } | null;
+            };
+        } & {
+            id: string;
+            role: import("@prisma/client").$Enums.RoomRole;
+            userId: string;
+            roomId: string;
+            joinedAt: Date;
+        })[];
+    } & {
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        isPublic: boolean;
+        activityType: import("@prisma/client").$Enums.StatusType | null;
+        createdById: string;
+    })[]>;
+    publicRooms(req: AuthRequest): Promise<({
+        tasks: ({
+            task: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                userId: string;
+                imageUrl: string | null;
+                title: string;
+                description: string | null;
+                date: Date | null;
+                time: string | null;
+                category: string | null;
+                priority: import("@prisma/client").$Enums.Priority;
+                isPublic: boolean;
+                isCompleted: boolean;
+                completedAt: Date | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            taskId: string;
+            roomId: string;
+            completedBy: string[];
+            failedBy: string[];
+            skippedBy: string[];
+        })[];
+        emojis: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            imageUrl: string;
+            roomId: string;
+            addedById: string;
+        }[];
         members: ({
             user: {
                 id: string;
@@ -131,6 +215,8 @@ export declare class RoomsController {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string;
+                imageUrl: string | null;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -139,19 +225,25 @@ export declare class RoomsController {
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
                 isCompleted: boolean;
-                imageUrl: string | null;
                 completedAt: Date | null;
-                userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
-            roomId: string;
             taskId: string;
+            roomId: string;
             completedBy: string[];
             failedBy: string[];
             skippedBy: string[];
         })[];
+        emojis: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            imageUrl: string;
+            roomId: string;
+            addedById: string;
+        }[];
         members: ({
             user: {
                 id: string;
@@ -184,6 +276,13 @@ export declare class RoomsController {
         activityType: import("@prisma/client").$Enums.StatusType | null;
         createdById: string;
     }>;
+    join(req: AuthRequest, id: string): Promise<{
+        id: string;
+        role: import("@prisma/client").$Enums.RoomRole;
+        userId: string;
+        roomId: string;
+        joinedAt: Date;
+    }>;
     invite(req: AuthRequest, id: string, userId: string): Promise<{
         user: {
             id: string;
@@ -213,6 +312,8 @@ export declare class RoomsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
+            imageUrl: string | null;
             title: string;
             description: string | null;
             date: Date | null;
@@ -221,15 +322,39 @@ export declare class RoomsController {
             priority: import("@prisma/client").$Enums.Priority;
             isPublic: boolean;
             isCompleted: boolean;
-            imageUrl: string | null;
             completedAt: Date | null;
-            userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        roomId: string;
         taskId: string;
+        roomId: string;
+        completedBy: string[];
+        failedBy: string[];
+        skippedBy: string[];
+    }>;
+    setTaskStatus(req: AuthRequest, id: string, taskId: string, status: 'DONE' | 'FAILED' | 'SKIP' | 'RESET'): Promise<{
+        task: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            imageUrl: string | null;
+            title: string;
+            description: string | null;
+            date: Date | null;
+            time: string | null;
+            category: string | null;
+            priority: import("@prisma/client").$Enums.Priority;
+            isPublic: boolean;
+            isCompleted: boolean;
+            completedAt: Date | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        taskId: string;
+        roomId: string;
         completedBy: string[];
         failedBy: string[];
         skippedBy: string[];
@@ -239,6 +364,8 @@ export declare class RoomsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
+            imageUrl: string | null;
             title: string;
             description: string | null;
             date: Date | null;
@@ -247,18 +374,33 @@ export declare class RoomsController {
             priority: import("@prisma/client").$Enums.Priority;
             isPublic: boolean;
             isCompleted: boolean;
-            imageUrl: string | null;
             completedAt: Date | null;
-            userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        roomId: string;
         taskId: string;
+        roomId: string;
         completedBy: string[];
         failedBy: string[];
         skippedBy: string[];
     }>;
+    listEmojis(id: string): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        imageUrl: string;
+        roomId: string;
+        addedById: string;
+    }[]>;
+    addEmoji(req: AuthRequest, id: string, name: string, file: Express.Multer.File): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        imageUrl: string;
+        roomId: string;
+        addedById: string;
+    }>;
+    deleteEmoji(req: AuthRequest, emojiId: string): Promise<void>;
 }
 export {};
