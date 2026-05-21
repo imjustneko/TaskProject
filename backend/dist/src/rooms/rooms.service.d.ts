@@ -11,6 +11,7 @@ export declare class RoomsService {
                 updatedAt: Date;
                 userId: string;
                 imageUrl: string | null;
+                isCompleted: boolean;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -18,7 +19,6 @@ export declare class RoomsService {
                 category: string | null;
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
-                isCompleted: boolean;
                 completedAt: Date | null;
             };
         } & {
@@ -79,6 +79,7 @@ export declare class RoomsService {
                 updatedAt: Date;
                 userId: string;
                 imageUrl: string | null;
+                isCompleted: boolean;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -86,7 +87,6 @@ export declare class RoomsService {
                 category: string | null;
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
-                isCompleted: boolean;
                 completedAt: Date | null;
             };
         } & {
@@ -147,6 +147,7 @@ export declare class RoomsService {
                 updatedAt: Date;
                 userId: string;
                 imageUrl: string | null;
+                isCompleted: boolean;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -154,7 +155,6 @@ export declare class RoomsService {
                 category: string | null;
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
-                isCompleted: boolean;
                 completedAt: Date | null;
             };
         } & {
@@ -215,6 +215,7 @@ export declare class RoomsService {
                 updatedAt: Date;
                 userId: string;
                 imageUrl: string | null;
+                isCompleted: boolean;
                 title: string;
                 description: string | null;
                 date: Date | null;
@@ -222,7 +223,6 @@ export declare class RoomsService {
                 category: string | null;
                 priority: import("@prisma/client").$Enums.Priority;
                 isPublic: boolean;
-                isCompleted: boolean;
                 completedAt: Date | null;
             };
         } & {
@@ -314,6 +314,7 @@ export declare class RoomsService {
             updatedAt: Date;
             userId: string;
             imageUrl: string | null;
+            isCompleted: boolean;
             title: string;
             description: string | null;
             date: Date | null;
@@ -321,7 +322,6 @@ export declare class RoomsService {
             category: string | null;
             priority: import("@prisma/client").$Enums.Priority;
             isPublic: boolean;
-            isCompleted: boolean;
             completedAt: Date | null;
         };
     } & {
@@ -340,6 +340,7 @@ export declare class RoomsService {
             updatedAt: Date;
             userId: string;
             imageUrl: string | null;
+            isCompleted: boolean;
             title: string;
             description: string | null;
             date: Date | null;
@@ -347,7 +348,6 @@ export declare class RoomsService {
             category: string | null;
             priority: import("@prisma/client").$Enums.Priority;
             isPublic: boolean;
-            isCompleted: boolean;
             completedAt: Date | null;
         };
     } & {

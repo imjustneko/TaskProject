@@ -16,8 +16,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -25,6 +25,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -32,7 +33,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     }>;
     findToday(userId: string): Promise<({
@@ -45,8 +45,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -54,6 +54,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -61,7 +62,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     })[]>;
     findPlans(userId: string): Promise<({
@@ -74,8 +74,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -83,6 +83,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -90,7 +91,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     })[]>;
     findHistory(userId: string): Promise<({
@@ -103,8 +103,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -112,6 +112,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -119,7 +120,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     })[]>;
     findById(id: string, userId: string): Promise<{
@@ -132,8 +132,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -141,6 +141,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -148,7 +149,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     }>;
     update(id: string, userId: string, dto: UpdateTaskDto): Promise<{
@@ -161,8 +161,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -170,6 +170,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -177,7 +178,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     }>;
     remove(id: string, userId: string): Promise<void>;
@@ -191,8 +191,8 @@ export declare class TasksService {
                 color: string;
             };
         } & {
-            labelId: string;
             taskId: string;
+            labelId: string;
         })[];
     } & {
         id: string;
@@ -200,6 +200,7 @@ export declare class TasksService {
         updatedAt: Date;
         userId: string;
         imageUrl: string | null;
+        isCompleted: boolean;
         title: string;
         description: string | null;
         date: Date | null;
@@ -207,7 +208,6 @@ export declare class TasksService {
         category: string | null;
         priority: import("@prisma/client").$Enums.Priority;
         isPublic: boolean;
-        isCompleted: boolean;
         completedAt: Date | null;
     }>;
     getStreak(userId: string): Promise<{
@@ -232,6 +232,7 @@ export declare class TasksService {
             updatedAt: Date;
             userId: string;
             imageUrl: string | null;
+            isCompleted: boolean;
             title: string;
             description: string | null;
             date: Date | null;
@@ -239,7 +240,6 @@ export declare class TasksService {
             category: string | null;
             priority: import("@prisma/client").$Enums.Priority;
             isPublic: boolean;
-            isCompleted: boolean;
             completedAt: Date | null;
         };
     } & {
@@ -259,6 +259,7 @@ export declare class TasksService {
             updatedAt: Date;
             userId: string;
             imageUrl: string | null;
+            isCompleted: boolean;
             title: string;
             description: string | null;
             date: Date | null;
@@ -266,7 +267,6 @@ export declare class TasksService {
             category: string | null;
             priority: import("@prisma/client").$Enums.Priority;
             isPublic: boolean;
-            isCompleted: boolean;
             completedAt: Date | null;
         };
     } & {

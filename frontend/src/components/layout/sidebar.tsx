@@ -18,6 +18,7 @@ const navMain = [
   { href: "/tasks/plans",    label: "Plans",     icon: "calendar" },
   { href: "/tasks/report",   label: "Report",    icon: "chart" },
   { href: "/friends",        label: "Friends",   icon: "users" },
+  { href: "/partners",       label: "Partners",  icon: "handshake" },
   { href: "/profile/edit",   label: "Profile",   icon: "edit" },
   { href: "/profile/labels", label: "Labels",    icon: "tag" },
 ];
@@ -40,8 +41,9 @@ function SvgIcon({ name, size = 15 }: { name: string; size?: number }) {
     case "x":        return <svg {...p}><path d="M6 6l12 12M18 6 6 18"/></svg>;
     case "sparkle":  return <svg {...p}><path d="M12 4v6M12 14v6M4 12h6M14 12h6M6 6l4 4M14 14l4 4M18 6l-4 4M10 14l-4 4"/></svg>;
     case "chart":    return <svg {...p}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V9M12 17v-5M15 17v-8"/></svg>;
-    case "tag":      return <svg {...p}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
-    default:         return null;
+    case "tag":       return <svg {...p}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
+    case "handshake": return <svg {...p}><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l1.06 1.06L12 21.23l7.77-7.94 1.06-1.06a5.4 5.4 0 0 0-.41-7.65z"/></svg>;
+    default:          return null;
   }
 }
 

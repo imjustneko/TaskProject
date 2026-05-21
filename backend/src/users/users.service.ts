@@ -97,6 +97,42 @@ export class UsersService {
     await this.prisma.userEmoji.delete({ where: { id } });
   }
 
+  async getPublicStats(username: string, viewerId?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      include: { status: true },
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const [completedCount, publicTasks, logs] = await Promise.all([
+      this.prisma.task.count({ where: { userId: user.id, isCompleted: true } }),
+      this.prisma.task.findMany({
+        where: { userId: user.id, isPublic: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        include: { labels: { include: { label: true } } },
+      }),
+      this.prisma.taskLog.findMany({
+        where: { userId: user.id, status: 'DONE' },
+        select: { date: true },
+        orderBy: { date: 'desc' },
+      }),
+    ]);
+
+    const doneDays = new Set(logs.map(l => l.date.toISOString().slice(0, 10)));
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    let streak = 0;
+    const startDay = doneDays.has(todayStr) ? todayStr : doneDays.has(yesterdayStr) ? yesterdayStr : null;
+    if (startDay) {
+      const d = new Date(startDay + 'T12:00:00');
+      while (doneDays.has(d.toISOString().slice(0, 10))) { streak++; d.setDate(d.getDate() - 1); }
+    }
+
+    const safeUser = maskInvisible(this.sanitize(user), viewerId);
+    return { user: safeUser, completedCount, streak, publicTasks };
+  }
+
   async updateProfile(
     id: string,
     data: { displayName?: string; bio?: string; avatarUrl?: string | null },

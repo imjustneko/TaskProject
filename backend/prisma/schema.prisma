@@ -71,6 +71,12 @@ enum PresenceType {
   INVISIBLE
 }
 
+enum PartnerStatus {
+  PENDING
+  ACTIVE
+  DECLINED
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model User {
@@ -86,19 +92,21 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  status           UserStatus?
-  tasks            Task[]
-  taskLogs         TaskLog[]
-  labels           Label[]
-  sentRequests     Friend[]       @relation("Requester")
-  receivedRequests Friend[]       @relation("Recipient")
-  sentMessages     Message[]
-  roomMembers      RoomMember[]
-  notifications    Notification[]
-  posts            Post[]
-  postLikes        PostLike[]
-  postComments     PostComment[]
-  userEmojis       UserEmoji[]
+  status               UserStatus?
+  tasks                Task[]
+  taskLogs             TaskLog[]
+  labels               Label[]
+  sentRequests         Friend[]              @relation("Requester")
+  receivedRequests     Friend[]              @relation("Recipient")
+  sentMessages         Message[]
+  roomMembers          RoomMember[]
+  notifications        Notification[]
+  posts                Post[]
+  postLikes            PostLike[]
+  postComments         PostComment[]
+  userEmojis           UserEmoji[]
+  partnerRequestsSent  AccountabilityPair[]  @relation("PartnerRequester")
+  partnerRequestsRecv  AccountabilityPair[]  @relation("PartnerRecipient")
 
   @@map("users")
 }
@@ -327,6 +335,22 @@ model TaskLabel {
 
   @@id([taskId, labelId])
   @@map("task_labels")
+}
+
+model AccountabilityPair {
+  id          String        @id @default(cuid())
+  requesterId String
+  partnerId   String
+  status      PartnerStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  requester User @relation("PartnerRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  partner   User @relation("PartnerRecipient", fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, partnerId])
+  @@index([partnerId, status])
+  @@map("accountability_pairs")
 }
 
 model PostLike {

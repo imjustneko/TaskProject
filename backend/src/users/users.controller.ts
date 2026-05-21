@@ -98,6 +98,11 @@ export class UsersController {
     return this.users.search(q ?? '', req.user.id);
   }
 
+  @Get(':username/stats')
+  getPublicStats(@Request() req: AuthRequest, @Param('username') username: string) {
+    return this.users.getPublicStats(username, req.user.id);
+  }
+
   @Get(':username')
   getByUsername(@Request() req: AuthRequest, @Param('username') username: string) {
     return this.users.findByUsername(username, req.user.id);

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTodayTasks, useToggleTask, useTaskStats, usePlansTasks, useStreak } from "@/hooks/useTasks";
 import { useFriends } from "@/hooks/useFriends";
+import { usePartners } from "@/hooks/usePartners";
 import { useAuthStore } from "@/stores/authStore";
 import { PageHeader } from "@/components/ui/page-header";
 import { TaskRow } from "@/components/ui/task-row";
@@ -52,6 +53,7 @@ export default function DashboardPage() {
   const { data: stats } = useTaskStats();
   const { data: streak } = useStreak();
   const { data: friends = [] } = useFriends();
+  const { data: partners = [] } = usePartners();
   const toggle = useToggleTask();
 
   const firstName = user?.displayName?.split(" ")[0] ?? "there";
@@ -206,6 +208,36 @@ export default function DashboardPage() {
                     <div className="muted" style={{ fontSize: 11.5 }}>{label}</div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Partners card */}
+          {partners.length > 0 && (
+            <div className="card">
+              <div className="card-hd">
+                <h3>🤝 Partners · өнөөдөр</h3>
+                <Link href="/partners" className="card-hd-action">Бүгд <ChevronRight /></Link>
+              </div>
+              <div className="col gap-3">
+                {partners.map(p => {
+                  const pct = p.todayTotal === 0 ? 0 : Math.round(p.todayDone / p.todayTotal * 100);
+                  const done = p.todayTotal > 0 && p.todayDone === p.todayTotal;
+                  return (
+                    <div key={p.pairId} className="row gap-3">
+                      <Avatar user={{ displayName: p.partner.displayName, avatarUrl: p.partner.avatarUrl, status: p.partner.status }} size={32} status onBg="bg" />
+                      <div className="flex1 truncate">
+                        <div style={{ fontSize: 13, fontWeight: 500 }}>{p.partner.displayName}</div>
+                        <div style={{ height: 4, borderRadius: 999, background: "var(--bg-subtle)", overflow: "hidden", marginTop: 4 }}>
+                          <div style={{ height: "100%", width: `${pct}%`, background: done ? "#22c55e" : "var(--accent)", borderRadius: 999, transition: "width 400ms" }} />
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: done ? "#16a34a" : "var(--text-muted)", minWidth: 38, textAlign: "right" }}>
+                        {p.todayDone}/{p.todayTotal}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

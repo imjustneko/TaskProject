@@ -9,11 +9,14 @@ import {
   useAcceptRequest,
   useDeclineRequest,
 } from "@/hooks/useFriends";
+import { usePartners, useSendPartnerRequest } from "@/hooks/usePartners";
+import { useToast } from "@/components/ui/toast";
 import { PageHeader } from "@/components/ui/page-header";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useDebounce } from "@/hooks/useDebounce";
+import type { User } from "@/types";
 
 function SearchIcon({ size = 14 }: { size?: number }) {
   return (
@@ -39,9 +42,14 @@ export default function FriendsPage() {
   const { data: friends = [] } = useFriends();
   const { data: requests = [] } = useIncomingRequests();
   const { data: searchResults = [] } = useSearchUsers(debouncedQ);
+  const { data: partners = [] } = usePartners();
   const accept = useAcceptRequest();
   const decline = useDeclineRequest();
   const sendReq = useSendFriendRequest();
+  const sendPartnerReq = useSendPartnerRequest();
+  const toast = useToast();
+
+  const partnerIds = new Set(partners.map(p => p.partner.id));
 
   const filtered = friends.filter(
     (f) =>
@@ -163,42 +171,60 @@ export default function FriendsPage() {
 
       {/* Friends grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-        {list.map((f) => (
+        {list.map((f: User) => {
+          const isPartner = partnerIds.has(f.id);
+          return (
           <div key={f.id} className="card" style={{ padding: 18, cursor: "default" }}>
             <div className="row gap-3" style={{ marginBottom: 12 }}>
               <Avatar
-                user={{
-                  displayName: f.displayName,
-                  avatarUrl: f.avatarUrl,
-                  presence: f.status ? "online" : "offline",
-                  status: f.status ? { presence: "online" } : undefined,
-                }}
-                size={40}
-                status
-                onBg="bg"
+                user={{ displayName: f.displayName, avatarUrl: f.avatarUrl, status: f.status ? { presence: f.status.presence ?? "ONLINE" } : undefined }}
+                size={40} status onBg="bg"
               />
               <div className="flex1 truncate">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{f.displayName}</div>
+                <div className="row gap-2">
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{f.displayName}</div>
+                  {isPartner && (
+                    <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 999, background: "rgba(99,102,241,0.12)", color: "var(--accent)", fontWeight: 600 }}>
+                      🤝 Partner
+                    </span>
+                  )}
+                </div>
                 <div className="muted truncate" style={{ fontSize: 12 }}>@{f.username}</div>
               </div>
             </div>
             {f.bio && (
               <div className="muted" style={{ fontSize: 12.5, marginBottom: 12, minHeight: 36 }}>{f.bio}</div>
             )}
-            <div className="row" style={{ justifyContent: "space-between" }}>
+            <div className="row gap-2" style={{ justifyContent: "space-between" }}>
               <StatusPill
-                status={f.status ? {
-                  emoji: f.status.emoji,
-                  label: f.status.customText ?? f.status.type,
-                } : null}
+                status={f.status ? { emoji: f.status.emoji, label: f.status.customText ?? f.status.type } : null}
                 compact
               />
-              <button className="btn btn-sm btn-ghost btn-icon">
-                <SendIcon size={13} />
-              </button>
+              <div className="row gap-1">
+                {!isPartner && (
+                  <button
+                    className="btn btn-sm"
+                    title="Accountability partner болох"
+                    onClick={() => sendPartnerReq.mutate(f.id, {
+                      onSuccess: () => toast.show(`${f.displayName}-д partner хүсэлт илгээв!`),
+                      onError: (e: unknown) => {
+                        const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+                        toast.show(typeof msg === "string" ? msg : "Хүсэлт илгээж чадсангүй", "error");
+                      },
+                    })}
+                    disabled={sendPartnerReq.isPending}
+                  >
+                    🤝
+                  </button>
+                )}
+                <button className="btn btn-sm btn-ghost btn-icon">
+                  <SendIcon size={13} />
+                </button>
+              </div>
             </div>
           </div>
-        ))}
+          );
+        })}
         {list.length === 0 && debouncedQ.length < 2 && (
           <div style={{
             gridColumn: "1 / -1",

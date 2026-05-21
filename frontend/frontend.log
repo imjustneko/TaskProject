@@ -6,5 +6,5 @@
 - Local:         http://localhost:3000
 - Network:       http://192.168.2.4:3000
 - Environments: .env.local
-✓ Ready in 1122ms
+✓ Ready in 818ms
 

@@ -27,6 +27,44 @@ export declare class UsersController {
     }>;
     deleteEmoji(req: AuthRequest, id: string): Promise<void>;
     search(req: AuthRequest, q: string): Promise<SafeUser[]>;
+    getPublicStats(req: AuthRequest, username: string): Promise<{
+        user: SafeUser & {
+            status?: {
+                presence?: string;
+            } | null;
+        };
+        completedCount: number;
+        streak: number;
+        publicTasks: ({
+            labels: ({
+                label: {
+                    name: string;
+                    id: string;
+                    createdAt: Date;
+                    userId: string;
+                    color: string;
+                };
+            } & {
+                taskId: string;
+                labelId: string;
+            })[];
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            imageUrl: string | null;
+            isCompleted: boolean;
+            title: string;
+            description: string | null;
+            date: Date | null;
+            time: string | null;
+            category: string | null;
+            priority: import("@prisma/client").$Enums.Priority;
+            isPublic: boolean;
+            completedAt: Date | null;
+        })[];
+    }>;
     getByUsername(req: AuthRequest, username: string): Promise<SafeUser | null>;
 }
 export {};
