@@ -12,6 +12,7 @@ export declare class FriendsService {
             status: {
                 id: string;
                 updatedAt: Date;
+                presence: import("@prisma/client").$Enums.PresenceType;
                 userId: string;
                 type: import("@prisma/client").$Enums.StatusType;
                 customText: string | null;
@@ -36,6 +37,7 @@ export declare class FriendsService {
             status: {
                 id: string;
                 updatedAt: Date;
+                presence: import("@prisma/client").$Enums.PresenceType;
                 userId: string;
                 type: import("@prisma/client").$Enums.StatusType;
                 customText: string | null;
@@ -61,6 +63,7 @@ export declare class FriendsService {
         status: {
             id: string;
             updatedAt: Date;
+            presence: import("@prisma/client").$Enums.PresenceType;
             userId: string;
             type: import("@prisma/client").$Enums.StatusType;
             customText: string | null;
@@ -77,6 +80,7 @@ export declare class FriendsService {
             status: {
                 id: string;
                 updatedAt: Date;
+                presence: import("@prisma/client").$Enums.PresenceType;
                 userId: string;
                 type: import("@prisma/client").$Enums.StatusType;
                 customText: string | null;
@@ -101,6 +105,7 @@ export declare class FriendsService {
             status: {
                 id: string;
                 updatedAt: Date;
+                presence: import("@prisma/client").$Enums.PresenceType;
                 userId: string;
                 type: import("@prisma/client").$Enums.StatusType;
                 customText: string | null;

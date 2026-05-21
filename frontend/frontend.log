@@ -6,8 +6,5 @@
 - Local:         http://localhost:3000
 - Network:       http://192.168.2.4:3000
 - Environments: .env.local
-✓ Ready in 784ms
+✓ Ready in 1122ms
 
- GET /profile/labels 200 in 1097ms (next.js: 607ms, application-code: 490ms)
- GET /login 200 in 327ms (next.js: 40ms, application-code: 287ms)
- GET /login 200 in 195ms (next.js: 10ms, application-code: 185ms)

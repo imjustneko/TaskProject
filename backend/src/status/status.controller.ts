@@ -1,8 +1,8 @@
 import {
-  Controller, Put, Delete, Body, UseGuards,
+  Controller, Put, Patch, Delete, Body, UseGuards,
   Request, HttpCode, HttpStatus,
 } from '@nestjs/common';
-import { StatusService, SetStatusDto } from './status.service';
+import { StatusService, SetStatusDto, SetPresenceDto } from './status.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { SafeUser } from '../users/users.service';
 
@@ -16,6 +16,11 @@ export class StatusController {
   @Put()
   set(@Request() req: AuthRequest, @Body() dto: SetStatusDto) {
     return this.status.setStatus(req.user.id, dto);
+  }
+
+  @Patch('presence')
+  setPresence(@Request() req: AuthRequest, @Body() dto: SetPresenceDto) {
+    return this.status.setPresence(req.user.id, dto.presence);
   }
 
   @Delete()

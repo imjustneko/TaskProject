@@ -137,8 +137,7 @@ export default function DashboardPage() {
                     user={{
                       displayName: f.displayName,
                       avatarUrl: f.avatarUrl,
-                      presence: f.status ? "online" : "offline",
-                      status: f.status ? { presence: "online" } : undefined,
+                      status: f.status ? { presence: f.status.presence ?? "ONLINE" } : undefined,
                     }}
                     size={32}
                     status

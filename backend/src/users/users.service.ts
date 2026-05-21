@@ -4,6 +4,15 @@ import type { User } from '@prisma/client';
 
 export type SafeUser = Omit<User, 'passwordHash'>;
 
+type SafeUserWithStatus = SafeUser & { status?: { presence?: string } | null };
+
+function maskInvisible(user: SafeUserWithStatus, viewerId?: string | null): SafeUserWithStatus {
+  if (!user.status?.presence) return user;
+  if (user.status.presence !== 'INVISIBLE') return user;
+  if (user.id === viewerId) return user;
+  return { ...user, status: { ...user.status, presence: 'OFFLINE' } };
+}
+
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -27,12 +36,13 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findByUsername(username: string): Promise<SafeUser | null> {
+  async findByUsername(username: string, viewerId?: string): Promise<SafeUser | null> {
     const user = await this.prisma.user.findUnique({
       where: { username },
       include: { status: true },
     });
-    return user ? this.sanitize(user) : null;
+    if (!user) return null;
+    return maskInvisible(this.sanitize(user), viewerId);
   }
 
   async checkUniqueness(email: string, username: string): Promise<void> {
@@ -63,7 +73,7 @@ export class UsersService {
       include: { status: true },
       take: 20,
     });
-    return users.map(this.sanitize);
+    return users.map(u => maskInvisible(this.sanitize(u), currentUserId));
   }
 
   async getEmojis(userId: string) {

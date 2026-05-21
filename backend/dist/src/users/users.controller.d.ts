@@ -27,6 +27,6 @@ export declare class UsersController {
     }>;
     deleteEmoji(req: AuthRequest, id: string): Promise<void>;
     search(req: AuthRequest, q: string): Promise<SafeUser[]>;
-    getByUsername(username: string): Promise<SafeUser | null>;
+    getByUsername(req: AuthRequest, username: string): Promise<SafeUser | null>;
 }
 export {};

@@ -12,6 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+function maskInvisible(user, viewerId) {
+    if (!user.status?.presence)
+        return user;
+    if (user.status.presence !== 'INVISIBLE')
+        return user;
+    if (user.id === viewerId)
+        return user;
+    return { ...user, status: { ...user.status, presence: 'OFFLINE' } };
+}
 let UsersService = class UsersService {
     prisma;
     constructor(prisma) {
@@ -33,12 +42,14 @@ let UsersService = class UsersService {
     async findByEmail(email) {
         return this.prisma.user.findUnique({ where: { email } });
     }
-    async findByUsername(username) {
+    async findByUsername(username, viewerId) {
         const user = await this.prisma.user.findUnique({
             where: { username },
             include: { status: true },
         });
-        return user ? this.sanitize(user) : null;
+        if (!user)
+            return null;
+        return maskInvisible(this.sanitize(user), viewerId);
     }
     async checkUniqueness(email, username) {
         const exists = await this.prisma.user.findFirst({
@@ -68,7 +79,7 @@ let UsersService = class UsersService {
             include: { status: true },
             take: 20,
         });
-        return users.map(this.sanitize);
+        return users.map(u => maskInvisible(this.sanitize(u), currentUserId));
     }
     async getEmojis(userId) {
         return this.prisma.userEmoji.findMany({

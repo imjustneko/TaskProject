@@ -24,6 +24,9 @@ let StatusController = class StatusController {
     set(req, dto) {
         return this.status.setStatus(req.user.id, dto);
     }
+    setPresence(req, dto) {
+        return this.status.setPresence(req.user.id, dto.presence);
+    }
     clear(req) {
         return this.status.clearStatus(req.user.id);
     }
@@ -37,6 +40,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, status_service_1.SetStatusDto]),
     __metadata("design:returntype", void 0)
 ], StatusController.prototype, "set", null);
+__decorate([
+    (0, common_1.Patch)('presence'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, status_service_1.SetPresenceDto]),
+    __metadata("design:returntype", void 0)
+], StatusController.prototype, "setPresence", null);
 __decorate([
     (0, common_1.Delete)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),

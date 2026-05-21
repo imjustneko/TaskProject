@@ -58,8 +58,8 @@ let UsersController = class UsersController {
     search(req, q) {
         return this.users.search(q ?? '', req.user.id);
     }
-    getByUsername(username) {
-        return this.users.findByUsername(username);
+    getByUsername(req, username) {
+        return this.users.findByUsername(username, req.user.id);
     }
 };
 exports.UsersController = UsersController;
@@ -152,9 +152,10 @@ __decorate([
 ], UsersController.prototype, "search", null);
 __decorate([
     (0, common_1.Get)(':username'),
-    __param(0, (0, common_1.Param)('username')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getByUsername", null);
 exports.UsersController = UsersController = __decorate([

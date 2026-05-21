@@ -411,10 +411,12 @@ p { margin: 0; }
 }
 [data-on-bg="subtle"] .avatar-status { border-color: var(--bg-subtle); }
 [data-on-bg="bg"] .avatar-status { border-color: var(--bg); }
-.avatar-status[data-s="online"] { background: var(--status-online); }
-.avatar-status[data-s="busy"]   { background: var(--status-busy); }
-.avatar-status[data-s="idle"]   { background: var(--status-idle); }
-.avatar-status[data-s="offline"] { background: var(--status-offline); }
+.avatar-status[data-s="online"]    { background: var(--status-online); }
+.avatar-status[data-s="busy"]      { background: var(--status-busy); }
+.avatar-status[data-s="idle"]      { background: var(--status-idle); }
+.avatar-status[data-s="offline"]   { background: var(--status-offline); }
+.avatar-status[data-s="dnd"]       { background: var(--status-busy); }
+.avatar-status[data-s="invisible"] { background: transparent; border-color: var(--status-offline); box-shadow: inset 0 0 0 1.5px var(--status-offline); }
 
 /* ── Badges & chips ── */
 .badge {

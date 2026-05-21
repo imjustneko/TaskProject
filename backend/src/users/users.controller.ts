@@ -99,7 +99,7 @@ export class UsersController {
   }
 
   @Get(':username')
-  getByUsername(@Param('username') username: string) {
-    return this.users.findByUsername(username);
+  getByUsername(@Request() req: AuthRequest, @Param('username') username: string) {
+    return this.users.findByUsername(username, req.user.id);
   }
 }

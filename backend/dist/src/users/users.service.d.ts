@@ -7,7 +7,7 @@ export declare class UsersService {
     sanitize(user: User): SafeUser;
     findById(id: string): Promise<SafeUser>;
     findByEmail(email: string): Promise<User | null>;
-    findByUsername(username: string): Promise<SafeUser | null>;
+    findByUsername(username: string, viewerId?: string): Promise<SafeUser | null>;
     checkUniqueness(email: string, username: string): Promise<void>;
     search(query: string, currentUserId: string): Promise<SafeUser[]>;
     getEmojis(userId: string): Promise<{

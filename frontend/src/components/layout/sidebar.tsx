@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, presenceToDot } from "@/components/ui/avatar";
+import { useUserEmojis } from "@/hooks/useUserEmojis";
 import api from "@/lib/api";
-import type { StatusType } from "@/types";
+import type { StatusType, PresenceType } from "@/types";
 import { STATUS_META } from "@/types";
 
 const navMain = [
@@ -44,18 +45,35 @@ function SvgIcon({ name, size = 15 }: { name: string; size?: number }) {
   }
 }
 
-function StatusModal({ onClose, currentStatus }: {
+const PRESENCE_OPTIONS: { value: PresenceType; label: string; dot: string; color: string; desc: string }[] = [
+  { value: "ONLINE",    label: "Online",       dot: "online",    color: "#34c759", desc: "Бусдад онлайн харагдана" },
+  { value: "IDLE",      label: "Idle",         dot: "idle",      color: "#ffb340", desc: "Идэвхгүй байгаа мэт" },
+  { value: "DND",       label: "Do Not Disturb", dot: "dnd",    color: "#ff453a", desc: "Мэдэгдэл хааж байна" },
+  { value: "INVISIBLE", label: "Invisible",    dot: "invisible", color: "#8a8a90", desc: "Оффлайн мэт харагдана" },
+];
+
+function StatusModal({ onClose, currentStatus, currentPresence }: {
   onClose: () => void;
   currentStatus?: StatusType | null;
+  currentPresence?: PresenceType | null;
 }) {
   const { updateUser } = useAuthStore();
   const [picked, setPicked] = useState<StatusType | null>(currentStatus ?? null);
+  const [presence, setPresence] = useState<PresenceType>(currentPresence ?? "ONLINE");
   const [custom, setCustom] = useState("");
+  const [showEmojis, setShowEmojis] = useState(false);
+  const { data: myEmojis = [] } = useUserEmojis();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const setStatus = useMutation({
     mutationFn: (type: StatusType) =>
-      api.put("/status", { type, customText: type === "CUSTOM" ? (custom || undefined) : undefined }).then(r => r.data),
+      api.put("/status", { type, presence, customText: type === "CUSTOM" ? (custom || undefined) : undefined }).then(r => r.data),
     onSuccess: (status) => { updateUser({ status }); onClose(); },
+  });
+
+  const setPresenceMutation = useMutation({
+    mutationFn: (p: PresenceType) => api.patch("/status/presence", { presence: p }).then(r => r.data),
+    onSuccess: (status) => { updateUser({ status }); },
   });
 
   const clearStatus = useMutation({
@@ -63,61 +81,133 @@ function StatusModal({ onClose, currentStatus }: {
     onSuccess: () => { updateUser({ status: undefined }); onClose(); },
   });
 
+  const insertEmoji = (name: string) => {
+    setCustom(c => c + `:${name}: `);
+    setPicked("CUSTOM");
+    setShowEmojis(false);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
   return (
     <div className="modal-back" onClick={onClose}>
-      <div className="modal" style={{ width: 440 }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ width: 460 }} onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>Update status</h2>
-          <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
-            <SvgIcon name="x" size={15} />
-          </button>
+          <h2>Set your status</h2>
+          <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}><SvgIcon name="x" size={15} /></button>
         </div>
-        <div className="muted" style={{ fontSize: 13.5, marginBottom: 16 }}>
-          What are you up to right now? Friends will see this.
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
-          {STATUS_LIST.map((s) => {
-            const m = STATUS_META[s];
-            return (
-              <button key={s} onClick={() => setPicked(s)} className="btn" style={{
-                height: 76, flexDirection: "column", gap: 6, padding: 8,
-                borderColor: picked === s ? "var(--accent)" : "var(--border-strong)",
-                background: picked === s ? "var(--accent-tint)" : "var(--bg-elevated)",
-              }}>
-                <span style={{ fontSize: 22 }}>{m.emoji}</span>
-                <span style={{ fontSize: 11.5, color: "var(--text-soft)" }}>{m.label}</span>
+
+        {/* ── Presence section ── */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+            Холболтын байдал
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+            {PRESENCE_OPTIONS.map(p => (
+              <button
+                key={p.value}
+                onClick={() => { setPresence(p.value); setPresenceMutation.mutate(p.value); }}
+                className="btn"
+                style={{
+                  flexDirection: "column", height: 70, gap: 6, padding: 8,
+                  borderColor: presence === p.value ? p.color : "var(--border-strong)",
+                  background: presence === p.value ? `${p.color}15` : "var(--bg-elevated)",
+                  position: "relative",
+                }}
+                title={p.desc}
+              >
+                {/* Presence dot preview */}
+                <div style={{
+                  width: 16, height: 16, borderRadius: "50%",
+                  background: p.value === "INVISIBLE" ? "transparent" : p.color,
+                  border: p.value === "INVISIBLE" ? `2px solid ${p.color}` : "none",
+                }} />
+                <span style={{ fontSize: 11, color: presence === p.value ? p.color : "var(--text-muted)", fontWeight: presence === p.value ? 600 : 400, lineHeight: 1.2, textAlign: "center" }}>
+                  {p.label}
+                </span>
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
-        <div className="field" style={{ marginBottom: 16 }}>
-          <label className="field-label">Or write your own</label>
-          <input
-            className="input"
-            placeholder="Doing my thing…"
-            value={custom}
-            onChange={e => setCustom(e.target.value)}
-            onFocus={() => setPicked("CUSTOM" as StatusType)}
-          />
+
+        {/* ── Activity section ── */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+            Үйл ажиллагаа
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 10 }}>
+            {STATUS_LIST.map((s) => {
+              const m = STATUS_META[s];
+              return (
+                <button key={s} onClick={() => setPicked(s)} className="btn" style={{
+                  height: 66, flexDirection: "column", gap: 5, padding: 8,
+                  borderColor: picked === s ? "var(--accent)" : "var(--border-strong)",
+                  background: picked === s ? "var(--accent-tint)" : "var(--bg-elevated)",
+                }}>
+                  <span style={{ fontSize: 20 }}>{m.emoji}</span>
+                  <span style={{ fontSize: 10.5, color: "var(--text-soft)" }}>{m.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Custom text + emoji picker */}
+          <div style={{ position: "relative" }}>
+            <div className="row gap-2">
+              <input
+                ref={inputRef}
+                className="input"
+                placeholder="Өөрийн статус бичих… (:emoji_name: ашиглаж болно)"
+                value={custom}
+                onChange={e => setCustom(e.target.value)}
+                onFocus={() => setPicked("CUSTOM" as StatusType)}
+                style={{ flex: 1 }}
+              />
+              {myEmojis.length > 0 && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm btn-icon"
+                  onClick={() => setShowEmojis(v => !v)}
+                  style={{ flexShrink: 0, color: showEmojis ? "var(--accent)" : "var(--text-muted)" }}
+                  title="Custom emoji"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+            {showEmojis && (
+              <div style={{
+                position: "absolute", bottom: "calc(100% + 6px)", left: 0, right: 0,
+                background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 10,
+                padding: 8, display: "flex", flexWrap: "wrap", gap: 4, zIndex: 10,
+                boxShadow: "var(--shadow-2)",
+              }}>
+                {myEmojis.map(em => (
+                  <button key={em.id} title={`:${em.name}:`} onClick={() => insertEmoji(em.name)}
+                    style={{ width: 34, height: 34, borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg-subtle)", padding: 3, cursor: "default" }}>
+                    <img src={em.imageUrl} alt={em.name} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+
         <div className="row" style={{ justifyContent: "space-between" }}>
-          <button
-            className="btn btn-ghost btn-sm"
-            style={{ color: "var(--status-busy)" }}
-            onClick={() => clearStatus.mutate()}
-            disabled={clearStatus.isPending}
-          >
-            Clear status
+          <button className="btn btn-ghost btn-sm" style={{ color: "var(--status-busy)" }}
+            onClick={() => clearStatus.mutate()} disabled={clearStatus.isPending}>
+            Статус арилгах
           </button>
           <div className="row gap-2">
-            <button className="btn" onClick={onClose}>Cancel</button>
+            <button className="btn" onClick={onClose}>Болих</button>
             <button
               className="btn btn-accent"
               disabled={!picked || setStatus.isPending}
               onClick={() => picked && setStatus.mutate(picked)}
             >
               <SvgIcon name="sparkle" size={14} />
-              {setStatus.isPending ? "Saving…" : "Set status"}
+              {setStatus.isPending ? "Хадгалж байна…" : "Тохируулах"}
             </button>
           </div>
         </div>
@@ -137,16 +227,21 @@ export function Sidebar() {
   const userForAvatar = user ? {
     displayName: user.displayName,
     avatarUrl: user.avatarUrl,
-    presence: user.status ? "online" : "offline",
-    status: user.status ? { presence: "online" } : undefined,
+    status: {
+      presence: user.status?.presence ?? (user.status ? "ONLINE" : undefined),
+    },
   } : null;
+
+  const presenceOpt = PRESENCE_OPTIONS.find(p => p.value === (user?.status?.presence ?? "ONLINE"));
 
   const statusLabel = (() => {
     if (!user?.status) return "@" + (user?.username ?? "");
     const meta = STATUS_META[user.status.type as StatusType];
     const label = user.status.customText ?? meta?.label ?? user.status.type;
     const emoji = meta?.emoji ?? "";
-    return `${emoji} ${label}`.trim();
+    const activityText = `${emoji} ${label}`.trim();
+    const presenceLabel = presenceOpt?.label ?? "Online";
+    return `${activityText} · ${presenceLabel}`;
   })();
 
   return (
@@ -219,6 +314,7 @@ export function Sidebar() {
         <StatusModal
           onClose={() => setStatusOpen(false)}
           currentStatus={user?.status?.type as StatusType ?? null}
+          currentPresence={user?.status?.presence as PresenceType ?? "ONLINE"}
         />
       )}
     </>

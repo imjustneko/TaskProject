@@ -25,9 +25,12 @@ export type NotificationType =
   | "TASK_REMINDER"
   | "MENTION";
 
+export type PresenceType = "ONLINE" | "IDLE" | "DND" | "INVISIBLE";
+
 export interface UserStatus {
   id: string;
   type: StatusType;
+  presence: PresenceType;
   customText?: string;
   emoji?: string;
   updatedAt: string;

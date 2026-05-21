@@ -64,6 +64,13 @@ enum LogStatus {
   SKIPPED
 }
 
+enum PresenceType {
+  ONLINE
+  IDLE
+  DND
+  INVISIBLE
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model User {
@@ -97,13 +104,14 @@ model User {
 }
 
 model UserStatus {
-  id         String     @id @default(cuid())
-  userId     String     @unique
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String       @id @default(cuid())
+  userId     String       @unique
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   type       StatusType
+  presence   PresenceType @default(ONLINE)
   customText String?
   emoji      String?
-  updatedAt  DateTime   @updatedAt
+  updatedAt  DateTime     @updatedAt
 
   @@map("user_statuses")
 }

@@ -16,9 +16,9 @@ export declare class MessagesController {
     } & {
         id: string;
         createdAt: Date;
+        type: import("@prisma/client").$Enums.MessageType;
         imageUrl: string | null;
         recipientId: string | null;
-        type: import("@prisma/client").$Enums.MessageType;
         content: string | null;
         senderId: string;
         roomId: string | null;
@@ -34,9 +34,9 @@ export declare class MessagesController {
     } & {
         id: string;
         createdAt: Date;
+        type: import("@prisma/client").$Enums.MessageType;
         imageUrl: string | null;
         recipientId: string | null;
-        type: import("@prisma/client").$Enums.MessageType;
         content: string | null;
         senderId: string;
         roomId: string | null;
@@ -52,9 +52,9 @@ export declare class MessagesController {
     } & {
         id: string;
         createdAt: Date;
+        type: import("@prisma/client").$Enums.MessageType;
         imageUrl: string | null;
         recipientId: string | null;
-        type: import("@prisma/client").$Enums.MessageType;
         content: string | null;
         senderId: string;
         roomId: string | null;
@@ -70,9 +70,9 @@ export declare class MessagesController {
     } & {
         id: string;
         createdAt: Date;
+        type: import("@prisma/client").$Enums.MessageType;
         imageUrl: string | null;
         recipientId: string | null;
-        type: import("@prisma/client").$Enums.MessageType;
         content: string | null;
         senderId: string;
         roomId: string | null;
@@ -88,9 +88,9 @@ export declare class MessagesController {
     } & {
         id: string;
         createdAt: Date;
+        type: import("@prisma/client").$Enums.MessageType;
         imageUrl: string | null;
         recipientId: string | null;
-        type: import("@prisma/client").$Enums.MessageType;
         content: string | null;
         senderId: string;
         roomId: string | null;

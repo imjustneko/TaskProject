@@ -9,6 +9,18 @@ export function hueFor(name: string): string {
   return `hsl(${hue}, 55%, 48%)`;
 }
 
+/** Map backend PresenceType → CSS data-s value */
+export function presenceToDot(presence?: string | null): string {
+  switch (presence) {
+    case "ONLINE":    return "online";
+    case "IDLE":      return "idle";
+    case "DND":       return "dnd";
+    case "INVISIBLE": return "invisible";
+    case "OFFLINE":
+    default:          return "offline";
+  }
+}
+
 interface AvatarUser {
   id?: string;
   displayName?: string;
@@ -45,7 +57,10 @@ export function Avatar({ user, name: nameProp, src: srcProp, size = 32, status =
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  const presence = user?.presence ?? user?.status?.presence;
+
+  // Resolve presence: explicit prop > status.presence > legacy string presence
+  const rawPresence = user?.status?.presence ?? user?.presence;
+  const dotValue = presenceToDot(rawPresence);
   const fontSize = Math.max(10, size * 0.38);
 
   return (
@@ -62,7 +77,7 @@ export function Avatar({ user, name: nameProp, src: srcProp, size = 32, status =
           initials
         )}
       </div>
-      {status && presence && <span className="avatar-status" data-s={presence} />}
+      {status && rawPresence && <span className="avatar-status" data-s={dotValue} />}
     </div>
   );
 }
