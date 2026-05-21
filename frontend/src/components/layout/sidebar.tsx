@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { Avatar, presenceToDot } from "@/components/ui/avatar";
 import { useUserEmojis } from "@/hooks/useUserEmojis";
+import { useMyRooms } from "@/hooks/useRooms";
 import api from "@/lib/api";
 import type { StatusType, PresenceType } from "@/types";
 import { STATUS_META } from "@/types";
@@ -218,20 +219,24 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
   );
 }
 
+const ACTIVITY_EMOJI: Record<string, string> = {
+  PLAYING:"🎮", COOKING:"🍳", WALKING:"🚶", STUDYING:"📚",
+  READING:"📖", WORKING:"💻", CUSTOM:"✨",
+};
+
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const router = useRouter();
   const [statusOpen, setStatusOpen] = useState(false);
+  const { data: rooms = [] } = useMyRooms();
 
   const handleLogout = () => { logout(); router.push("/login"); };
 
   const userForAvatar = user ? {
     displayName: user.displayName,
     avatarUrl: user.avatarUrl,
-    status: {
-      presence: user.status?.presence ?? (user.status ? "ONLINE" : undefined),
-    },
+    status: { presence: user.status?.presence ?? (user.status ? "ONLINE" : undefined) },
   } : null;
 
   const presenceOpt = PRESENCE_OPTIONS.find(p => p.value === (user?.status?.presence ?? "ONLINE"));
@@ -241,9 +246,7 @@ export function Sidebar() {
     const meta = STATUS_META[user.status.type as StatusType];
     const label = user.status.customText ?? meta?.label ?? user.status.type;
     const emoji = meta?.emoji ?? "";
-    const activityText = `${emoji} ${label}`.trim();
-    const presenceLabel = presenceOpt?.label ?? "Online";
-    return `${activityText} · ${presenceLabel}`;
+    return `${emoji} ${label} · ${presenceOpt?.label ?? "Online"}`.trim();
   })();
 
   return (
@@ -256,13 +259,13 @@ export function Sidebar() {
 
         <Link
           href="/tasks/today"
-          className="btn btn-accent btn-sm"
-          style={{ margin: "4px 4px 14px", justifyContent: "flex-start", height: 32, paddingLeft: 10, display: "flex" }}
+          className="btn btn-accent"
+          style={{ margin: "2px 2px 14px", justifyContent: "flex-start", height: 30, paddingLeft: 10, display: "flex", gap: 7 }}
         >
-          <SvgIcon name="plus" size={14} />
+          <SvgIcon name="plus" size={13} />
           New task
           <span style={{ marginLeft: "auto" }}>
-            <span className="kbd" style={{ background: "rgba(255,255,255,0.18)", borderColor: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.85)" }}>N</span>
+            <span className="kbd" style={{ background: "rgba(255,255,255,0.16)", borderColor: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.82)", fontSize: 10 }}>N</span>
           </span>
         </Link>
 
@@ -271,20 +274,43 @@ export function Sidebar() {
           const active = pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href));
           return (
             <Link key={n.href} href={n.href} className="side-link" data-active={active ? "1" : "0"}>
-              <SvgIcon name={n.icon} size={15} />
+              <SvgIcon name={n.icon} size={14} />
               <span>{n.label}</span>
             </Link>
           );
         })}
 
-        <div className="side-section row" style={{ justifyContent: "space-between" }}>
+        <div className="side-section" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>Rooms</span>
-          <SvgIcon name="plus" size={12} />
+          <Link href="/rooms" style={{ display: "flex", color: "var(--text-faint)", padding: 2 }}>
+            <SvgIcon name="plus" size={12} />
+          </Link>
         </div>
-        <Link href="/rooms" className="side-link" data-active={pathname.startsWith("/rooms") ? "1" : "0"}>
-          <SvgIcon name="hash" size={15} />
-          <span className="truncate">Browse rooms</span>
-        </Link>
+        {rooms.length === 0 ? (
+          <Link href="/rooms" className="side-link" data-active={pathname === "/rooms" ? "1" : "0"}>
+            <SvgIcon name="hash" size={14} />
+            <span className="truncate">Browse rooms</span>
+          </Link>
+        ) : (
+          rooms.slice(0, 6).map(room => {
+            const emoji = room.activityType ? ACTIVITY_EMOJI[room.activityType] ?? "🏠" : "🏠";
+            const active = pathname === `/rooms/${room.id}`;
+            const hasActive = room.members?.some(m => m.user?.status);
+            return (
+              <Link key={room.id} href={`/rooms/${room.id}`} className="side-link" data-active={active ? "1" : "0"}>
+                <span style={{ width: 15, textAlign: "center", fontSize: 13, flexShrink: 0 }}>{emoji}</span>
+                <span className="truncate" style={{ flex: 1 }}>{room.name}</span>
+                {hasActive && (
+                  <span style={{
+                    width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
+                    background: "var(--status-online)",
+                    boxShadow: "0 0 0 3px color-mix(in oklab, var(--status-online) 22%, transparent)",
+                  }} />
+                )}
+              </Link>
+            );
+          })
+        )}
 
         {/* ── Profile footer — click to open status modal ── */}
         <div className="side-foot">

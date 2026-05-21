@@ -51,7 +51,8 @@
       "Bash(kill -9 2400)",
       "Bash(/c/Windows/System32/taskkill.exe /F /IM node.exe)",
       "Bash(\"/c/Windows/System32/taskkill.exe\" //F //IM node.exe)",
-      "Bash(echo \"Frontend starting, PID: $!\")"
+      "Bash(echo \"Frontend starting, PID: $!\")",
+      "Bash(\"/c/Windows/System32/taskkill.exe\" //F //FI \"IMAGENAME eq node.exe\" //FI \"WINDOWTITLE ne *backend*\")"
     ]
   }
 }

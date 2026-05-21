@@ -2,46 +2,63 @@
 
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import { STATUS_META } from "@/types";
+import type { StatusType } from "@/types";
 
-const PAGE_TITLES: Record<string, { title: string; emoji?: string }> = {
-  "/dashboard":     { title: "Home", emoji: "🏠" },
-  "/feed":          { title: "Feed", emoji: "📣" },
-  "/tasks/today":   { title: "Today", emoji: "☀️" },
-  "/tasks/plans":   { title: "Plans", emoji: "📅" },
-  "/tasks/report":  { title: "Report", emoji: "📊" },
-  "/friends":       { title: "Friends", emoji: "👥" },
-  "/partners":      { title: "Partners", emoji: "🤝" },
-  "/rooms":         { title: "Rooms", emoji: "🏠" },
-  "/profile/edit":  { title: "Profile", emoji: "✏️" },
-  "/profile/labels":{ title: "Labels", emoji: "🏷️" },
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard": "Home", "/feed": "Feed",
+  "/tasks/today": "Today", "/tasks/plans": "Plans", "/tasks/report": "Report",
+  "/friends": "Friends", "/partners": "Partners", "/rooms": "Rooms",
+  "/profile/edit": "Profile", "/profile/labels": "Labels",
 };
 
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const pathname = usePathname();
+  const { user } = useAuthStore();
 
-  const info = PAGE_TITLES[pathname];
+  const title = PAGE_TITLES[pathname] ?? (
+    pathname.startsWith("/rooms/") ? "Room" :
+    pathname.startsWith("/users/") ? "Profile" : "Taskyy"
+  );
+
+  const statusMeta = user?.status ? STATUS_META[user.status.type as StatusType] : null;
+  const statusText = user?.status
+    ? (user.status.customText ?? statusMeta?.label ?? "")
+    : null;
 
   return (
     <div className="topbar">
-      {info && (
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <span style={{ fontSize:14, fontWeight:700, color:"var(--text)", letterSpacing:"-0.01em" }}>
-            {info.title}
-          </span>
-        </div>
-      )}
+      <div className="row gap-2">
+        <span className="topbar-title">{title}</span>
+      </div>
       <div className="topbar-spacer" />
-      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+      <div className="row" style={{ gap: 8 }}>
+
+        {/* Status chip */}
+        {user?.status && statusMeta && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "0 10px", height: 28, borderRadius: 999,
+            background: "var(--bg-subtle)", border: "1px solid var(--border)",
+            fontSize: 12, color: "var(--text-soft)", cursor: "default",
+            maxWidth: 180, overflow: "hidden",
+          }}>
+            <span style={{ fontSize: 13 }}>{statusMeta.emoji}</span>
+            <span className="truncate">{statusText}</span>
+          </div>
+        )}
+
         {/* Search */}
-        <div className="input-search" style={{ width:200 }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ left:9 }}>
+        <div className="input-search" style={{ width: 200 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ left: 9 }}>
             <circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.5-3.5"/>
           </svg>
           <input
             className="input"
             placeholder="Search…"
-            style={{ height:30, fontSize:12.5, paddingLeft:28, borderRadius:8 }}
+            style={{ height: 28, fontSize: 12.5, paddingLeft: 28, borderRadius: 8 }}
           />
         </div>
 
@@ -50,14 +67,13 @@ export function Navbar() {
           className="btn btn-ghost btn-sm btn-icon"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           title={resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
-          style={{ color:"var(--text-muted)" }}
         >
           {resolvedTheme === "dark" ? (
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>
             </svg>
           ) : (
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
             </svg>
           )}
