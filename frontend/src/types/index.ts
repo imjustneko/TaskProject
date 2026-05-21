@@ -81,6 +81,7 @@ export interface Room {
   name: string;
   description?: string;
   activityType?: StatusType;
+  imageUrl?: string;
   createdById: string;
   isPublic: boolean;
   createdAt: string;

@@ -44,6 +44,18 @@ export function useCreateRoom() {
   });
 }
 
+export function useUpdateRoom(roomId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { name?: string; description?: string; activityType?: string; isPublic?: boolean; imageUrl?: string | null }) =>
+      api.patch<Room>(`/rooms/${roomId}`, data).then(r => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["rooms"] });
+      qc.invalidateQueries({ queryKey: ["rooms", roomId] });
+    },
+  });
+}
+
 export function useJoinRoom() {
   const qc = useQueryClient();
   return useMutation({

@@ -10,16 +10,20 @@ import { useUserEmojis } from "@/hooks/useUserEmojis";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/components/ui/toast";
 import { Avatar } from "@/components/ui/avatar";
+import { useT } from "@/hooks/useT";
 import { STATUS_META } from "@/types";
 import type { StatusType } from "@/types";
 
 /* ── Time helper ── */
-function timeAgo(date: string): string {
-  const s = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-  if (s < 60) return "дөнгөж сая";
-  if (s < 3600) return `${Math.floor(s / 60)}м`;
-  if (s < 86400) return `${Math.floor(s / 3600)}ц`;
-  return `${Math.floor(s / 86400)}х`;
+function useTimeAgo() {
+  const { t } = useT();
+  return (date: string): string => {
+    const s = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+    if (s < 60) return t("just_now");
+    if (s < 3600) return `${Math.floor(s / 60)}${t("time_min")}`;
+    if (s < 86400) return `${Math.floor(s / 3600)}${t("time_hour")}`;
+    return `${Math.floor(s / 86400)}${t("time_day")}`;
+  };
 }
 
 /* ── Parse message with user emojis ── */
@@ -39,6 +43,7 @@ function parseWithEmojis(content: string, emojis: { name: string; imageUrl: stri
 function ComposeBox() {
   const { user } = useAuthStore();
   const toast = useToast();
+  const { t } = useT();
   const [text, setText] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [showImg, setShowImg] = useState(false);
@@ -50,10 +55,10 @@ function ComposeBox() {
   const { data: myTasks = [] } = useTodayTasks();
   const { data: myEmojis = [] } = useUserEmojis();
 
-  const selectedTask = myTasks.find(t => t.id === selectedTaskId);
+  const selectedTask = myTasks.find(tk => tk.id === selectedTaskId);
 
   const insertEmoji = (name: string) => {
-    setText(t => t + `:${name}: `);
+    setText(tx => tx + `:${name}: `);
     setShowEmojiPicker(false);
     textareaRef.current?.focus();
   };
@@ -63,10 +68,10 @@ function ComposeBox() {
     createPost.mutate(
       { content: text.trim() || undefined, imageUrl: imgUrl.trim() || undefined, taskId: selectedTaskId || undefined },
       {
-        onSuccess: () => { setText(""); setImgUrl(""); setShowImg(false); setSelectedTaskId(null); toast.show("Нийтлэв!"); },
+        onSuccess: () => { setText(""); setImgUrl(""); setShowImg(false); setSelectedTaskId(null); toast.show(t("post")); },
         onError: (e: unknown) => {
           const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-          toast.show(typeof msg === "string" ? msg : "Нийтлэж чадсангүй. Backend-г дахин эхлүүлнэ үү.", "error");
+          toast.show(typeof msg === "string" ? msg : t("error_generic"), "error");
         },
       }
     );
@@ -81,7 +86,7 @@ function ComposeBox() {
             ref={textareaRef}
             value={text}
             onChange={e => setText(e.target.value)}
-            placeholder="Юу бодож байна вэ?"
+            placeholder={t("post_placeholder")}
             rows={text.length > 80 ? 4 : 2}
             maxLength={500}
             style={{
@@ -111,24 +116,24 @@ function ComposeBox() {
           {showTaskPicker && (
             <div style={{ marginTop: 8, border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden", maxHeight: 200, overflowY: "auto" }}>
               {myTasks.length === 0 ? (
-                <div style={{ padding: "12px 14px", fontSize: 13, color: "var(--text-muted)" }}>Өнөөдрийн таск байхгүй</div>
-              ) : myTasks.map(t => (
+                <div style={{ padding: "12px 14px", fontSize: 13, color: "var(--text-muted)" }}>{t("no_task_today")}</div>
+              ) : myTasks.map(tk => (
                 <div
-                  key={t.id}
-                  onClick={() => { setSelectedTaskId(selectedTaskId === t.id ? null : t.id); setShowTaskPicker(false); }}
+                  key={tk.id}
+                  onClick={() => { setSelectedTaskId(selectedTaskId === tk.id ? null : tk.id); setShowTaskPicker(false); }}
                   style={{
                     padding: "10px 14px", fontSize: 13.5, cursor: "default",
-                    background: selectedTaskId === t.id ? "var(--accent-tint)" : "var(--bg-elevated)",
-                    color: selectedTaskId === t.id ? "var(--accent)" : "var(--text)",
+                    background: selectedTaskId === tk.id ? "var(--accent-tint)" : "var(--bg-elevated)",
+                    color: selectedTaskId === tk.id ? "var(--accent)" : "var(--text)",
                     borderBottom: "1px solid var(--border)",
                     display: "flex", alignItems: "center", gap: 8,
                   }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={t.isCompleted?"#16a34a":"var(--text-muted)"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    {t.isCompleted ? <path d="m4 12 5 5L20 6"/> : <circle cx="12" cy="12" r="9"/>}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={tk.isCompleted?"#16a34a":"var(--text-muted)"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    {tk.isCompleted ? <path d="m4 12 5 5L20 6"/> : <circle cx="12" cy="12" r="9"/>}
                   </svg>
-                  {t.title}
-                  {t.isCompleted && <span style={{ marginLeft: "auto", fontSize: 10, color: "#16a34a", background: "rgba(34,197,94,0.12)", padding: "1px 6px", borderRadius: 4 }}>Дууссан</span>}
+                  {tk.title}
+                  {tk.isCompleted && <span style={{ marginLeft: "auto", fontSize: 10, color: "#16a34a", background: "rgba(34,197,94,0.12)", padding: "1px 6px", borderRadius: 4 }}>{t("done")}</span>}
                 </div>
               ))}
             </div>
@@ -146,7 +151,7 @@ function ComposeBox() {
               </svg>
               <span style={{ fontSize: 13, flex: 1 }}>{selectedTask.title}</span>
               <span style={{ fontSize: 11, color: selectedTask.isCompleted?"#16a34a":"var(--accent)", fontWeight: 500 }}>
-                {selectedTask.isCompleted ? "✓ Дууссан" : "Хийгдэж байна"}
+                {selectedTask.isCompleted ? `✓ ${t("done")}` : "…"}
               </span>
               <button className="btn btn-ghost btn-sm btn-icon" style={{ padding: 0, width: 18, height: 18 }}
                 onClick={() => setSelectedTaskId(null)}>
@@ -178,7 +183,7 @@ function ComposeBox() {
               </button>
 
               {/* Task attach */}
-              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setShowTaskPicker(v=>!v); setShowEmojiPicker(false); }} title="Таск хавсаргах"
+              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setShowTaskPicker(v=>!v); setShowEmojiPicker(false); }} title={t("attach_task")}
                 style={{ color: selectedTaskId?"var(--accent)":"var(--text-muted)" }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m4 12 5 5L20 6"/>
@@ -187,7 +192,7 @@ function ComposeBox() {
 
               {/* Emoji */}
               {myEmojis.length > 0 && (
-                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setShowEmojiPicker(v=>!v); setShowTaskPicker(false); }} title="Custom emoji"
+                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setShowEmojiPicker(v=>!v); setShowTaskPicker(false); }} title={t("custom_emoji_btn")}
                   style={{ color: showEmojiPicker?"var(--accent)":"var(--text-muted)" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
@@ -208,7 +213,7 @@ function ComposeBox() {
               disabled={(!text.trim() && !imgUrl.trim() && !selectedTaskId) || createPost.isPending}
               style={{ minWidth: 70 }}
             >
-              {createPost.isPending ? "…" : "Нийтлэх"}
+              {createPost.isPending ? t("posting") : t("post")}
             </button>
           </div>
         </div>
@@ -220,6 +225,7 @@ function ComposeBox() {
 /* ── Comment section ── */
 function Comments({ postId, onClose }: { postId: string; onClose: () => void }) {
   const { user } = useAuthStore();
+  const { t } = useT();
   const { data: comments = [] } = usePostComments(postId, true);
   const addComment = useAddComment(postId);
   const [text, setText] = useState("");
@@ -251,7 +257,7 @@ function Comments({ postId, onClose }: { postId: string; onClose: () => void }) 
           ref={inputRef}
           className="input"
           style={{ flex: 1, height: 34, fontSize: 13, borderRadius: 20 }}
-          placeholder="Сэтгэгдэл бичих…"
+          placeholder={t("comment_placeholder")}
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => e.key === "Enter" && submit()}
@@ -274,6 +280,8 @@ function Comments({ postId, onClose }: { postId: string; onClose: () => void }) 
 /* ── Single Post card ── */
 function PostCard({ post }: { post: FeedPost }) {
   const { user: me } = useAuthStore();
+  const { t } = useT();
+  const timeAgo = useTimeAgo();
   const toggleLike = useToggleLike();
   const deletePost = useDeletePost();
   const [showComments, setShowComments] = useState(false);
@@ -301,7 +309,7 @@ function PostCard({ post }: { post: FeedPost }) {
                 className="btn btn-ghost btn-sm btn-icon"
                 onClick={() => deletePost.mutate(post.id)}
                 style={{ color: "var(--text-faint)" }}
-                title="Устгах"
+                title={t("delete")}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
@@ -346,7 +354,7 @@ function PostCard({ post }: { post: FeedPost }) {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13.5, fontWeight: 500 }}>{post.task.title}</div>
             <div style={{ fontSize: 11.5, color: post.task.isCompleted?"#16a34a":"var(--text-muted)", marginTop: 1 }}>
-              {post.task.isCompleted ? "✓ Дууссан" : "Хийгдэж байна"}
+              {post.task.isCompleted ? `✓ ${t("done")}` : "…"}
             </div>
           </div>
         </div>
@@ -410,7 +418,7 @@ function PostCard({ post }: { post: FeedPost }) {
           onClick={() => {
             navigator.clipboard?.writeText(window.location.origin + "/feed");
           }}
-          title="Хуулах"
+          title={t("copy_link")}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>
@@ -427,13 +435,14 @@ function PostCard({ post }: { post: FeedPost }) {
 /* ── Feed page ── */
 export default function FeedPage() {
   const { data: posts = [], isLoading, refetch } = useFeed();
+  const { t } = useT();
 
   return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       <div className="row" style={{ marginBottom: 16, justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.015em" }}>Мэдээлэл</h1>
-          <div className="muted" style={{ fontSize: 13, marginTop: 2 }}>Нийтийн нийтлэлүүд</div>
+          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.015em" }}>{t("feed_title")}</h1>
+          <div className="muted" style={{ fontSize: 13, marginTop: 2 }}>{t("feed_subtitle")}</div>
         </div>
         <button
           className="btn btn-ghost btn-sm btn-icon"
@@ -459,8 +468,8 @@ export default function FeedPage() {
       ) : posts.length === 0 ? (
         <div style={{ textAlign: "center", padding: "48px 20px", color: "var(--text-muted)" }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>📣</div>
-          <div style={{ fontWeight: 600, color: "var(--text)", marginBottom: 6 }}>Нийтлэл байхгүй байна</div>
-          <div style={{ fontSize: 13 }}>Эхний нийтлэлийг бичээрэй!</div>
+          <div style={{ fontWeight: 600, color: "var(--text)", marginBottom: 6 }}>{t("no_posts")}</div>
+          <div style={{ fontSize: 13 }}>{t("no_posts_hint")}</div>
         </div>
       ) : (
         posts.map(post => <PostCard key={post.id} post={post} />)

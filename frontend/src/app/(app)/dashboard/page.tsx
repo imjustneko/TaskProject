@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTodayTasks, useToggleTask, useTaskStats, usePlansTasks, useStreak } from "@/hooks/useTasks";
+import { useTodayAllTasks, useToggleTask, useTaskStats, usePlansTasks, useStreak } from "@/hooks/useTasks";
 import { useFriends } from "@/hooks/useFriends";
 import { usePartners } from "@/hooks/usePartners";
 import { useAuthStore } from "@/stores/authStore";
@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { TaskRow } from "@/components/ui/task-row";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusPill } from "@/components/ui/status-pill";
+import { useT } from "@/hooks/useT";
 
 function ChevronRight({ size = 11 }: { size?: number }) {
   return (
@@ -18,15 +19,9 @@ function ChevronRight({ size = 11 }: { size?: number }) {
   );
 }
 
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Өглөөний мэнд";
-  if (h < 18) return "Өдрийн мэнд";
-  return "Оройн мэнд";
-}
-
 // ── Streak card — ambient glow + week bars ────────────────────────────────
 function StreakCard({ current, best }: { current: number; best: number }) {
+  const { t } = useT();
   const today = new Date().getDay();
   const todayIdx = today === 0 ? 6 : today - 1;
   const labels = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"];
@@ -48,10 +43,10 @@ function StreakCard({ current, best }: { current: number; best: number }) {
         pointerEvents: "none",
       }} />
       <div className="card-hd" style={{ position: "relative" }}>
-        <h3>Өдрийн streak</h3>
+        <h3>{t("streak_title")}</h3>
         {current > 0 && (
           <span className="badge" data-tone="accent" style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <i className="dot" />Идэвхтэй
+            <i className="dot" />{t("streak_active")}
           </span>
         )}
       </div>
@@ -64,12 +59,12 @@ function StreakCard({ current, best }: { current: number; best: number }) {
             letterSpacing: "-0.04em", fontVariantNumeric: "tabular-nums",
           }}>{current}</span>
           <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}>
-            өдөр
+            {t("streak_days")}
           </span>
         </div>
         <div style={{ flex: 1 }} />
         <div style={{ textAlign: "right" }}>
-          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>Хамгийн дээд</div>
+          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>{t("streak_best")}</div>
           <div className="mono" style={{ fontSize: 18, fontWeight: 600, color: "var(--text-soft)" }}>{best}</div>
         </div>
       </div>
@@ -107,6 +102,7 @@ function StreakCard({ current, best }: { current: number; best: number }) {
 
 // ── Stats card — hero + sparkline ─────────────────────────────────────────
 function StatsCard({ total, completed, today }: { total: number; completed: number; today: number }) {
+  const { t } = useT();
   const W = 220, H = 36, P = 2;
   // simplified sparkline using stats
   const series = Array.from({ length: 14 }, (_, i) => {
@@ -124,13 +120,13 @@ function StatsCard({ total, completed, today }: { total: number; completed: numb
   return (
     <div className="card">
       <div className="card-hd">
-        <h3>Статистик</h3>
-        <span className="muted" style={{ fontSize: 12 }}>Нийт</span>
+        <h3>{t("stats_title")}</h3>
+        <span className="muted" style={{ fontSize: 12 }}>{t("stats_alltime")}</span>
       </div>
 
       <div className="row" style={{ alignItems: "flex-start", gap: 16, marginBottom: 12 }}>
         <div style={{ flex: "0 0 auto" }}>
-          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 4 }}>Өнөөдөр</div>
+          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 4 }}>{t("stats_today")}</div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 4, lineHeight: 1 }}>
             <span style={{ fontSize: 32, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums" }}>
               {today}
@@ -155,17 +151,17 @@ function StatsCard({ total, completed, today }: { total: number; completed: numb
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderTop: "1px solid var(--border)", paddingTop: 12 }}>
         <div>
-          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 3 }}>Нийт</div>
+          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 3 }}>{t("stats_all")}</div>
           <div className="row" style={{ alignItems: "baseline", gap: 4 }}>
             <span style={{ fontSize: 17, fontWeight: 600, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.015em" }}>{completed}</span>
-            <span className="muted" style={{ fontSize: 11 }}>дуусгасан</span>
+            <span className="muted" style={{ fontSize: 11 }}>{t("stats_done")}</span>
           </div>
         </div>
         <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: 14 }}>
-          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 3 }}>Нийт таск</div>
+          <div className="muted" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 3 }}>{t("stats_total")}</div>
           <div className="row" style={{ alignItems: "baseline", gap: 4 }}>
             <span style={{ fontSize: 17, fontWeight: 600, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.015em" }}>{total}</span>
-            <span className="muted" style={{ fontSize: 11 }}>үүсгэсэн</span>
+            <span className="muted" style={{ fontSize: 11 }}>{t("stats_created")}</span>
           </div>
         </div>
       </div>
@@ -175,12 +171,13 @@ function StatsCard({ total, completed, today }: { total: number; completed: numb
 
 // ── Partners card ─────────────────────────────────────────────────────────
 function PartnersWidget({ partners }: { partners: ReturnType<typeof usePartners>["data"] }) {
+  const { t } = useT();
   if (!partners?.length) return null;
   return (
     <div className="card">
       <div className="card-hd">
-        <h3>Партнер · өнөөдөр</h3>
-        <Link href="/partners" className="card-hd-action">Бүгд <ChevronRight /></Link>
+        <h3>{t("partners_today")}</h3>
+        <Link href="/partners" className="card-hd-action">{t("view_all")} <ChevronRight /></Link>
       </div>
       <div className="col gap-4">
         {partners.map(p => {
@@ -226,13 +223,14 @@ function PartnersWidget({ partners }: { partners: ReturnType<typeof usePartners>
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { data: todayTasks = [] } = useTodayTasks();
+  const { data: todayTasks = [] } = useTodayAllTasks();
   const { data: plansTasks = [] } = usePlansTasks();
   const { data: stats } = useTaskStats();
   const { data: streak } = useStreak();
   const { data: friends = [] } = useFriends();
   const { data: partners = [] } = usePartners();
   const toggle = useToggleTask();
+  const { t, tf } = useT();
 
   const firstName = user?.displayName?.split(" ")[0] ?? "there";
   const completed = todayTasks.filter(t => t.isCompleted).length;
@@ -240,16 +238,20 @@ export default function DashboardPage() {
   const progress = Math.round((completed / Math.max(1, total)) * 100);
   const upcoming = plansTasks.slice(0, 4);
   const eyebrow = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+  const h = new Date().getHours();
+  const greetingKey = h < 12 ? "greeting_morning" : h < 18 ? "greeting_afternoon" : "greeting_evening";
+
   const subtitle = progress === 100
-    ? "Бүгд дуусгасан. Сайн байна!"
-    : `${completed} / ${total} таск дуусгасан · ${total - completed} үлдсэн`;
+    ? t("tasks_all_done")
+    : tf("tasks_subtitle", completed, total);
 
   return (
     <div>
-      <PageHeader eyebrow={eyebrow} title={`${greeting()}, ${firstName}`} subtitle={subtitle}>
+      <PageHeader eyebrow={eyebrow} title={`${t(greetingKey)}, ${firstName}`} subtitle={subtitle}>
         <Link href="/tasks/today" className="btn btn-accent" style={{ gap: 6 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Шинэ таск
+          {t("new_task")}
         </Link>
       </PageHeader>
 
@@ -272,31 +274,31 @@ export default function DashboardPage() {
         <div className="col gap-5">
           <div className="card">
             <div className="card-hd">
-              <h3>Өнөөдөр</h3>
+              <h3>{t("today_card")}</h3>
               <span className="muted" style={{ fontSize: 12 }}>{completed}/{total}</span>
-              <Link href="/tasks/today" className="card-hd-action">Бүгдийг харах <ChevronRight /></Link>
+              <Link href="/tasks/today" className="card-hd-action">{t("view_all")} <ChevronRight /></Link>
             </div>
             <div className="list">
-              {todayTasks.slice(0, 5).map(t => (
-                <TaskRow key={t.id} task={t} onToggle={id => toggle.mutate(id)} />
+              {todayTasks.slice(0, 5).map(tk => (
+                <TaskRow key={tk.id} task={tk} onToggle={id => toggle.mutate(id)} />
               ))}
               {todayTasks.length === 0 && (
-                <div className="muted" style={{ padding: "16px 4px", fontSize: 13 }}>Өнөөдрийн таск байхгүй.</div>
+                <div className="muted" style={{ padding: "16px 4px", fontSize: 13 }}>{t("no_tasks_today")}</div>
               )}
             </div>
           </div>
 
           <div className="card">
             <div className="card-hd">
-              <h3>Ирэх</h3>
-              <Link href="/tasks/plans" className="card-hd-action">Бүх төлөвлөгөө <ChevronRight /></Link>
+              <h3>{t("upcoming_card")}</h3>
+              <Link href="/tasks/plans" className="card-hd-action">{t("all_plans")} <ChevronRight /></Link>
             </div>
             <div className="list">
-              {upcoming.map(t => (
-                <TaskRow key={t.id} task={t} onToggle={id => toggle.mutate(id)} showWhen />
+              {upcoming.map(tk => (
+                <TaskRow key={tk.id} task={tk} onToggle={id => toggle.mutate(id)} showWhen />
               ))}
               {upcoming.length === 0 && (
-                <div className="muted" style={{ padding: "16px 4px", fontSize: 13 }}>Ирэх таск байхгүй.</div>
+                <div className="muted" style={{ padding: "16px 4px", fontSize: 13 }}>{t("no_upcoming")}</div>
               )}
             </div>
           </div>
@@ -313,9 +315,9 @@ export default function DashboardPage() {
           {/* Friends */}
           <div className="card">
             <div className="card-hd">
-              <h3>Найзууд · одоо</h3>
-              <span className="muted" style={{ fontSize: 12 }}>{friends.filter(f => f.status).length} идэвхтэй</span>
-              <Link href="/friends" className="card-hd-action">Бүгдийг харах <ChevronRight /></Link>
+              <h3>{t("friends_now")}</h3>
+              <span className="muted" style={{ fontSize: 12 }}>{friends.filter(f => f.status).length} {t("friends_active")}</span>
+              <Link href="/friends" className="card-hd-action">{t("view_all")} <ChevronRight /></Link>
             </div>
             <div className="col gap-3">
               {friends.slice(0, 5).map(f => (
@@ -335,7 +337,7 @@ export default function DashboardPage() {
                 </div>
               ))}
               {friends.length === 0 && (
-                <div className="muted" style={{ fontSize: 13 }}>Найз байхгүй.</div>
+                <div className="muted" style={{ fontSize: 13 }}>{t("no_friends_dash")}</div>
               )}
             </div>
           </div>

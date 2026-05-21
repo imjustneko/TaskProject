@@ -44,6 +44,13 @@ export function useTodayTasks() {
   });
 }
 
+export function useTodayAllTasks() {
+  return useQuery({
+    queryKey: [...keys.today, "all"],
+    queryFn: () => api.get<Task[]>("/tasks/today?all=true").then((r) => r.data),
+  });
+}
+
 export function usePlansTasks() {
   return useQuery({
     queryKey: keys.plans,

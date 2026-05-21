@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/ui/page-header";
 import { useAuthStore } from "@/stores/authStore";
 import { useRouter } from "next/navigation";
+import { useT } from "@/hooks/useT";
 
 // ── PartnerSide — individual progress column ──────────────────────────────
 function PartnerSide({ label, done, total }: { label: string; done: number; total: number }) {
@@ -43,14 +44,15 @@ function PartnerSide({ label, done, total }: { label: string; done: number; tota
 function PartnerCard({ p, onRemove }: { p: PartnerData; onRemove: () => void }) {
   const router = useRouter();
   const { user: me } = useAuthStore();
+  const { t, tf } = useT();
   const pct = p.todayTotal === 0 ? 0 : Math.round(p.todayDone / p.todayTotal * 100);
   const allDone = p.todayTotal > 0 && p.todayDone === p.todayTotal;
 
   const statusMsg = allDone
-    ? `🎉 ${p.partner.displayName.split(" ")[0]} дууссан!`
+    ? tf("partner_done_msg", p.partner.displayName.split(" ")[0])
     : p.todayDone > 0
-    ? `⚡ ${p.todayDone} дуусгасан, ${p.todayTotal - p.todayDone} үлдсэн`
-    : p.todayTotal === 0 ? "📋 Өнөөдрийн таск алга" : "⏳ Хүлээж байна…";
+    ? tf("partner_progress", p.todayDone, p.todayTotal - p.todayDone)
+    : p.todayTotal === 0 ? t("partner_no_tasks") : t("partner_waiting");
 
   return (
     <div className="card" style={{ padding: 18 }}>
@@ -66,13 +68,13 @@ function PartnerCard({ p, onRemove }: { p: PartnerData; onRemove: () => void }) 
         </div>
         <div className="flex1" style={{ minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 600 }}>
-            Та &amp; {p.partner.displayName.split(" ")[0]}
+            {t("partner_you")} &amp; {p.partner.displayName.split(" ")[0]}
           </div>
           <div className="muted" style={{ fontSize: 11.5 }}>
-            🔥 {p.streak} өдрийн streak
+            {tf("partner_since", p.streak)}
           </div>
         </div>
-        <button className="btn btn-ghost btn-sm btn-icon" onClick={onRemove} title="Partner болиох" style={{ color: "var(--text-faint)" }}>
+        <button className="btn btn-ghost btn-sm btn-icon" onClick={onRemove} title={t("partner_remove")} style={{ color: "var(--text-faint)" }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 6l12 12M18 6 6 18"/>
           </svg>
@@ -81,7 +83,7 @@ function PartnerCard({ p, onRemove }: { p: PartnerData; onRemove: () => void }) 
 
       {/* Today progress */}
       <div className="row gap-3" style={{ marginBottom: 14 }}>
-        <PartnerSide label="Та" done={Math.min((me ? 1 : 0), p.todayTotal)} total={p.todayTotal} />
+        <PartnerSide label={t("partner_you")} done={Math.min((me ? 1 : 0), p.todayTotal)} total={p.todayTotal} />
         <div style={{ width: 1, alignSelf: "stretch", background: "var(--border)" }} />
         <PartnerSide label={p.partner.displayName.split(" ")[0]} done={p.todayDone} total={p.todayTotal} />
       </div>
@@ -100,11 +102,11 @@ function PartnerCard({ p, onRemove }: { p: PartnerData; onRemove: () => void }) 
       <div className="row gap-2" style={{ justifyContent: "flex-end" }}>
         <button className="btn btn-ghost btn-sm" onClick={() => router.push(`/chat/${p.partner.id}`)}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 16-8-6 18-3-7-7-3z"/></svg>
-          Мессеж
+          {t("partner_message")}
         </button>
         <button className="btn btn-sm" onClick={() => router.push(`/users/${p.partner.username}`)}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
-          Профайл
+          {t("partner_profile")}
         </button>
       </div>
     </div>
@@ -119,11 +121,12 @@ export default function PartnersPage() {
   const remove = useRemovePartner();
   const toast = useToast();
   const router = useRouter();
+  const { t, tf } = useT();
 
   if (!isLoading && partners.length === 0 && requests.length === 0) {
     return (
       <div className="view-narrow">
-        <PageHeader eyebrow="Партнер" title="Хамтдаа хариуцлагатай яв" />
+        <PageHeader eyebrow={t("partners_eyebrow")} title={t("partners_title")} />
         <div className="card" style={{ padding: 0 }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, padding: "56px 24px", textAlign: "center", color: "var(--text-muted)" }}>
             <div style={{ position: "relative", width: 80, height: 80 }}>
@@ -140,15 +143,15 @@ export default function PartnersPage() {
             </div>
             <div>
               <div style={{ fontWeight: 600, color: "var(--text)", fontSize: 15, marginBottom: 6 }}>
-                Accountability partner алга
+                {t("no_partners_title")}
               </div>
               <div style={{ fontSize: 13, maxWidth: 320, lineHeight: 1.6 }}>
-                Найзтайгаа хосолж өдөр бүрийн дэвшлээ харилцан харж, streak-ийгээ хамт хадгалаарай.
+                {t("no_partners_hint")}
               </div>
             </div>
             <button className="btn btn-accent" onClick={() => router.push("/friends")}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Найзаас partner олох
+              {t("find_partner")}
             </button>
           </div>
         </div>
@@ -159,13 +162,13 @@ export default function PartnersPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Партнер"
-        title="Хамтдаа хариуцлагатай яв"
-        subtitle="Хамтдаа streak хадгалж, бие биенийгээ урамшуул."
+        eyebrow={t("partners_eyebrow")}
+        title={t("partners_title")}
+        subtitle={t("partners_subtitle")}
       >
         <button className="btn btn-accent" onClick={() => router.push("/friends")}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Partner нэмэх
+          {t("add_partner_btn")}
         </button>
       </PageHeader>
 
@@ -183,23 +186,23 @@ export default function PartnersPage() {
             </div>
             <div className="flex1">
               <div style={{ fontSize: 13.5, fontWeight: 500 }}>
-                <b>{requests[0].requester.displayName}</b> таны партнер болохыг хүсэж байна
+                {tf("partner_wants", requests[0].requester.displayName)}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
-                Accountability partner болохыг хүсэж байна
+                {t("partner_requests")}
               </div>
             </div>
-            <button className="btn btn-sm" onClick={() => decline.mutate(requests[0].id, { onSuccess: () => toast.show("Татгалзлаа") })}>
-              Татгалзах
+            <button className="btn btn-sm" onClick={() => decline.mutate(requests[0].id, { onSuccess: () => toast.show(t("partner_declined")) })}>
+              {t("decline")}
             </button>
             <button className="btn btn-sm btn-accent" disabled={accept.isPending}
-              onClick={() => accept.mutate(requests[0].id, { onSuccess: () => toast.show(`${requests[0].requester.displayName} partner болов!`) })}>
-              Зөвшөөрөх
+              onClick={() => accept.mutate(requests[0].id, { onSuccess: () => toast.show(tf("partner_accepted", requests[0].requester.displayName)) })}>
+              {t("accept")}
             </button>
           </div>
           {requests.length > 1 && (
             <div className="muted" style={{ fontSize: 12, marginTop: 8, paddingLeft: 48 }}>
-              + {requests.length - 1} өөр хүсэлт
+              {tf("partner_more", requests.length - 1)}
             </div>
           )}
         </div>
@@ -209,9 +212,9 @@ export default function PartnersPage() {
       {partners.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
           {[
-            { label: "Партнер", value: partners.length, icon: "🤝" },
-            { label: "Өнөөдөр дуусгасан", value: partners.filter(p => p.todayTotal > 0 && p.todayDone === p.todayTotal).length, icon: "✅" },
-            { label: "Нийт streak", value: partners.reduce((s, p) => s + p.streak, 0), icon: "🔥" },
+            { label: t("partner_summary_label"), value: partners.length, icon: "🤝" },
+            { label: t("partner_summary_done"), value: partners.filter(p => p.todayTotal > 0 && p.todayDone === p.todayTotal).length, icon: "✅" },
+            { label: t("partner_summary_streak"), value: partners.reduce((s, p) => s + p.streak, 0), icon: "🔥" },
           ].map(s => (
             <div key={s.label} className="card" style={{ padding: "14px 16px", textAlign: "center" }}>
               <div style={{ fontSize: 22, marginBottom: 4 }}>{s.icon}</div>
@@ -233,7 +236,7 @@ export default function PartnersPage() {
             <PartnerCard
               key={p.pairId}
               p={p}
-              onRemove={() => remove.mutate(p.pairId, { onSuccess: () => toast.show("Partner устгагдлаа") })}
+              onRemove={() => remove.mutate(p.pairId, { onSuccess: () => toast.show(t("partner_removed")) })}
             />
           ))}
         </div>

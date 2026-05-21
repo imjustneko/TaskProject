@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useLogin } from "@/hooks/useAuth";
+import { useT } from "@/hooks/useT";
 
 function GoogleIcon() {
   return (
@@ -42,6 +43,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
 
 export default function LoginPage() {
   const login = useLogin();
+  const { t } = useT();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [toast, setToast] = useState<string | null>(null);
@@ -141,9 +143,9 @@ export default function LoginPage() {
         overflowY: "auto",
       }}>
         <div style={{ maxWidth: 380, margin: "0 auto", width: "100%" }}>
-          <h1 style={{ fontSize: 26, marginBottom: 6 }}>Тавтай морил</h1>
+          <h1 style={{ fontSize: 26, marginBottom: 6 }}>{t("login_welcome")}</h1>
           <div className="muted" style={{ fontSize: 14, marginBottom: 28 }}>
-            Үргэлжлүүлэхийн тулд нэвтрэнэ үү.
+            {t("login_subtitle")}
           </div>
 
           {/* Error */}
@@ -155,14 +157,14 @@ export default function LoginPage() {
               border: "1px solid color-mix(in oklab, var(--status-busy) 22%, transparent)",
             }}>
               {(login.error as { response?: { data?: { message?: string } } })
-                ?.response?.data?.message ?? "Имэйл эсвэл нууц үг буруу байна"}
+                ?.response?.data?.message ?? t("login_error")}
             </div>
           )}
 
           {/* Email + password form */}
           <form onSubmit={handleSubmit} className="col gap-3">
             <div className="field">
-              <label className="field-label">Имэйл</label>
+              <label className="field-label">{t("email_label")}</label>
               <input
                 className="input"
                 type="email"
@@ -175,7 +177,7 @@ export default function LoginPage() {
             </div>
             <div className="field">
               <label className="field-label">
-                <span style={{ flex: 1 }}>Нууц үг</span>
+                <span style={{ flex: 1 }}>{t("password_label")}</span>
               </label>
               <input
                 className="input"
@@ -187,7 +189,7 @@ export default function LoginPage() {
               />
               <div style={{ fontSize: 12, color: "var(--accent)", marginTop: 4, textAlign: "right", cursor: "pointer" }}
                 onClick={() => showToast("Нууц үг сэргээх удахгүй нэмэгдэнэ — support@taskyy.app-д хандана уу")}>
-                Нууц үг мартсан уу?
+                {t("forgot_pw")}
               </div>
             </div>
 
@@ -200,9 +202,9 @@ export default function LoginPage() {
               {login.isPending ? (
                 <>
                   <svg style={{ animation: "spin 1s linear infinite" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                  Нэвтэрч байна…
+                  {t("logging_in")}
                 </>
-              ) : "Нэвтрэх"}
+              ) : t("login_btn")}
             </button>
           </form>
 
@@ -212,7 +214,7 @@ export default function LoginPage() {
             margin: "22px 0", color: "var(--text-faint)", fontSize: 12,
           }}>
             <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-            эсвэл
+            {t("or_divider")}
             <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
           </div>
 
@@ -224,7 +226,7 @@ export default function LoginPage() {
               onClick={() => showToast("Google нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.")}
             >
               <GoogleIcon />
-              Google-ээр нэвтрэх
+              {t("continue_google")}
             </button>
             <button
               className="btn btn-lg"
@@ -232,14 +234,14 @@ export default function LoginPage() {
               onClick={() => showToast("Apple нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.")}
             >
               <AppleIcon />
-              Apple-ээр нэвтрэх
+              {t("continue_apple")}
             </button>
           </div>
 
           <div style={{ textAlign: "center", marginTop: 28, fontSize: 13, color: "var(--text-muted)" }}>
-            Бүртгэл байхгүй юу?{" "}
+            {t("no_account")}{" "}
             <Link href="/register" style={{ color: "var(--accent)", fontWeight: 500 }}>
-              Бүртгүүлэх
+              {t("create_one")}
             </Link>
           </div>
         </div>

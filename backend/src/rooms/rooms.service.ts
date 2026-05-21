@@ -107,6 +107,18 @@ export class RoomsService {
     });
   }
 
+  async update(roomId: string, userId: string, dto: Partial<{ name: string; description: string | null; activityType: string | null; isPublic: boolean; imageUrl: string | null }>) {
+    const member = await this.prisma.roomMember.findUnique({
+      where: { roomId_userId: { roomId, userId } },
+    });
+    if (!member || member.role !== RoomRole.OWNER) throw new ForbiddenException('Only the owner can edit this room');
+    return this.prisma.room.update({
+      where: { id: roomId },
+      data: dto,
+      include: ROOM_INCLUDE,
+    });
+  }
+
   async delete(roomId: string, userId: string) {
     const member = await this.prisma.roomMember.findUnique({
       where: { roomId_userId: { roomId, userId } },

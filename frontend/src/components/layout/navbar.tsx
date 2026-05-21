@@ -3,24 +3,34 @@
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
+import { useLangStore } from "@/stores/langStore";
+import { useT } from "@/hooks/useT";
 import { STATUS_META } from "@/types";
 import type { StatusType } from "@/types";
-
-const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Нүүр", "/feed": "Мэдээлэл",
-  "/tasks/today": "Өнөөдөр", "/tasks/plans": "Төлөвлөгөө", "/tasks/report": "Тайлан",
-  "/friends": "Найзууд", "/partners": "Партнер", "/rooms": "Өрөөнүүд",
-  "/profile/edit": "Профайл", "/profile/labels": "Шошго",
-};
 
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const pathname = usePathname();
   const { user } = useAuthStore();
+  const { lang, toggle } = useLangStore();
+  const { t } = useT();
 
-  const title = PAGE_TITLES[pathname] ?? (
-    pathname.startsWith("/rooms/") ? "Өрөө" :
-    pathname.startsWith("/users/") ? "Профайл" : "Taskyy"
+  const titleMap: Record<string, string> = {
+    "/dashboard":      t("nav_home"),
+    "/feed":           t("nav_feed"),
+    "/tasks/today":    t("nav_today"),
+    "/tasks/plans":    t("nav_plans"),
+    "/tasks/report":   t("nav_report"),
+    "/friends":        t("nav_friends"),
+    "/partners":       t("nav_partners"),
+    "/rooms":          t("nav_rooms"),
+    "/profile/edit":   t("nav_profile"),
+    "/profile/labels": t("nav_labels"),
+  };
+
+  const title = titleMap[pathname] ?? (
+    pathname.startsWith("/rooms/") ? t("nav_rooms") :
+    pathname.startsWith("/users/") ? t("nav_profile") : "Taskyy"
   );
 
   const statusMeta = user?.status ? STATUS_META[user.status.type as StatusType] : null;
@@ -57,16 +67,27 @@ export function Navbar() {
           </svg>
           <input
             className="input"
-            placeholder="Хайх…"
+            placeholder={t("search")}
             style={{ height: 28, fontSize: 12.5, paddingLeft: 28, borderRadius: 8 }}
           />
         </div>
+
+        {/* Language toggle */}
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={toggle}
+          title={lang === "en" ? "Switch to Mongolian" : "Англи хэл рүү солих"}
+          style={{ gap: 5, fontSize: 12, fontWeight: 600, minWidth: 52, color: "var(--text-muted)" }}
+        >
+          <span style={{ fontSize: 14 }}>{lang === "en" ? "🇲🇳" : "🇺🇸"}</span>
+          {lang === "en" ? "MN" : "EN"}
+        </button>
 
         {/* Theme toggle */}
         <button
           className="btn btn-ghost btn-sm btn-icon"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          title={resolvedTheme === "dark" ? "Цайвар горим" : "Харанхуй горим"}
+          title={resolvedTheme === "dark" ? (lang === "mn" ? "Цайвар горим" : "Light mode") : (lang === "mn" ? "Харанхуй горим" : "Dark mode")}
         >
           {resolvedTheme === "dark" ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">

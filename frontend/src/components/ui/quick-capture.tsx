@@ -4,12 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useCreateTask } from "@/hooks/useTasks";
 import { useLabels } from "@/hooks/useLabels";
 import { useToast } from "./toast";
-
-const PRIORITIES = [
-  { k: "HIGH", label: "Өндөр", color: "#ef4444" },
-  { k: "MEDIUM", label: "Дунд", color: "#f59e0b" },
-  { k: "LOW", label: "Бага", color: "#22c55e" },
-] as const;
+import { useT } from "@/hooks/useT";
 
 export function QuickCapture() {
   const [open, setOpen] = useState(false);
@@ -21,7 +16,14 @@ export function QuickCapture() {
   const createTask = useCreateTask();
   const { data: labels = [] } = useLabels();
   const toast = useToast();
+  const { t } = useT();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const PRIORITIES = [
+    { k: "HIGH", label: t("priority_high"), color: "#ef4444" },
+    { k: "MEDIUM", label: t("priority_med"), color: "#f59e0b" },
+    { k: "LOW", label: t("priority_low"), color: "#22c55e" },
+  ] as const;
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
@@ -96,7 +98,7 @@ export function QuickCapture() {
               ref={inputRef}
               className="input"
               style={{ fontSize: 16, height: 44, fontWeight: 500, marginBottom: 14 }}
-              placeholder="Юу хийх вэ? (Ctrl+K)"
+              placeholder={t("qc_placeholder")}
               value={title}
               onChange={e => setTitle(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") setOpen(false); }}
@@ -141,7 +143,7 @@ export function QuickCapture() {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
                   </svg>
-                  Labels {selectedLabels.length > 0 && `(${selectedLabels.length})`}
+                  {t("qc_labels")} {selectedLabels.length > 0 && `(${selectedLabels.length})`}
                 </button>
               )}
             </div>
@@ -170,13 +172,13 @@ export function QuickCapture() {
 
             {/* Actions */}
             <div className="row gap-2" style={{ justifyContent: "flex-end" }}>
-              <button className="btn" onClick={() => setOpen(false)}>Болих</button>
+              <button className="btn" onClick={() => setOpen(false)}>{t("cancel")}</button>
               <button
                 className="btn btn-accent"
                 disabled={!title.trim() || createTask.isPending}
                 onClick={save}
               >
-                {createTask.isPending ? "Нэмж байна…" : "Нэмэх"}
+                {createTask.isPending ? t("qc_adding") : t("qc_add")}
               </button>
             </div>
           </div>

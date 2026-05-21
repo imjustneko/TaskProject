@@ -10,6 +10,7 @@ import { useSendPartnerRequest, usePartners } from "@/hooks/usePartners";
 import { useToast } from "@/components/ui/toast";
 import { useAuthStore } from "@/stores/authStore";
 import { useRouter } from "next/navigation";
+import { useT } from "@/hooks/useT";
 import api from "@/lib/api";
 import { STATUS_META } from "@/types";
 import type { StatusType, Task } from "@/types";
@@ -36,6 +37,7 @@ function UserProfile({ username }: { username: string }) {
   const router = useRouter();
   const toast = useToast();
   const { user: me } = useAuthStore();
+  const { t } = useT();
   const sendReq = useSendFriendRequest();
   const sendPartnerReq = useSendPartnerRequest();
   const { data: partners = [] } = usePartners();
@@ -54,7 +56,7 @@ function UserProfile({ username }: { username: string }) {
   if (!data) return (
     <div className="view-narrow" style={{ textAlign:"center",padding:"60px 20px",color:"var(--text-muted)" }}>
       <div style={{ fontSize:36,marginBottom:12 }}>🔍</div>
-      <div style={{ fontWeight:600,color:"var(--text)",marginBottom:6 }}>Хэрэглэгч олдсонгүй</div>
+      <div style={{ fontWeight:600,color:"var(--text)",marginBottom:6 }}>{t("not_found_title")}</div>
     </div>
   );
 
@@ -69,7 +71,7 @@ function UserProfile({ username }: { username: string }) {
       <div className="row" style={{ marginBottom: 20 }}>
         <button className="btn btn-ghost btn-sm" style={{ gap:6 }} onClick={() => router.back()}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Буцах
+          {t("back_btn")}
         </button>
       </div>
 
@@ -86,44 +88,44 @@ function UserProfile({ username }: { username: string }) {
                 <h1 style={{ fontSize:22 }}>{user.displayName}</h1>
                 {isPartner && (
                   <span style={{ fontSize:11,padding:"2px 8px",borderRadius:999,background:"rgba(99,102,241,0.12)",color:"var(--accent)",fontWeight:600 }}>
-                    🤝 Партнер
+                    {t("partner_chip")}
                   </span>
                 )}
               </div>
-              <div className="muted" style={{ fontSize:13 }}>@{user.username} · Элссэн {joinedDate}</div>
+              <div className="muted" style={{ fontSize:13 }}>@{user.username} · {t("member_since")} {joinedDate}</div>
             </div>
             {!isMe && (
               <div className="row gap-2" style={{ paddingBottom:4,flexWrap:"wrap" }}>
                 <button className="btn btn-sm" onClick={() => router.push(`/chat/${user.id}`)}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 16-8-6 18-3-7-7-3z"/></svg>
-                  Мессеж
+                  {t("partner_message")}
                 </button>
                 <button
                   className="btn btn-sm btn-primary"
                   onClick={() => sendReq.mutate(user.id, {
-                    onSuccess: () => toast.show("Найзын хүсэлт илгээв!"),
+                    onSuccess: () => toast.show(t("friend_req_sent")),
                     onError: (e: unknown) => {
                       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-                      toast.show(typeof msg === "string" ? msg : "Хүсэлт илгээж чадсангүй", "error");
+                      toast.show(typeof msg === "string" ? msg : t("req_failed"), "error");
                     },
                   })}
                   disabled={sendReq.isPending}
                 >
-                  + Найз нэмэх
+                  {t("add_friend_btn")}
                 </button>
                 {!isPartner && (
                   <button
                     className="btn btn-sm"
                     onClick={() => sendPartnerReq.mutate(user.id, {
-                      onSuccess: () => toast.show(`${user.displayName}-д partner хүсэлт илгээв!`),
+                      onSuccess: () => toast.show(t("friend_req_sent")),
                       onError: (e: unknown) => {
                         const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-                        toast.show(typeof msg === "string" ? msg : "Хүсэлт илгээж чадсангүй", "error");
+                        toast.show(typeof msg === "string" ? msg : t("req_failed"), "error");
                       },
                     })}
                     disabled={sendPartnerReq.isPending}
                   >
-                    🤝 Партнер
+                    {t("partner_chip")}
                   </button>
                 )}
               </div>
@@ -150,10 +152,10 @@ function UserProfile({ username }: { username: string }) {
       {/* Stats row */}
       <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20 }}>
         {[
-          { icon:"✅", value:completedCount, label:"Дуусгасан" },
-          { icon:"🔥", value:streak, label:"Streak" },
-          { icon:"📋", value:publicTasks.length, label:"Нийтийн таск" },
-          { icon:"📅", value:joinedDate, label:"Гишүүн болсон" },
+          { icon:"✅", value:completedCount, label:t("completed_label") },
+          { icon:"🔥", value:streak, label:t("streak_label") },
+          { icon:"📋", value:publicTasks.length, label:t("public_tasks") },
+          { icon:"📅", value:joinedDate, label:t("member_since") },
         ].map(s => (
           <div key={s.label} className="card" style={{ textAlign:"center",padding:"14px 8px" }}>
             <div style={{ fontSize:20,marginBottom:4 }}>{s.icon}</div>
@@ -173,8 +175,8 @@ function UserProfile({ username }: { username: string }) {
         }}>
           <div style={{ fontSize:28 }}>🔥</div>
           <div>
-            <div style={{ fontWeight:700,color:"#f97316" }}>{streak} өдрийн streak!</div>
-            <div style={{ fontSize:12.5,color:"var(--text-muted)" }}>Дараалсан өдрүүдэд таск дуусгасан</div>
+            <div style={{ fontWeight:700,color:"#f97316" }}>{streak} {t("streak_days")}!</div>
+            <div style={{ fontSize:12.5,color:"var(--text-muted)" }}>{t("streak_active")}</div>
           </div>
         </div>
       )}
@@ -182,7 +184,7 @@ function UserProfile({ username }: { username: string }) {
       {/* Public tasks */}
       <div className="card">
         <div className="card-hd">
-          <h3>Нийтийн таскууд</h3>
+          <h3>{t("public_tasks")}</h3>
           <span className="muted" style={{ fontSize:12 }}>{publicTasks.length}</span>
         </div>
         {publicTasks.length === 0 ? (
@@ -190,22 +192,23 @@ function UserProfile({ username }: { username: string }) {
             <div style={{ width:40,height:40,borderRadius:10,display:"grid",placeItems:"center",background:"var(--bg-subtle)" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
-            <div style={{ fontWeight:600,color:"var(--text)" }}>Нийтийн таск байхгүй</div>
+            <div style={{ fontWeight:600,color:"var(--text)" }}>{t("nothing_public")}</div>
+            <div style={{ fontSize:12,color:"var(--text-muted)",textAlign:"center",maxWidth:260 }}>{t("nothing_public_hint")}</div>
           </div>
         ) : (
           <div className="col">
-            {publicTasks.map(t => (
-              <div key={t.id} className={"list-row"+(t.isCompleted?" is-done":"")} style={{ gap:10 }}>
+            {publicTasks.map(tk => (
+              <div key={tk.id} className={"list-row"+(tk.isCompleted?" is-done":"")} style={{ gap:10 }}>
                 <div style={{
                   width:16,height:16,borderRadius:"50%",flexShrink:0,
-                  background:t.isCompleted?"var(--accent)":"var(--bg-elevated)",
-                  border:`1.5px solid ${t.isCompleted?"var(--accent)":"var(--border-strong)"}`,
+                  background:tk.isCompleted?"var(--accent)":"var(--bg-elevated)",
+                  border:`1.5px solid ${tk.isCompleted?"var(--accent)":"var(--border-strong)"}`,
                   display:"grid",placeItems:"center",
                 }}>
-                  {t.isCompleted&&<svg width="9" height="9" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.2 5.8 10 11 4.2"/></svg>}
+                  {tk.isCompleted&&<svg width="9" height="9" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.2 5.8 10 11 4.2"/></svg>}
                 </div>
-                <div className="flex1" style={{ fontSize:13.5,fontWeight:500,color:"var(--text)" }}>{t.title}</div>
-                {t.labels?.map(tl => (
+                <div className="flex1" style={{ fontSize:13.5,fontWeight:500,color:"var(--text)" }}>{tk.title}</div>
+                {tk.labels?.map(tl => (
                   <span key={tl.label.id} style={{
                     fontSize:11,padding:"1px 7px",borderRadius:20,fontWeight:500,
                     color:tl.label.color,background:`${tl.label.color}18`,
@@ -214,7 +217,7 @@ function UserProfile({ username }: { username: string }) {
                     {tl.label.name}
                   </span>
                 ))}
-                {t.isCompleted && <span style={{ fontSize:11,color:"#16a34a",flexShrink:0 }}>✓</span>}
+                {tk.isCompleted && <span style={{ fontSize:11,color:"#16a34a",flexShrink:0 }}>✓</span>}
               </div>
             ))}
           </div>

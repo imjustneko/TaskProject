@@ -5,10 +5,11 @@ import { usePlansTasks, useToggleTask, useDeleteTask, useCreateTask } from "@/ho
 import { useToast } from "@/components/ui/toast";
 import { PageHeader } from "@/components/ui/page-header";
 import { TaskRow } from "@/components/ui/task-row";
+import { useT } from "@/hooks/useT";
 import { formatDate } from "@/lib/utils";
 import type { Task } from "@/types";
 
-function groupByDate(tasks: Task[]): { label: string; tasks: Task[] }[] {
+function groupByDate(tasks: Task[], someday: string): { label: string; tasks: Task[] }[] {
   const groups: Record<string, Task[]> = {};
   const noDate: Task[] = [];
 
@@ -27,7 +28,7 @@ function groupByDate(tasks: Task[]): { label: string; tasks: Task[] }[] {
       tasks,
     }));
 
-  if (noDate.length > 0) sorted.push({ label: "Нэгэн өдөр", tasks: noDate });
+  if (noDate.length > 0) sorted.push({ label: someday, tasks: noDate });
   return sorted;
 }
 
@@ -35,6 +36,7 @@ function CreatePlanModal({ open, onClose, onCreate }: {
   open: boolean; onClose: () => void;
   onCreate: (d: { title: string; date?: string; priority?: string }) => void;
 }) {
+  const { t } = useT();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [priority, setPriority] = useState("MEDIUM");
@@ -51,25 +53,25 @@ function CreatePlanModal({ open, onClose, onCreate }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>Шинэ төлөвлөгөө</h2>
+          <h2>{t("new_plan_title")}</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>
         <div className="col gap-4">
           <input className="input" style={{ fontSize: 15, height: 40, fontWeight: 500 }}
-            placeholder="Юу төлөвлөж байна вэ?" autoFocus value={title}
+            placeholder={t("planning_placeholder")} autoFocus value={title}
             onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === "Enter" && save()} />
           <div className="grid-2">
             <div className="field">
-              <label className="field-label">Огноо</label>
+              <label className="field-label">{t("date_label")}</label>
               <input className="input" type="date" value={date} onChange={e => setDate(e.target.value)}
                 min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)} />
             </div>
             <div className="field">
-              <label className="field-label">Чухлын зэрэг</label>
+              <label className="field-label">{t("priority_label")}</label>
               <div className="row gap-2">
-                {[{ k: "HIGH", l: "Өндөр" }, { k: "MEDIUM", l: "Дунд" }, { k: "LOW", l: "Бага" }].map(p => (
+                {[{ k: "HIGH", l: t("priority_high") }, { k: "MEDIUM", l: t("priority_med") }, { k: "LOW", l: t("priority_low") }].map(p => (
                   <button key={p.k} className="btn btn-sm" onClick={() => setPriority(p.k)} style={{
                     flex: 1,
                     borderColor: priority === p.k ? "var(--accent)" : "var(--border-strong)",
@@ -81,10 +83,10 @@ function CreatePlanModal({ open, onClose, onCreate }: {
             </div>
           </div>
           <div className="row" style={{ justifyContent: "flex-end", gap: 8 }}>
-            <button className="btn" onClick={onClose}>Болих</button>
+            <button className="btn" onClick={onClose}>{t("cancel")}</button>
             <button className="btn btn-accent" onClick={save} disabled={!title.trim()}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
-              Нэмэх
+              {t("add_plan_btn")}
             </button>
           </div>
         </div>
@@ -96,6 +98,7 @@ function CreatePlanModal({ open, onClose, onCreate }: {
 export default function PlansPage() {
   const { data: tasks = [], isLoading } = usePlansTasks();
   const toast = useToast();
+  const { t } = useT();
   const toggle = useToggleTask((task: Task) => {
     toast.show(`"${task.title}" дууссан!`);
   });
@@ -103,20 +106,20 @@ export default function PlansPage() {
   const create = useCreateTask();
   const [showModal, setShowModal] = useState(false);
 
-  const groups = groupByDate(tasks);
+  const groups = groupByDate(tasks, t("someday"));
   const total = tasks.length;
-  const done = tasks.filter(t => t.isCompleted).length;
+  const done = tasks.filter(tk => tk.isCompleted).length;
 
   return (
     <div className="view-narrow">
       <PageHeader
-        eyebrow="Төлөвлөгөө"
-        title="Ирэх"
-        subtitle={`${total - done} таск төлөвлөсөн`}
+        eyebrow={t("plans_eyebrow")}
+        title={t("plans_title")}
+        subtitle={t("plans_subtitle")}
       >
         <button className="btn btn-accent" onClick={() => setShowModal(true)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Шинэ төлөвлөгөө
+          {t("new_plan_title")}
         </button>
       </PageHeader>
 
@@ -127,9 +130,9 @@ export default function PlansPage() {
       ) : groups.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "60px 20px", color: "var(--text-muted)" }}>
           <div style={{ width: 52, height: 52, borderRadius: 14, display: "grid", placeItems: "center", background: "var(--bg-subtle)", fontSize: 24 }}>📅</div>
-          <div style={{ fontWeight: 600, color: "var(--text)" }}>Төлөвлөгөө байхгүй</div>
-          <div style={{ fontSize: 13, textAlign: "center", maxWidth: 280 }}>Маргааш, ирэх долоо хоног, эсвэл нэгэн өдрийн таск нэмнэ үү.</div>
-          <button className="btn btn-accent btn-sm" style={{ marginTop: 4 }} onClick={() => setShowModal(true)}>Эхний төлөвлөгөө нэмэх</button>
+          <div style={{ fontWeight: 600, color: "var(--text)" }}>{t("no_plans_title")}</div>
+          <div style={{ fontSize: 13, textAlign: "center", maxWidth: 280 }}>{t("no_plans_hint")}</div>
+          <button className="btn btn-accent btn-sm" style={{ marginTop: 4 }} onClick={() => setShowModal(true)}>{t("add_first_plan")}</button>
         </div>
       ) : (
         <div className="col gap-6">
@@ -140,8 +143,8 @@ export default function PlansPage() {
                 <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>{gTasks.length}</span>
               </div>
               <div className="list">
-                {gTasks.map(t => (
-                  <TaskRow key={t.id} task={t}
+                {gTasks.map(tk => (
+                  <TaskRow key={tk.id} task={tk}
                     onToggle={id => toggle.mutate(id)}
                     onDelete={id => remove.mutate(id)}
                     showDate showStatus />

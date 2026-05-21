@@ -1,8 +1,17 @@
 import {
-  Controller, Get, Post, Delete, Param, Body,
+  Controller, Get, Post, Patch, Delete, Param, Body,
   UseGuards, Request, HttpCode, HttpStatus,
   UploadedFile, UseInterceptors, BadRequestException,
 } from '@nestjs/common';
+import { IsOptional, IsString, IsBoolean, MaxLength } from 'class-validator';
+
+class UpdateRoomDto {
+  @IsOptional() @IsString() @MaxLength(80) name?: string;
+  @IsOptional() @IsString() @MaxLength(300) description?: string;
+  @IsOptional() @IsString() activityType?: string;
+  @IsOptional() @IsBoolean() isPublic?: boolean;
+  @IsOptional() @IsString() imageUrl?: string;
+}
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -37,6 +46,11 @@ export class RoomsController {
   @Get(':id')
   findOne(@Request() req: AuthRequest, @Param('id') id: string) {
     return this.rooms.getRoom(id, req.user.id);
+  }
+
+  @Patch(':id')
+  update(@Request() req: AuthRequest, @Param('id') id: string, @Body() dto: UpdateRoomDto) {
+    return this.rooms.update(id, req.user.id, dto);
   }
 
   @Post(':id/join')

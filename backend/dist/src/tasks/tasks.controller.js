@@ -26,8 +26,8 @@ let TasksController = class TasksController {
     create(req, dto) {
         return this.tasks.create(req.user.id, dto);
     }
-    today(req) {
-        return this.tasks.findToday(req.user.id);
+    today(req, all) {
+        return this.tasks.findToday(req.user.id, all === 'true');
     }
     plans(req) {
         return this.tasks.findPlans(req.user.id);
@@ -78,8 +78,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('today'),
     __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('all')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], TasksController.prototype, "today", null);
 __decorate([

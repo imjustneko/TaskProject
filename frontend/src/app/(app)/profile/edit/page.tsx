@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/ui/page-header";
 import { useToast } from "@/components/ui/toast";
+import { useT } from "@/hooks/useT";
 import api from "@/lib/api";
 import type { StatusType } from "@/types";
 import { STATUS_META } from "@/types";
@@ -33,6 +34,7 @@ function Toggle({ value }: { value: boolean }) {
 export default function ProfileEditPage() {
   const { user, updateUser } = useAuthStore();
   const toast = useToast();
+  const { t } = useT();
   const [name, setName] = useState(user?.displayName ?? "");
   const [bio, setBio] = useState(user?.bio ?? "");
   const [dirty, setDirty] = useState(false);
@@ -92,7 +94,7 @@ export default function ProfileEditPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="Та" title="Профайл" subtitle="Найзуудад хэрхэн харагдахыг тохируул." />
+      <PageHeader eyebrow={t("profile_eyebrow")} title={t("profile_title")} subtitle={t("profile_subtitle")} />
 
       <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
 
@@ -128,7 +130,7 @@ export default function ProfileEditPage() {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/>
                     </svg>
-                    <div style={{ fontSize: 11, fontWeight: 600 }}>Солих</div>
+                    <div style={{ fontSize: 11, fontWeight: 600 }}>{t("change_photo")}</div>
                   </>
                 )}
               </div>
@@ -140,12 +142,12 @@ export default function ProfileEditPage() {
             <div className="row gap-2" style={{ justifyContent: "center" }}>
               <button className="btn btn-ghost btn-sm" onClick={() => fileInputRef.current?.click()} disabled={uploadAvatar.isPending}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>
-                Оруулах
+                {t("upload_photo")}
               </button>
               {avatarUrl && (
                 <button className="btn btn-ghost btn-sm" style={{ color: "var(--status-busy)" }}
                   onClick={() => removeAvatar.mutate()} disabled={removeAvatar.isPending}>
-                  Устгах
+                  {t("remove_photo")}
                 </button>
               )}
             </div>
@@ -153,7 +155,7 @@ export default function ProfileEditPage() {
             <div style={{ marginTop: 18, paddingTop: 14, borderTop: "1px solid var(--border)", fontSize: 12, color: "var(--text-muted)" }}>
               <div className="row gap-2" style={{ justifyContent: "center" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>
-                Элссэн {new Date(user?.createdAt ?? Date.now()).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+                {t("joined_date")} {new Date(user?.createdAt ?? Date.now()).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
               </div>
             </div>
           </div>
@@ -161,7 +163,7 @@ export default function ProfileEditPage() {
           {/* Status card */}
           <div className="card" style={{ padding: 18 }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 10 }}>
-              Одоогийн статус
+              {t("current_status")}
             </div>
             <div style={{
               padding: 12, borderRadius: 10, background: "var(--bg-subtle)",
@@ -173,7 +175,7 @@ export default function ProfileEditPage() {
               </div>
               <div className="flex1" style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600 }} className="truncate">
-                  {customText || (activeStatus ? STATUS_META[activeStatus]?.label : "Статус байхгүй")}
+                  {customText || (activeStatus ? STATUS_META[activeStatus]?.label : t("no_status"))}
                 </div>
                 <div className="muted" style={{ fontSize: 11.5 }}>
                   {user?.status?.presence ? user.status.presence.toLowerCase() : "offline"}
@@ -199,18 +201,18 @@ export default function ProfileEditPage() {
 
             <div className="row gap-2" style={{ marginBottom: 8 }}>
               <input className="input" style={{ fontSize: 12.5 }}
-                placeholder="Өөрийн статус бичих…"
+                placeholder={t("status_custom_placeholder")}
                 value={customText}
                 onFocus={() => setActiveStatus("CUSTOM")}
                 onChange={e => setCustomText(e.target.value)}
               />
-              <button className="btn btn-sm btn-accent" onClick={() => setStatusMutation.mutate("CUSTOM")} disabled={!customText.trim()}>Тохируулах</button>
+              <button className="btn btn-sm btn-accent" onClick={() => setStatusMutation.mutate("CUSTOM")} disabled={!customText.trim()}>{t("status_set")}</button>
             </div>
 
             {activeStatus && (
               <button className="btn btn-ghost btn-sm" style={{ width: "100%", color: "var(--status-busy)" }}
                 onClick={() => clearStatus.mutate()}>
-                Статус арилгах
+                {t("status_clear")}
               </button>
             )}
           </div>
@@ -219,21 +221,21 @@ export default function ProfileEditPage() {
         {/* ── RIGHT — form cards ── */}
         <div className="col gap-4">
           <div className="card">
-            <div className="card-hd"><h3>Нийтийн мэдээлэл</h3></div>
+            <div className="card-hd"><h3>{t("public_details")}</h3></div>
             <div className="col gap-4">
               <div className="grid-2">
                 <div className="field">
-                  <label className="field-label">Харагдах нэр</label>
+                  <label className="field-label">{t("display_name")}</label>
                   <input className="input" value={name}
                     onChange={e => { setName(e.target.value); setDirty(true); }} />
                 </div>
                 <div className="field">
-                  <label className="field-label">Хэрэглэгчийн нэр</label>
+                  <label className="field-label">{t("handle_label")}</label>
                   <input className="input" value={"@" + (user?.username ?? "")} disabled style={{ opacity: 0.55 }} />
                 </div>
               </div>
               <div className="field">
-                <label className="field-label">Танилцуулга</label>
+                <label className="field-label">{t("bio_label")}</label>
                 <textarea className="textarea" value={bio} maxLength={160}
                   onChange={e => { setBio(e.target.value); setDirty(true); }} />
                 <div className="muted mono" style={{ fontSize: 11, textAlign: "right" }}>{bio.length}/160</div>
@@ -243,15 +245,15 @@ export default function ProfileEditPage() {
 
           <div className="card">
             <div className="card-hd">
-              <h3>Нууцлал</h3>
-              <span className="muted" style={{ fontSize: 12 }}>Найзууд юу харахыг удирдах</span>
+              <h3>{t("privacy_title")}</h3>
+              <span className="muted" style={{ fontSize: 12 }}>{t("privacy_hint")}</span>
             </div>
             <div className="col">
               {[
-                { k: "status",  label: "Шууд статус харуулах",     val: true,  hint: "Найзууд одоо юу хийж байгааг харж болно." },
-                { k: "tasks",   label: "Нийтийн таскуудаа хуваалцах", val: true,  hint: "Нийтийн гэж тэмдэглэсэн таскууд профайл дээр харагдана." },
-                { k: "photos",  label: "Өдрийн дурсамж зураг",      val: false, hint: "Таскад хавсаргасан зургууд идэвхжүүлэхгүй бол хувийн хэвээр байна." },
-                { k: "online",  label: "Онлайн тэмдэг харуулах",    val: true,  hint: "Идэвхтэй үед таны аватар дэргэд ногоон цэг харагдана." },
+                { k: "status",  label: t("show_status"),  val: true,  hint: t("show_status_hint") },
+                { k: "tasks",   label: t("share_tasks"),  val: true,  hint: t("share_tasks_hint") },
+                { k: "photos",  label: t("show_photos"),  val: false, hint: t("show_photos_hint") },
+                { k: "online",  label: t("show_online"),  val: true,  hint: t("show_online_hint") },
               ].map((p, i, arr) => (
                 <div key={p.k} className="row gap-4" style={{
                   padding: "14px 0",
@@ -268,13 +270,13 @@ export default function ProfileEditPage() {
           </div>
 
           <div className="card">
-            <div className="card-hd"><h3>Аюултай</h3></div>
+            <div className="card-hd"><h3>{t("danger_zone")}</h3></div>
             <div className="row gap-4">
               <div className="flex1">
-                <div style={{ fontSize: 13.5, fontWeight: 500, marginBottom: 2 }}>Бүртгэл устгах</div>
-                <div className="muted" style={{ fontSize: 12, lineHeight: 1.45 }}>Бүртгэл болон бүх өгөгдлийг бүрмөсөн устгана. Буцаах боломжгүй.</div>
+                <div style={{ fontSize: 13.5, fontWeight: 500, marginBottom: 2 }}>{t("delete_account")}</div>
+                <div className="muted" style={{ fontSize: 12, lineHeight: 1.45 }}>{t("delete_account_hint")}</div>
               </div>
-              <button className="btn btn-sm" style={{ color: "var(--status-busy)", borderColor: "rgba(255,69,58,0.3)", flexShrink: 0 }}>Устгах…</button>
+              <button className="btn btn-sm" style={{ color: "var(--status-busy)", borderColor: "rgba(255,69,58,0.3)", flexShrink: 0 }}>{t("delete_btn")}</button>
             </div>
           </div>
         </div>
@@ -290,13 +292,13 @@ export default function ProfileEditPage() {
           boxShadow: "var(--shadow-3)",
           animation: "slide-up 200ms var(--ease-out)",
         }}>
-          <span className="muted" style={{ fontSize: 12.5, flex: 1 }}>Хадгалаагүй өөрчлөлт байна</span>
+          <span className="muted" style={{ fontSize: 12.5, flex: 1 }}>{t("unsaved_changes")}</span>
           <button className="btn" onClick={() => { setName(user?.displayName ?? ""); setBio(user?.bio ?? ""); setDirty(false); }}>
-            Буцаах
+            {t("discard")}
           </button>
           <button className="btn btn-accent" onClick={() => updateProfile.mutate({ displayName: name, bio })}
             disabled={updateProfile.isPending}>
-            {updateProfile.isPending ? "Хадгалж байна…" : "Хадгалах"}
+            {updateProfile.isPending ? t("saving") : t("save")}
           </button>
         </div>
       )}

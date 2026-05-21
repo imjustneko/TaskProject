@@ -8,21 +8,10 @@ import { useAuthStore } from "@/stores/authStore";
 import { Avatar, presenceToDot } from "@/components/ui/avatar";
 import { useUserEmojis } from "@/hooks/useUserEmojis";
 import { useMyRooms } from "@/hooks/useRooms";
+import { useT } from "@/hooks/useT";
 import api from "@/lib/api";
 import type { StatusType, PresenceType } from "@/types";
 import { STATUS_META } from "@/types";
-
-const navMain = [
-  { href: "/dashboard",      label: "Нүүр",          icon: "home" },
-  { href: "/feed",           label: "Мэдээлэл",      icon: "globe" },
-  { href: "/tasks/today",    label: "Өнөөдөр",       icon: "sun" },
-  { href: "/tasks/plans",    label: "Төлөвлөгөө",    icon: "calendar" },
-  { href: "/tasks/report",   label: "Тайлан",        icon: "chart" },
-  { href: "/friends",        label: "Найзууд",       icon: "users" },
-  { href: "/partners",       label: "Партнер",       icon: "handshake" },
-  { href: "/profile/edit",   label: "Профайл",       icon: "edit" },
-  { href: "/profile/labels", label: "Шошго",         icon: "tag" },
-];
 
 const STATUS_LIST: StatusType[] = ["PLAYING","COOKING","WALKING","STUDYING","READING","WORKING"];
 
@@ -48,18 +37,12 @@ function SvgIcon({ name, size = 15 }: { name: string; size?: number }) {
   }
 }
 
-const PRESENCE_OPTIONS: { value: PresenceType; label: string; dot: string; color: string; desc: string }[] = [
-  { value: "ONLINE",    label: "Онлайн",           dot: "online",    color: "#34c759", desc: "Бусдад онлайн харагдана" },
-  { value: "IDLE",      label: "Идэвхгүй",         dot: "idle",      color: "#ffb340", desc: "Идэвхгүй байгаа мэт" },
-  { value: "DND",       label: "Бүү саа",           dot: "dnd",      color: "#ff453a", desc: "Мэдэгдэл хааж байна" },
-  { value: "INVISIBLE", label: "Үл үзэгдэх",       dot: "invisible", color: "#8a8a90", desc: "Оффлайн мэт харагдана" },
-];
-
 function StatusModal({ onClose, currentStatus, currentPresence }: {
   onClose: () => void;
   currentStatus?: StatusType | null;
   currentPresence?: PresenceType | null;
 }) {
+  const { t } = useT();
   const { updateUser } = useAuthStore();
   const [picked, setPicked] = useState<StatusType | null>(currentStatus ?? null);
   const [presence, setPresence] = useState<PresenceType>(currentPresence ?? "ONLINE");
@@ -67,6 +50,13 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
   const [showEmojis, setShowEmojis] = useState(false);
   const { data: myEmojis = [] } = useUserEmojis();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const PRESENCE_OPTIONS: { value: PresenceType; label: string; dot: string; color: string; desc: string }[] = [
+    { value: "ONLINE",    label: t("presence_online"),    dot: "online",    color: "#34c759", desc: t("presence_online_d") },
+    { value: "IDLE",      label: t("presence_idle"),      dot: "idle",      color: "#ffb340", desc: t("presence_idle_d") },
+    { value: "DND",       label: t("presence_dnd"),       dot: "dnd",       color: "#ff453a", desc: t("presence_dnd_d") },
+    { value: "INVISIBLE", label: t("presence_invisible"), dot: "invisible", color: "#8a8a90", desc: t("presence_inv_d") },
+  ];
 
   const setStatus = useMutation({
     mutationFn: (type: StatusType) =>
@@ -95,14 +85,14 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" style={{ width: 460 }} onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>Статус тохируулах</h2>
+          <h2>{t("status_modal_title")}</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}><SvgIcon name="x" size={15} /></button>
         </div>
 
         {/* ── Presence section ── */}
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
-            Холболтын байдал
+            {t("presence_section")}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
             {PRESENCE_OPTIONS.map(p => (
@@ -135,7 +125,7 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
         {/* ── Activity section ── */}
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
-            Үйл ажиллагаа
+            {t("activity_section")}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 10 }}>
             {STATUS_LIST.map((s) => {
@@ -159,7 +149,7 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
               <input
                 ref={inputRef}
                 className="input"
-                placeholder="Өөрийн статус бичих… (:emoji_name: ашиглаж болно)"
+                placeholder={t("status_custom_placeholder")}
                 value={custom}
                 onChange={e => setCustom(e.target.value)}
                 onFocus={() => setPicked("CUSTOM" as StatusType)}
@@ -200,17 +190,17 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
         <div className="row" style={{ justifyContent: "space-between" }}>
           <button className="btn btn-ghost btn-sm" style={{ color: "var(--status-busy)" }}
             onClick={() => clearStatus.mutate()} disabled={clearStatus.isPending}>
-            Статус арилгах
+            {t("status_clear")}
           </button>
           <div className="row gap-2">
-            <button className="btn" onClick={onClose}>Болих</button>
+            <button className="btn" onClick={onClose}>{t("cancel")}</button>
             <button
               className="btn btn-accent"
               disabled={!picked || setStatus.isPending}
               onClick={() => picked && setStatus.mutate(picked)}
             >
               <SvgIcon name="sparkle" size={14} />
-              {setStatus.isPending ? "Хадгалж байна…" : "Тохируулах"}
+              {setStatus.isPending ? t("status_setting") : t("status_set")}
             </button>
           </div>
         </div>
@@ -228,8 +218,21 @@ export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const { t } = useT();
   const [statusOpen, setStatusOpen] = useState(false);
   const { data: rooms = [] } = useMyRooms();
+
+  const navMain = [
+    { href: "/dashboard",      label: t("nav_home"),     icon: "home" },
+    { href: "/feed",           label: t("nav_feed"),     icon: "globe" },
+    { href: "/tasks/today",    label: t("nav_today"),    icon: "sun" },
+    { href: "/tasks/plans",    label: t("nav_plans"),    icon: "calendar" },
+    { href: "/tasks/report",   label: t("nav_report"),   icon: "chart" },
+    { href: "/friends",        label: t("nav_friends"),  icon: "users" },
+    { href: "/partners",       label: t("nav_partners"), icon: "handshake" },
+    { href: "/profile/edit",   label: t("nav_profile"),  icon: "edit" },
+    { href: "/profile/labels", label: t("nav_labels"),   icon: "tag" },
+  ];
 
   const handleLogout = () => { logout(); router.push("/login"); };
 
@@ -239,14 +242,21 @@ export function Sidebar() {
     status: { presence: user.status?.presence ?? (user.status ? "ONLINE" : undefined) },
   } : null;
 
-  const presenceOpt = PRESENCE_OPTIONS.find(p => p.value === (user?.status?.presence ?? "ONLINE"));
+  const PRESENCE_OPTIONS_FOR_LABEL: { value: string; label: string }[] = [
+    { value: "ONLINE",    label: t("presence_online") },
+    { value: "IDLE",      label: t("presence_idle") },
+    { value: "DND",       label: t("presence_dnd") },
+    { value: "INVISIBLE", label: t("presence_invisible") },
+  ];
+
+  const presenceOpt = PRESENCE_OPTIONS_FOR_LABEL.find(p => p.value === (user?.status?.presence ?? "ONLINE"));
 
   const statusLabel = (() => {
     if (!user?.status) return "@" + (user?.username ?? "");
     const meta = STATUS_META[user.status.type as StatusType];
     const label = user.status.customText ?? meta?.label ?? user.status.type;
     const emoji = meta?.emoji ?? "";
-    return `${emoji} ${label} · ${presenceOpt?.label ?? "Онлайн"}`.trim();
+    return `${emoji} ${label} · ${presenceOpt?.label ?? t("presence_online")}`.trim();
   })();
 
   return (
@@ -263,13 +273,13 @@ export function Sidebar() {
           style={{ margin: "2px 2px 14px", justifyContent: "flex-start", height: 30, paddingLeft: 10, display: "flex", gap: 7 }}
         >
           <SvgIcon name="plus" size={13} />
-          Шинэ таск
+          {t("new_task")}
           <span style={{ marginLeft: "auto" }}>
             <span className="kbd" style={{ background: "rgba(255,255,255,0.16)", borderColor: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.82)", fontSize: 10 }}>N</span>
           </span>
         </Link>
 
-        <div className="side-section">Хувийн</div>
+        <div className="side-section">{t("nav_personal")}</div>
         {navMain.map((n) => {
           const active = pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href));
           return (
@@ -281,7 +291,7 @@ export function Sidebar() {
         })}
 
         <div className="side-section" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span>Өрөөнүүд</span>
+          <span>{t("nav_rooms")}</span>
           <Link href="/rooms" style={{ display: "flex", color: "var(--text-faint)", padding: 2 }}>
             <SvgIcon name="plus" size={12} />
           </Link>
@@ -289,7 +299,7 @@ export function Sidebar() {
         {rooms.length === 0 ? (
           <Link href="/rooms" className="side-link" data-active={pathname === "/rooms" ? "1" : "0"}>
             <SvgIcon name="hash" size={14} />
-            <span className="truncate">Өрөөнүүд харах</span>
+            <span className="truncate">{t("browse_rooms")}</span>
           </Link>
         ) : (
           rooms.slice(0, 6).map(room => {
@@ -318,7 +328,7 @@ export function Sidebar() {
             className="side-me"
             onClick={() => setStatusOpen(true)}
             style={{ cursor: "default" }}
-            title="Статус шинэчлэхийн тулд дарна уу"
+            title={t("status_modal_title")}
           >
             <Avatar user={userForAvatar} size={30} status onBg="subtle" />
             <div className="flex1 truncate">
@@ -333,7 +343,7 @@ export function Sidebar() {
             style={{ width: "100%", marginTop: 4, justifyContent: "flex-start", color: "var(--text-muted)", gap: 8, paddingLeft: 8 }}
           >
             <SvgIcon name="logout" size={14} />
-            Гарах
+            {t("sign_out")}
           </button>
         </div>
       </aside>

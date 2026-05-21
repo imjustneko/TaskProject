@@ -22,8 +22,8 @@ export class TasksController {
   }
 
   @Get('today')
-  today(@Request() req: AuthRequest) {
-    return this.tasks.findToday(req.user.id);
+  today(@Request() req: AuthRequest, @Query('all') all?: string) {
+    return this.tasks.findToday(req.user.id, all === 'true');
   }
 
   @Get('plans')

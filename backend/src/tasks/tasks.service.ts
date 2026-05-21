@@ -28,12 +28,12 @@ export class TasksService {
     });
   }
 
-  async findToday(userId: string) {
+  async findToday(userId: string, includeCompleted = false) {
     const now = new Date();
     return this.prisma.task.findMany({
       where: {
         userId,
-        isCompleted: false,
+        ...(includeCompleted ? {} : { isCompleted: false }),
         OR: [
           { date: null },
           { date: { gte: startOfDay(now), lte: endOfDay(now) } },

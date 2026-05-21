@@ -4,6 +4,7 @@ import { useConversations } from "@/hooks/useMessages";
 import { useFriends } from "@/hooks/useFriends";
 import { Avatar } from "@/components/ui/avatar";
 import { useAuthStore } from "@/stores/authStore";
+import { useT } from "@/hooks/useT";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import type { User } from "@/types";
@@ -12,6 +13,7 @@ export default function ChatPage() {
   const { data: convos = [] } = useConversations();
   const { data: friends = [] } = useFriends();
   const { user: me } = useAuthStore();
+  const { t } = useT();
 
   const friendsMap = new Map<string, User>(friends.map(f => [f.id, f]));
 
@@ -20,7 +22,7 @@ export default function ChatPage() {
       {/* Left: conversation list */}
       <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", fontWeight: 600, fontSize: 14 }}>
-          Мессежүүд
+          {t("messages_title")}
         </div>
 
         <div style={{ flex: 1, overflowY: "auto" }}>
@@ -57,7 +59,7 @@ export default function ChatPage() {
           {friends.length > 0 && (
             <div>
               <div style={{ padding: "8px 14px 4px", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-faint)" }}>
-                Найзууд
+                {t("friends_section")}
               </div>
               {friends.map(f => (
                 <Link key={f.id} href={`/chat/${f.id}`} style={{
@@ -78,7 +80,7 @@ export default function ChatPage() {
           {friends.length === 0 && convos.length === 0 && (
             <div style={{ padding: "40px 20px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
               <div style={{ fontSize: 28, marginBottom: 10 }}>💬</div>
-              Мессеж бичихийн тулд найз нэмнэ үү
+              {t("no_chat_friends")}
             </div>
           )}
         </div>
@@ -91,8 +93,8 @@ export default function ChatPage() {
         color: "var(--text-muted)", gap: 10,
       }}>
         <div style={{ fontSize: 36 }}>💬</div>
-        <div style={{ fontWeight: 600, color: "var(--text)" }}>Яриа сонгох</div>
-        <div style={{ fontSize: 13 }}>Чат эхлүүлэхийн тулд жагсаалтаас найзаа сонгоно уу.</div>
+        <div style={{ fontWeight: 600, color: "var(--text)" }}>{t("select_chat")}</div>
+        <div style={{ fontSize: 13 }}>{t("select_chat_hint")}</div>
       </div>
     </div>
   );

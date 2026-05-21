@@ -6,6 +6,31 @@
 - Local:         http://localhost:3000
 - Network:       http://192.168.2.4:3000
 - Environments: .env.local
-✓ Ready in 2.0s
+✓ Ready in 2.9s
 
- GET /login 200 in 1706ms (next.js: 653ms, application-code: 1053ms)
+ GET /login 200 in 4.2s (next.js: 2.2s, application-code: 1975ms)
+ GET /login 200 in 184ms (next.js: 10ms, application-code: 174ms)
+ GET /dashboard 200 in 178ms (next.js: 51ms, application-code: 127ms)
+ GET / 200 in 271ms (next.js: 51ms, application-code: 220ms)
+ GET /login 200 in 89ms (next.js: 6ms, application-code: 82ms)
+ GET /dashboard 200 in 61ms (next.js: 7ms, application-code: 54ms)
+ GET /feed 200 in 179ms (next.js: 51ms, application-code: 128ms)
+ GET /tasks/today 200 in 196ms (next.js: 50ms, application-code: 146ms)
+ GET /feed 200 in 94ms (next.js: 23ms, application-code: 71ms)
+ GET /dashboard 200 in 127ms (next.js: 10ms, application-code: 116ms)
+ GET /feed 200 in 52ms (next.js: 7ms, application-code: 45ms)
+ GET /tasks/today 200 in 51ms (next.js: 6ms, application-code: 45ms)
+ GET /tasks/plans 200 in 96ms (next.js: 46ms, application-code: 50ms)
+ GET /tasks/today 200 in 47ms (next.js: 5ms, application-code: 41ms)
+ GET /dashboard 200 in 44ms (next.js: 5ms, application-code: 39ms)
+ GET /feed 200 in 40ms (next.js: 5ms, application-code: 35ms)
+ GET /tasks/today 200 in 51ms (next.js: 4ms, application-code: 47ms)
+ GET /tasks/plans 200 in 115ms (next.js: 8ms, application-code: 108ms)
+ GET /tasks/report 200 in 106ms (next.js: 51ms, application-code: 55ms)
+ GET /tasks/plans 200 in 42ms (next.js: 4ms, application-code: 38ms)
+ GET /dashboard 200 in 43ms (next.js: 5ms, application-code: 39ms)
+ GET /feed 200 in 42ms (next.js: 4ms, application-code: 38ms)
+ GET /tasks/today 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET /tasks/plans 200 in 58ms (next.js: 6ms, application-code: 52ms)
+✓ Compiled in 1500ms
+ GET /tasks/plans 200 in 399ms (next.js: 187ms, application-code: 213ms)

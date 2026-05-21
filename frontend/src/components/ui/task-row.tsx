@@ -1,6 +1,9 @@
+"use client";
+
 import { PriorityDot } from "./priority-dot";
 import type { Task } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { useT } from "@/hooks/useT";
 
 interface TaskWithLabels extends Task {
   labels?: { label: { id: string; name: string; color: string } }[];
@@ -17,6 +20,8 @@ interface TaskRowProps {
 }
 
 export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate, showStatus }: TaskRowProps) {
+  const { t } = useT();
+
   return (
     <div
       className={"list-row" + (task.isCompleted ? " is-done" : "")}
@@ -79,7 +84,7 @@ export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate, 
             flexShrink: 0,
           }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
-            Дууссан
+            {t("task_done_badge")}
           </span>
         ) : (
           <span style={{
@@ -89,7 +94,7 @@ export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate, 
             background: "var(--bg-subtle)",
             flexShrink: 0,
           }}>
-            Хүлээгдэж байна
+            {t("task_pending_badge")}
           </span>
         )
       )}
@@ -105,7 +110,7 @@ export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate, 
           className="btn btn-ghost btn-sm btn-icon"
           style={{ opacity: 0, transition: "opacity 120ms", marginLeft: -4 }}
           onClick={e => { e.stopPropagation(); onDelete(task.id); }}
-          title="Устгах"
+          title={t("task_delete_title")}
           onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
           onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
         >

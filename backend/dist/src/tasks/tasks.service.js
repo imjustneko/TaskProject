@@ -33,12 +33,12 @@ let TasksService = class TasksService {
             include: this.TASK_INCLUDE,
         });
     }
-    async findToday(userId) {
+    async findToday(userId, includeCompleted = false) {
         const now = new Date();
         return this.prisma.task.findMany({
             where: {
                 userId,
-                isCompleted: false,
+                ...(includeCompleted ? {} : { isCompleted: false }),
                 OR: [
                     { date: null },
                     { date: { gte: (0, tasks_utils_1.startOfDay)(now), lte: (0, tasks_utils_1.endOfDay)(now) } },
