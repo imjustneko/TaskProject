@@ -53,15 +53,15 @@ function TaskStatusButtons({ rt, roomId, userId, memberCount }: {
       <div style={{ display:"flex",gap:4 }}>
         {btn("DONE",
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>,
-          "Done","#16a34a"
+          "Дууссан","#16a34a"
         )}
         {btn("FAILED",
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>,
-          "Failed","#ef4444"
+          "Болоогүй","#ef4444"
         )}
         {btn("SKIP",
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
-          "Skip","#f59e0b"
+          "Алгасах","#f59e0b"
         )}
       </div>
       <div style={{ display:"flex",alignItems:"center",gap:6 }}>
@@ -129,14 +129,14 @@ function InviteModal({ open, onClose, roomId, memberIds }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>Invite to room</h2>
+          <h2>Өрөөнд урих</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>
         <input
           className="input"
-          placeholder="Search by username or name…"
+          placeholder="Нэр эсвэл хэрэглэгчийн нэрээр хайх…"
           autoFocus
           value={q}
           onChange={e => setQ(e.target.value)}
@@ -145,11 +145,11 @@ function InviteModal({ open, onClose, roomId, memberIds }: {
         <div className="col gap-2" style={{ maxHeight:300,overflowY:"auto" }}>
           {q.length < 2 ? (
             <div style={{ textAlign:"center",color:"var(--text-muted)",fontSize:13,padding:"20px 0" }}>
-              Type a name to search…
+              Нэр бичиж хайна уу…
             </div>
           ) : nonMembers.length === 0 ? (
             <div style={{ textAlign:"center",color:"var(--text-muted)",fontSize:13,padding:"20px 0" }}>
-              No results
+              Хайлт олдсонгүй
             </div>
           ) : nonMembers.map(u => (
             <div key={u.id} className="row gap-3" style={{ padding:"8px 0",borderBottom:"1px solid var(--border)" }}>
@@ -165,7 +165,7 @@ function InviteModal({ open, onClose, roomId, memberIds }: {
                   onSuccess: () => { toast.show(`${u.displayName} урилаа!`); setQ(""); },
                 })}
               >
-                Invite
+                Урих
               </button>
             </div>
           ))}
@@ -216,7 +216,7 @@ function EmojiModal({ open, onClose, roomId }: { open: boolean; onClose: () => v
     <div className="modal-back" onClick={onClose}>
       <div className="modal" style={{ maxWidth:480 }} onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>Custom emojis</h2>
+          <h2>Эможи</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
@@ -224,7 +224,7 @@ function EmojiModal({ open, onClose, roomId }: { open: boolean; onClose: () => v
 
         {/* Upload new */}
         <div style={{ padding:14,background:"var(--bg-subtle)",borderRadius:10,marginBottom:16 }}>
-          <div style={{ fontSize:13,fontWeight:600,marginBottom:10 }}>Add emoji</div>
+          <div style={{ fontSize:13,fontWeight:600,marginBottom:10 }}>Эможи нэмэх</div>
           <div className="row gap-3" style={{ alignItems:"flex-end" }}>
             <div
               onClick={() => fileRef.current?.click()}
@@ -241,22 +241,22 @@ function EmojiModal({ open, onClose, roomId }: { open: boolean; onClose: () => v
             </div>
             <input ref={fileRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleFile} />
             <div className="flex1">
-              <label className="field-label">Name</label>
+              <label className="field-label">Нэр</label>
               <input
                 className="input"
-                placeholder="e.g. cool_cat"
+                placeholder="жишээ: cool_cat"
                 value={name}
                 onChange={e => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g,""))}
                 style={{ marginBottom:0 }}
               />
-              <div style={{ fontSize:10.5,color:"var(--text-muted)",marginTop:4 }}>Use as :name: in chat</div>
+              <div style={{ fontSize:10.5,color:"var(--text-muted)",marginTop:4 }}>Чатад :нэр: хэлбэрээр ашиглана</div>
             </div>
             <button
               className="btn btn-accent"
               disabled={!file || !name.trim() || addEmoji.isPending}
               onClick={handleAdd}
             >
-              {addEmoji.isPending ? "Adding…" : "Add"}
+              {addEmoji.isPending ? "Нэмж байна…" : "Нэмэх"}
             </button>
           </div>
         </div>
@@ -264,7 +264,7 @@ function EmojiModal({ open, onClose, roomId }: { open: boolean; onClose: () => v
         {/* Existing emojis */}
         <div style={{ maxHeight:280,overflowY:"auto" }}>
           {emojis.length === 0 ? (
-            <div style={{ textAlign:"center",color:"var(--text-muted)",fontSize:13,padding:"20px 0" }}>No custom emojis yet</div>
+            <div style={{ textAlign:"center",color:"var(--text-muted)",fontSize:13,padding:"20px 0" }}>Эможи байхгүй</div>
           ) : (
             <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:8 }}>
               {emojis.map((em: RoomEmoji) => (
@@ -335,7 +335,7 @@ function RoomChat({ roomId, emojis }: { roomId: string; emojis: RoomEmoji[] }) {
       <div style={{ flex:1,overflowY:"auto",padding:"12px 16px",display:"flex",flexDirection:"column",gap:4 }}>
         {messages.length === 0 ? (
           <div style={{ textAlign:"center",color:"var(--text-muted)",fontSize:13,marginTop:"auto" }}>
-            No messages yet. Start the conversation!
+            Мессеж байхгүй. Яриа эхлүүл!
           </div>
         ) : (
           messages.map((msg, i) => {
@@ -376,7 +376,7 @@ function RoomChat({ roomId, emojis }: { roomId: string; emojis: RoomEmoji[] }) {
             </svg>
           </button>
         )}
-        <input ref={inputRef} className="input" style={{ flex:1,height:34,fontSize:13 }} placeholder="Message… (use :emoji_name: for custom emojis)" value={text} onChange={e => setText(e.target.value)} autoComplete="off"/>
+        <input ref={inputRef} className="input" style={{ flex:1,height:34,fontSize:13 }} placeholder="Мессеж… (:emoji_name: ашиглан эможи оруулна уу)" value={text} onChange={e => setText(e.target.value)} autoComplete="off"/>
         <button type="submit" className="btn btn-accent btn-sm btn-icon" disabled={!text.trim()}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 16-8-6 18-3-7-7-3z"/></svg>
         </button>
@@ -398,12 +398,12 @@ function RoomView({ roomId }: { roomId: string }) {
 
   if (isLoading) return (
     <div style={{ height:"100%",display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text-muted)" }}>
-      Loading room…
+      Өрөө ачаалж байна…
     </div>
   );
   if (!room) return (
     <div style={{ height:"100%",display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text-muted)" }}>
-      Room not found.
+      Өрөө олдсонгүй.
     </div>
   );
 
@@ -425,25 +425,25 @@ function RoomView({ roomId }: { roomId: string }) {
             <div className="row gap-2">
               <div style={{ fontSize:15,fontWeight:600 }}>{room.name}</div>
               {room.isPublic
-                ? <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"rgba(99,102,241,0.12)",color:"var(--accent)",fontWeight:500 }}>Public</span>
-                : <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"var(--bg-subtle)",color:"var(--text-muted)",fontWeight:500 }}>Private</span>
+                ? <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"rgba(99,102,241,0.12)",color:"var(--accent)",fontWeight:500 }}>Нийтийн</span>
+                : <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"var(--bg-subtle)",color:"var(--text-muted)",fontWeight:500 }}>Хаалттай</span>
               }
             </div>
-            <div className="muted" style={{ fontSize:11.5 }}>{memberCount} members</div>
+            <div className="muted" style={{ fontSize:11.5 }}>{memberCount} гишүүд</div>
           </div>
           {/* Actions */}
           <div className="row gap-2">
-            <button className="btn btn-sm" onClick={() => setShowEmoji(true)} title="Custom emojis">
+            <button className="btn btn-sm" onClick={() => setShowEmoji(true)} title="Эможи">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
               </svg>
-              Emojis {emojis.length > 0 && <span style={{ fontSize:10,background:"var(--bg-subtle)",padding:"0 4px",borderRadius:4 }}>{emojis.length}</span>}
+              Эможи {emojis.length > 0 && <span style={{ fontSize:10,background:"var(--bg-subtle)",padding:"0 4px",borderRadius:4 }}>{emojis.length}</span>}
             </button>
             <button className="btn btn-sm btn-accent" onClick={() => setShowInvite(true)}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
               </svg>
-              Invite
+              Урих
             </button>
           </div>
           {/* Member avatars */}
@@ -460,7 +460,7 @@ function RoomView({ roomId }: { roomId: string }) {
         <div style={{ flex:1,overflowY:"auto",padding:"8px 0" }}>
           {(!room.tasks || room.tasks.length === 0) ? (
             <div style={{ padding:"40px 20px",textAlign:"center",color:"var(--text-muted)",fontSize:13 }}>
-              No tasks yet. Add the first one below.
+              Таск байхгүй. Доорх талбарт эхнийг нэмнэ үү.
             </div>
           ) : (
             room.tasks.map(rt => (
@@ -481,7 +481,7 @@ function RoomView({ roomId }: { roomId: string }) {
         <div style={{ padding:"10px 20px",borderTop:"1px solid var(--border)",display:"flex",gap:8 }}>
           <input
             className="input"
-            placeholder="Add a shared task…"
+            placeholder="Хуваалцсан таск нэмэх…"
             value={newTask}
             onChange={e => setNewTask(e.target.value)}
             onKeyDown={e => {

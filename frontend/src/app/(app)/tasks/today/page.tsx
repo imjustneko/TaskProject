@@ -189,7 +189,7 @@ function CreateTaskModal({ open, onClose, onCreate }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>New task</h2>
+          <h2>Шинэ таск</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
@@ -197,15 +197,15 @@ function CreateTaskModal({ open, onClose, onCreate }: {
         <div className="col gap-4">
           <input
             className="input" style={{ fontSize: 15, height: 40, fontWeight: 500 }}
-            placeholder="What's the task?" autoFocus value={title}
+            placeholder="Юу хийх вэ?" autoFocus value={title}
             onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === "Enter" && save()}
           />
-          <textarea className="textarea" placeholder="Notes (optional)" value={desc} onChange={e => setDesc(e.target.value)} rows={3} />
+          <textarea className="textarea" placeholder="Тэмдэглэл (заавал биш)" value={desc} onChange={e => setDesc(e.target.value)} rows={3} />
           <div className="grid-2">
             <div className="field">
-              <label className="field-label">Priority</label>
+              <label className="field-label">Чухлын зэрэг</label>
               <div className="row gap-2">
-                {[{ k: "HIGH", label: "High" },{ k: "MEDIUM", label: "Med" },{ k: "LOW", label: "Low" }].map(p => (
+                {[{ k: "HIGH", label: "Өндөр" },{ k: "MEDIUM", label: "Дунд" },{ k: "LOW", label: "Бага" }].map(p => (
                   <button key={p.k} className="btn btn-sm" onClick={() => setPriority(p.k)} style={{
                     flex:1, borderColor: priority===p.k?"var(--accent)":"var(--border-strong)",
                     background: priority===p.k?"var(--accent-tint)":"var(--bg-elevated)",
@@ -215,15 +215,15 @@ function CreateTaskModal({ open, onClose, onCreate }: {
               </div>
             </div>
             <div className="field">
-              <label className="field-label">Time</label>
+              <label className="field-label">Цаг</label>
               <input className="input" type="time" value={time} onChange={e => setTime(e.target.value)} />
             </div>
           </div>
           <div className="row" style={{ justifyContent: "flex-end", gap: 8, marginTop: 4 }}>
-            <button className="btn" onClick={onClose}>Cancel</button>
+            <button className="btn" onClick={onClose}>Болих</button>
             <button className="btn btn-accent" onClick={save} disabled={!title.trim()}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
-              Add task
+              Таск нэмэх
             </button>
           </div>
         </div>
@@ -255,9 +255,9 @@ export default function TodayTasksPage() {
   return (
     <div className="view-narrow">
       <PageHeader
-        eyebrow="Today"
+        eyebrow="Өнөөдөр"
         title={date}
-        subtitle={`${todo.length} task${todo.length === 1 ? "" : "s"} remaining`}
+        subtitle={`${todo.length} таск үлдсэн`}
       >
         <button className="btn btn-sm btn-ghost" onClick={() => setShowHistory(v=>!v)} style={{ color: showHistory?"var(--accent)":undefined }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -265,7 +265,7 @@ export default function TodayTasksPage() {
         </button>
         <button className="btn btn-accent" onClick={() => setShowModal(true)}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          New task
+          Шинэ таск
         </button>
       </PageHeader>
 
@@ -303,7 +303,7 @@ export default function TodayTasksPage() {
         {/* To do */}
         <div>
           <div className="row" style={{ marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.04em", textTransform: "uppercase" }}>To do</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.04em", textTransform: "uppercase" }}>Хийх</span>
             <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>{todo.length}</span>
           </div>
           {todo.length === 0 ? (
@@ -311,8 +311,8 @@ export default function TodayTasksPage() {
               <div style={{ width:44,height:44,borderRadius:12,display:"grid",placeItems:"center",background:"var(--bg-subtle)",color:"var(--text-muted)" }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
               </div>
-              <div style={{ fontWeight:600,color:"var(--text)" }}>All clear</div>
-              <div style={{ fontSize:12.5,textAlign:"center",maxWidth:320 }}>You&apos;ve checked off every task for today.</div>
+              <div style={{ fontWeight:600,color:"var(--text)" }}>Бүгд дуусгасан</div>
+              <div style={{ fontSize:12.5,textAlign:"center",maxWidth:320 }}>Өнөөдрийн бүх таскийг дуусгасан байна.</div>
             </div>
           ) : (
             <div className="list">
@@ -327,7 +327,7 @@ export default function TodayTasksPage() {
         {done.length > 0 && (
           <div>
             <div className="row" style={{ marginBottom: 8 }}>
-              <span style={{ fontSize:12,fontWeight:600,color:"var(--text-muted)",letterSpacing:"0.04em",textTransform:"uppercase" }}>Completed</span>
+              <span style={{ fontSize:12,fontWeight:600,color:"var(--text-muted)",letterSpacing:"0.04em",textTransform:"uppercase" }}>Дуусгасан</span>
               <span className="muted" style={{ marginLeft:"auto",fontSize:12 }}>{done.length}</span>
             </div>
             <div className="list">

@@ -6,9 +6,9 @@ import { useLabels } from "@/hooks/useLabels";
 import { useToast } from "./toast";
 
 const PRIORITIES = [
-  { k: "HIGH", label: "High", color: "#ef4444" },
-  { k: "MEDIUM", label: "Med", color: "#f59e0b" },
-  { k: "LOW", label: "Low", color: "#22c55e" },
+  { k: "HIGH", label: "Өндөр", color: "#ef4444" },
+  { k: "MEDIUM", label: "Дунд", color: "#f59e0b" },
+  { k: "LOW", label: "Бага", color: "#22c55e" },
 ] as const;
 
 export function QuickCapture() {

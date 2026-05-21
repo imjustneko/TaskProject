@@ -42,25 +42,25 @@ function CreateRoomModal({ open, onClose }: { open: boolean; onClose: () => void
     <div className="modal-back" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>New room</h2>
+          <h2>Шинэ өрөө</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>
         <div className="col gap-4">
           <div className="field">
-            <label className="field-label">Room name</label>
-            <input className="input" style={{ fontSize:15,height:40,fontWeight:500 }} placeholder="Morning Pages, Book Club…"
+            <label className="field-label">Өрөөний нэр</label>
+            <input className="input" style={{ fontSize:15,height:40,fontWeight:500 }} placeholder="Өглөөний бичих, Номын клуб…"
               autoFocus value={name} onChange={e => setName(e.target.value)} onKeyDown={e => e.key==="Enter" && save()} />
           </div>
           <div className="field">
-            <label className="field-label">Description (optional)</label>
-            <textarea className="textarea" rows={2} placeholder="What will the room be about?" value={desc} onChange={e => setDesc(e.target.value)} />
+            <label className="field-label">Тайлбар (заавал биш)</label>
+            <textarea className="textarea" rows={2} placeholder="Өрөө юуны тухай байх вэ?" value={desc} onChange={e => setDesc(e.target.value)} />
           </div>
 
           {/* Public / Private */}
           <div className="field">
-            <label className="field-label">Visibility</label>
+            <label className="field-label">Харагдах байдал</label>
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:8 }}>
               <button
                 className="btn"
@@ -74,8 +74,8 @@ function CreateRoomModal({ open, onClose }: { open: boolean; onClose: () => void
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={!isPublic?"var(--accent)":"var(--text-muted)"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                <span style={{ fontSize:12,color:!isPublic?"var(--accent)":"var(--text-soft)" }}>Private</span>
-                <span style={{ fontSize:10.5,color:"var(--text-muted)",fontWeight:400 }}>Members only</span>
+                <span style={{ fontSize:12,color:!isPublic?"var(--accent)":"var(--text-soft)" }}>Хаалттай</span>
+                <span style={{ fontSize:10.5,color:"var(--text-muted)",fontWeight:400 }}>Гишүүдэд</span>
               </button>
               <button
                 className="btn"
@@ -89,16 +89,16 @@ function CreateRoomModal({ open, onClose }: { open: boolean; onClose: () => void
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={isPublic?"var(--accent)":"var(--text-muted)"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                 </svg>
-                <span style={{ fontSize:12,color:isPublic?"var(--accent)":"var(--text-soft)" }}>Public</span>
-                <span style={{ fontSize:10.5,color:"var(--text-muted)",fontWeight:400 }}>Anyone can join</span>
+                <span style={{ fontSize:12,color:isPublic?"var(--accent)":"var(--text-soft)" }}>Нийтийн</span>
+                <span style={{ fontSize:10.5,color:"var(--text-muted)",fontWeight:400 }}>Хэн ч орж болно</span>
               </button>
             </div>
           </div>
 
           <div className="field">
-            <label className="field-label">Activity (optional)</label>
+            <label className="field-label">Үйл ажиллагаа (заавал биш)</label>
             <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8 }}>
-              {[["","Any"],["READING","Reading"],["STUDYING","Studying"],["WALKING","Walking"],["PLAYING","Gaming"],["COOKING","Cooking"],["WORKING","Working"],["CUSTOM","Custom"]].map(([k,l])=>(
+              {[["","Аливаа"],["READING","Унших"],["STUDYING","Суралцах"],["WALKING","Алхах"],["PLAYING","Тоглоом"],["COOKING","Хоол"],["WORKING","Ажиллах"],["CUSTOM","Өөрийн"]].map(([k,l])=>(
                 <button key={k} className="btn btn-sm" onClick={() => setActivity(k)} style={{
                   borderColor: activity===k?"var(--accent)":"var(--border-strong)",
                   background: activity===k?"var(--accent-tint)":"var(--bg-elevated)",
@@ -112,9 +112,9 @@ function CreateRoomModal({ open, onClose }: { open: boolean; onClose: () => void
           </div>
 
           <div className="row" style={{ justifyContent:"flex-end",gap:8 }}>
-            <button className="btn" onClick={onClose}>Cancel</button>
+            <button className="btn" onClick={onClose}>Болих</button>
             <button className="btn btn-accent" onClick={save} disabled={!name.trim()||create.isPending}>
-              {create.isPending?"Creating…":"Create room"}
+              {create.isPending?"Үүсгэж байна…":"Өрөө үүсгэх"}
             </button>
           </div>
         </div>
@@ -141,12 +141,12 @@ function RoomCard({ room, onJoin, isJoining }: { room: Room; onJoin?: () => void
           <div className="row gap-2">
             <div style={{ fontSize:15,fontWeight:600 }}>{room.name}</div>
             {room.isPublic ? (
-              <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"rgba(99,102,241,0.12)",color:"var(--accent)",fontWeight:500 }}>Public</span>
+              <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"rgba(99,102,241,0.12)",color:"var(--accent)",fontWeight:500 }}>Нийтийн</span>
             ) : (
-              <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"var(--bg-subtle)",color:"var(--text-muted)",fontWeight:500 }}>Private</span>
+              <span style={{ fontSize:10,padding:"1px 6px",borderRadius:4,background:"var(--bg-subtle)",color:"var(--text-muted)",fontWeight:500 }}>Хаалттай</span>
             )}
           </div>
-          <div className="muted" style={{ fontSize:12 }}>{memberCount} members · {taskCount} tasks</div>
+          <div className="muted" style={{ fontSize:12 }}>{memberCount} гишүүд · {taskCount} таскууд</div>
         </div>
       </div>
       {room.description && (
@@ -154,7 +154,7 @@ function RoomCard({ room, onJoin, isJoining }: { room: Room; onJoin?: () => void
       )}
       <div style={{ marginBottom:12 }}>
         <div className="row" style={{ marginBottom:5 }}>
-          <span style={{ fontSize:11,color:"var(--text-muted)" }}>Progress</span>
+          <span style={{ fontSize:11,color:"var(--text-muted)" }}>Явц</span>
           <span className="mono muted" style={{ fontSize:11,marginLeft:"auto" }}>{doneCount}/{taskCount} · {pct}%</span>
         </div>
         <div style={{ height:4,borderRadius:999,background:"var(--border)",overflow:"hidden" }}>
@@ -181,7 +181,7 @@ function RoomCard({ room, onJoin, isJoining }: { room: Room; onJoin?: () => void
             disabled={isJoining}
             onClick={e => { e.stopPropagation(); onJoin(); }}
           >
-            {isJoining ? "Joining…" : "Join"}
+            {isJoining ? "Нэгдэж байна…" : "Нэгдэх"}
           </button>
         )}
       </div>
@@ -209,10 +209,10 @@ export default function RoomsPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="Rooms" title="Rooms" subtitle="Shared spaces for doing things together.">
+      <PageHeader eyebrow="Өрөөнүүд" title="Өрөөнүүд" subtitle="Хамтдаа үйл ажиллагаа хийх хуваалцсан орон зай.">
         <button className="btn btn-accent" onClick={() => setShowCreate(true)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          New room
+          Шинэ өрөө
         </button>
       </PageHeader>
 
@@ -224,7 +224,7 @@ export default function RoomsPage() {
             background: tab===t?"var(--accent-tint)":"var(--bg-elevated)",
             color: tab===t?"var(--accent)":"var(--text-soft)",
           }}>
-            {t==="mine" ? "My rooms" : "Discover"}
+            {t==="mine" ? "Миний өрөөнүүд" : "Нээх"}
             {t==="public" && publicRooms.length > 0 && (
               <span style={{ marginLeft:5,padding:"0 5px",borderRadius:99,background:"var(--accent)",color:"#fff",fontSize:10,fontWeight:600 }}>{publicRooms.length}</span>
             )}
@@ -240,9 +240,9 @@ export default function RoomsPage() {
         ) : myRooms.length === 0 ? (
           <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:10,padding:"60px 20px",color:"var(--text-muted)" }}>
             <div style={{ width:52,height:52,borderRadius:14,display:"grid",placeItems:"center",background:"var(--bg-subtle)",fontSize:24 }}>🏠</div>
-            <div style={{ fontWeight:600,color:"var(--text)" }}>No rooms yet</div>
-            <div style={{ fontSize:13,textAlign:"center",maxWidth:280 }}>Create a room and invite friends to do activities together.</div>
-            <button className="btn btn-accent btn-sm" style={{ marginTop:4 }} onClick={() => setShowCreate(true)}>Create first room</button>
+            <div style={{ fontWeight:600,color:"var(--text)" }}>Өрөө байхгүй</div>
+            <div style={{ fontSize:13,textAlign:"center",maxWidth:280 }}>Өрөө үүсгэж найзуудаа урин хамтдаа үйл ажиллагаа явуул.</div>
+            <button className="btn btn-accent btn-sm" style={{ marginTop:4 }} onClick={() => setShowCreate(true)}>Эхний өрөө үүсгэх</button>
           </div>
         ) : (
           <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:16 }}>
@@ -253,8 +253,8 @@ export default function RoomsPage() {
         publicRooms.length === 0 ? (
           <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:10,padding:"60px 20px",color:"var(--text-muted)" }}>
             <div style={{ width:52,height:52,borderRadius:14,display:"grid",placeItems:"center",background:"var(--bg-subtle)",fontSize:24 }}>🌐</div>
-            <div style={{ fontWeight:600,color:"var(--text)" }}>No public rooms</div>
-            <div style={{ fontSize:13,textAlign:"center",maxWidth:280 }}>No public rooms to discover right now.</div>
+            <div style={{ fontWeight:600,color:"var(--text)" }}>Нийтийн өрөө байхгүй</div>
+            <div style={{ fontSize:13,textAlign:"center",maxWidth:280 }}>Одоо нээх нийтийн өрөө байхгүй.</div>
           </div>
         ) : (
           <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:16 }}>

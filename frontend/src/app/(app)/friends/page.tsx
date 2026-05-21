@@ -62,10 +62,10 @@ export default function FriendsPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="Friends" title="Your circle" subtitle="People you do tasks and rooms with.">
+      <PageHeader eyebrow="Найзууд" title="Найзуудын тойрог" subtitle="Хамт таск хийдэг найзууд.">
         <button className="btn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Add by handle
+          Хаягаар нэмэх
         </button>
       </PageHeader>
 
@@ -75,7 +75,7 @@ export default function FriendsPage() {
           <SearchIcon size={14} />
           <input
             className="input"
-            placeholder="Search by name or @handle"
+            placeholder="Нэр эсвэл @хаягаар хайх"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -88,8 +88,8 @@ export default function FriendsPage() {
           border: "1px solid var(--border)",
         }}>
           {[
-            { k: "all" as const, label: `All · ${filtered.length}` },
-            { k: "online" as const, label: `Online · ${online.length}` },
+            { k: "all" as const, label: `Бүгд · ${filtered.length}` },
+            { k: "online" as const, label: `Онлайн · ${online.length}` },
           ].map((t) => (
             <button
               key={t.k}
@@ -114,11 +114,11 @@ export default function FriendsPage() {
       {debouncedQ.length >= 2 && (
         <div className="card" style={{ marginBottom: 24 }}>
           <div className="card-hd">
-            <h3>Search results</h3>
+            <h3>Хайлтын үр дүн</h3>
           </div>
           <div className="col gap-3">
             {searchResults.length === 0 ? (
-              <div className="muted" style={{ fontSize: 13 }}>No users found for &quot;{debouncedQ}&quot;</div>
+              <div className="muted" style={{ fontSize: 13 }}>&quot;{debouncedQ}&quot; — хэрэглэгч олдсонгүй</div>
             ) : (
               searchResults.map((u) => (
                 <div key={u.id} className="row gap-3">
@@ -132,7 +132,7 @@ export default function FriendsPage() {
                     onClick={() => sendReq.mutate(u.id)}
                     disabled={sendReq.isPending}
                   >
-                    Add friend
+                    Найз нэмэх
                   </button>
                 </div>
               ))
@@ -145,8 +145,8 @@ export default function FriendsPage() {
       {requests.length > 0 && (
         <div className="card" style={{ marginBottom: 24 }}>
           <div className="card-hd">
-            <h3>Requests</h3>
-            <Badge tone="accent">{requests.length} pending</Badge>
+            <h3>Хүсэлтүүд</h3>
+            <Badge tone="accent">{requests.length} хүлээгдэж байна</Badge>
           </div>
           <div className="col gap-3">
             {requests.map((r) => (
@@ -161,8 +161,8 @@ export default function FriendsPage() {
                     <div className="muted" style={{ fontSize: 12 }}>{r.requester.bio}</div>
                   )}
                 </div>
-                <button className="btn btn-sm btn-primary" onClick={() => accept.mutate(r.id)}>Accept</button>
-                <button className="btn btn-sm" onClick={() => decline.mutate(r.id)}>Decline</button>
+                <button className="btn btn-sm btn-primary" onClick={() => accept.mutate(r.id)}>Зөвшөөрөх</button>
+                <button className="btn btn-sm" onClick={() => decline.mutate(r.id)}>Татгалзах</button>
               </div>
             ))}
           </div>
@@ -239,9 +239,9 @@ export default function FriendsPage() {
                 <circle cx="9" cy="9" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 11a3 3 0 1 0 0-6M22 20a5 5 0 0 0-4.5-5"/>
               </svg>
             </div>
-            <div style={{ fontWeight: 600, color: "var(--text)" }}>No friends yet</div>
+            <div style={{ fontWeight: 600, color: "var(--text)" }}>Найз байхгүй</div>
             <div style={{ fontSize: 12.5, textAlign: "center", maxWidth: 320 }}>
-              {tab === "online" ? "No friends are online right now." : "Search for people to add as friends."}
+              {tab === "online" ? "Одоо онлайн найз байхгүй." : "Найз болохын тулд хэрэглэгч хайна уу."}
             </div>
           </div>
         )}

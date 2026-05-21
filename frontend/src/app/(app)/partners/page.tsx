@@ -123,7 +123,7 @@ export default function PartnersPage() {
   if (!isLoading && partners.length === 0 && requests.length === 0) {
     return (
       <div className="view-narrow">
-        <PageHeader eyebrow="Partners" title="Stay accountable, together" />
+        <PageHeader eyebrow="Партнер" title="Хамтдаа хариуцлагатай яв" />
         <div className="card" style={{ padding: 0 }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, padding: "56px 24px", textAlign: "center", color: "var(--text-muted)" }}>
             <div style={{ position: "relative", width: 80, height: 80 }}>
@@ -159,8 +159,8 @@ export default function PartnersPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Partners"
-        title="Stay accountable, together"
+        eyebrow="Партнер"
+        title="Хамтдаа хариуцлагатай яв"
         subtitle="Хамтдаа streak хадгалж, бие биенийгээ урамшуул."
       >
         <button className="btn btn-accent" onClick={() => router.push("/friends")}>
@@ -183,7 +183,7 @@ export default function PartnersPage() {
             </div>
             <div className="flex1">
               <div style={{ fontSize: 13.5, fontWeight: 500 }}>
-                <b>{requests[0].requester.displayName}</b> wants to be your partner
+                <b>{requests[0].requester.displayName}</b> таны партнер болохыг хүсэж байна
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
                 Accountability partner болохыг хүсэж байна
@@ -209,7 +209,7 @@ export default function PartnersPage() {
       {partners.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
           {[
-            { label: "Partners", value: partners.length, icon: "🤝" },
+            { label: "Партнер", value: partners.length, icon: "🤝" },
             { label: "Өнөөдөр дуусгасан", value: partners.filter(p => p.todayTotal > 0 && p.todayDone === p.todayTotal).length, icon: "✅" },
             { label: "Нийт streak", value: partners.reduce((s, p) => s + p.streak, 0), icon: "🔥" },
           ].map(s => (

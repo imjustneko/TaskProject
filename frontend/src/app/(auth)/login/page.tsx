@@ -90,20 +90,20 @@ export default function LoginPage() {
             fontSize: 36, fontWeight: 700, letterSpacing: "-0.025em",
             lineHeight: 1.15, color: "#2a1a14", maxWidth: 440,
           }}>
-            Get things done,<br />together.
+            Ажлаа дуусга,<br />хамтдаа.
           </div>
           <div style={{
             fontSize: 15, color: "#6b4530", marginTop: 14,
             maxWidth: 400, lineHeight: 1.6,
           }}>
-            A calm place for daily tasks, shared rooms, and showing friends what you&apos;re up to.
+            Өдрийн таск, хуваалцсан өрөө, найзуудын үйл ажиллагааг харах тайван газар.
           </div>
 
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 10, maxWidth: 380 }}>
             {[
-              { e: "☀️", t: "Morning Pages", s: "3 friends writing now" },
-              { e: "📖", t: "Slow Reads · Demon Copperhead", s: "Chapter 10 due Friday" },
-              { e: "🏃", t: "Couch to 5K", s: "Priya finished Run 2" },
+              { e: "☀️", t: "Өглөөний бичих", s: "3 найз одоо бичиж байна" },
+              { e: "📖", t: "Аажим уншилт · Demon Copperhead", s: "10-р бүлэг Пүрэвт дуусна" },
+              { e: "🏃", t: "Диванаас 5км", s: "Priya 2-р гүйлтийг дуусгалаа" },
             ].map((c, i) => (
               <div key={i} style={{
                 display: "flex", gap: 12, alignItems: "center",
@@ -129,7 +129,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ marginTop: "auto", fontSize: 12, color: "#8a6648", paddingTop: 32 }}>
-          © Taskyy 2026 · Built for calm productivity
+          © Taskyy 2026 · Тайван бүтээмжийн төлөө
         </div>
       </div>
 
@@ -141,9 +141,9 @@ export default function LoginPage() {
         overflowY: "auto",
       }}>
         <div style={{ maxWidth: 380, margin: "0 auto", width: "100%" }}>
-          <h1 style={{ fontSize: 26, marginBottom: 6 }}>Welcome back</h1>
+          <h1 style={{ fontSize: 26, marginBottom: 6 }}>Тавтай морил</h1>
           <div className="muted" style={{ fontSize: 14, marginBottom: 28 }}>
-            Pick up where you left off.
+            Үргэлжлүүлэхийн тулд нэвтрэнэ үү.
           </div>
 
           {/* Error */}
@@ -155,14 +155,14 @@ export default function LoginPage() {
               border: "1px solid color-mix(in oklab, var(--status-busy) 22%, transparent)",
             }}>
               {(login.error as { response?: { data?: { message?: string } } })
-                ?.response?.data?.message ?? "Invalid email or password"}
+                ?.response?.data?.message ?? "Имэйл эсвэл нууц үг буруу байна"}
             </div>
           )}
 
           {/* Email + password form */}
           <form onSubmit={handleSubmit} className="col gap-3">
             <div className="field">
-              <label className="field-label">Email</label>
+              <label className="field-label">Имэйл</label>
               <input
                 className="input"
                 type="email"
@@ -175,7 +175,7 @@ export default function LoginPage() {
             </div>
             <div className="field">
               <label className="field-label">
-                <span style={{ flex: 1 }}>Password</span>
+                <span style={{ flex: 1 }}>Нууц үг</span>
               </label>
               <input
                 className="input"
@@ -186,8 +186,8 @@ export default function LoginPage() {
                 autoComplete="current-password"
               />
               <div style={{ fontSize: 12, color: "var(--accent)", marginTop: 4, textAlign: "right", cursor: "pointer" }}
-                onClick={() => showToast("Password reset coming soon — contact support@taskyy.app")}>
-                Forgot password?
+                onClick={() => showToast("Нууц үг сэргээх удахгүй нэмэгдэнэ — support@taskyy.app-д хандана уу")}>
+                Нууц үг мартсан уу?
               </div>
             </div>
 
@@ -200,9 +200,9 @@ export default function LoginPage() {
               {login.isPending ? (
                 <>
                   <svg style={{ animation: "spin 1s linear infinite" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                  Signing in…
+                  Нэвтэрч байна…
                 </>
-              ) : "Sign in"}
+              ) : "Нэвтрэх"}
             </button>
           </form>
 
@@ -212,7 +212,7 @@ export default function LoginPage() {
             margin: "22px 0", color: "var(--text-faint)", fontSize: 12,
           }}>
             <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-            or continue with
+            эсвэл
             <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
           </div>
 
@@ -221,25 +221,25 @@ export default function LoginPage() {
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center", position: "relative" }}
-              onClick={() => showToast("Google sign-in coming soon! Use email for now.")}
+              onClick={() => showToast("Google нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.")}
             >
               <GoogleIcon />
-              Continue with Google
+              Google-ээр нэвтрэх
             </button>
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center" }}
-              onClick={() => showToast("Apple sign-in coming soon! Use email for now.")}
+              onClick={() => showToast("Apple нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.")}
             >
               <AppleIcon />
-              Continue with Apple
+              Apple-ээр нэвтрэх
             </button>
           </div>
 
           <div style={{ textAlign: "center", marginTop: 28, fontSize: 13, color: "var(--text-muted)" }}>
-            Don&apos;t have an account?{" "}
+            Бүртгэл байхгүй юу?{" "}
             <Link href="/register" style={{ color: "var(--accent)", fontWeight: 500 }}>
-              Create one free
+              Бүртгүүлэх
             </Link>
           </div>
         </div>

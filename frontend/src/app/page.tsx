@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 const FAQS = [
-  { q: "Is Taskyy really free?", a: "Yes. Daily tasks, rooms, friends, chat, and dark mode are free forever. A paid plan is coming for power-user extras — never for anything that locks you in." },
-  { q: "Do I need friends for it to work?", a: "No. Taskyy is a complete to-do app on its own. Social features turn on when you add even one friend." },
-  { q: "Can others see what I am doing?", a: "Only things you explicitly share — status, tasks marked as shared, and rooms you joined. Default is private." },
-  { q: "Is there a mobile app?", a: "A responsive web app today; native iOS and Android coming soon." },
+  { q: "Taskyy үнэхээр үнэгүй юу?", a: "Тийм. Өдрийн таск, өрөө, найз, чат, харанхуй горим үүрд үнэгүй. Хүч хэрэглэгчийн нэмэлт боломжуудад төлбөртэй тариф гарна — хэзээ ч таныг түгжихгүй зүйлд биш." },
+  { q: "Найз хэрэгтэй юу?", a: "Үгүй. Taskyy бие даасан бүрэн todo програм. Нэг найз нэмэхэд нийгмийн боломжууд автоматаар идэвхждэг." },
+  { q: "Бусад хүмүүс юу хийж байгааг харж чадах уу?", a: "Зөвхөн та тодорхой хуваалцсан зүйлс — статус, нийтийн гэж тэмдэглэсэн таск, нэгдсэн өрөөнүүд. Анхдагч нь хувийн." },
+  { q: "Мобайл апп байна уу?", a: "Одоо responsive вэб апп байна; iOS болон Android удахгүй гарна." },
 ];
 
 export default function LandingPage() {
@@ -84,13 +84,13 @@ export default function LandingPage() {
         <nav className="lnav">
           <Link href="/" className="lbrand"><span className="lbmark">T</span>Taskyy</Link>
           <div className="lnlinks">
-            {[["#how","How it works"],["#rooms","Rooms"],["#features","Features"],["#faq","FAQ"]].map(([h,l])=>(
+            {[["#how","Хэрхэн ажилладаг"],["#rooms","Өрөөнүүд"],["#features","Боломжууд"],["#faq","Асуулт"]].map(([h,l])=>(
               <a key={h} href={h} className="lnlink">{l}</a>
             ))}
           </div>
           <div style={{ marginLeft:"auto",display:"flex",gap:8,alignItems:"center" }}>
-            <Link href="/login" className="btn btn-ghost btn-sm">Open app</Link>
-            <Link href="/register" className="btn btn-accent btn-sm">Sign up · free</Link>
+            <Link href="/login" className="btn btn-ghost btn-sm">Апп нээх</Link>
+            <Link href="/register" className="btn btn-accent btn-sm">Бүртгүүлэх · үнэгүй</Link>
           </div>
         </nav>
       </div>
@@ -100,25 +100,25 @@ export default function LandingPage() {
         <div className="lhi">
           <div>
             <div style={{ display:"inline-flex",alignItems:"center",gap:8,padding:"6px 12px 6px 8px",borderRadius:999,background:"var(--bg-elevated)",border:"1px solid var(--border)",fontSize:13,color:"var(--text-soft)",marginBottom:22,boxShadow:"var(--shadow-1)" }}>
-              <span style={{ padding:"1px 8px",fontSize:11,fontWeight:600,background:"var(--accent)",color:"#fff",borderRadius:999 }}>NEW</span>
-              Rooms — do daily things together
+              <span style={{ padding:"1px 8px",fontSize:11,fontWeight:600,background:"var(--accent)",color:"#fff",borderRadius:999 }}>ШИНЭ</span>
+              Өрөөнүүд — өдрийн зүйлсийг хамтдаа хий
             </div>
             <h1 style={{ fontSize:"clamp(40px,5vw,64px)",fontWeight:700,letterSpacing:"-0.035em",lineHeight:1.04,maxWidth:580,margin:"0 0 0" }}>
-              Calm tasks,<br/>
-              <span style={{ background:"linear-gradient(180deg,var(--accent) 0%,#d9491a 100%)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",fontStyle:"italic",fontWeight:500 }}>together.</span>
+              Тайван таск,<br/>
+              <span style={{ background:"linear-gradient(180deg,var(--accent) 0%,#d9491a 100%)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",fontStyle:"italic",fontWeight:500 }}>хамтдаа.</span>
             </h1>
             <p style={{ marginTop:24,fontSize:19,lineHeight:1.5,color:"var(--text-soft)",maxWidth:520 }}>
-              A quiet place for your daily to-dos, where you can see what friends are up to — and do the small things side by side.
+              Өдрийн todo-уудаа хадгалах тайван газар — найзуудын үйл ажиллагааг харж, жижиг зүйлсийг хамтдаа хий.
             </p>
             <div style={{ marginTop:36,display:"flex",gap:12,alignItems:"center",flexWrap:"wrap" }}>
               <Link href="/register" className="btn btn-orange" style={{ height:48,padding:"0 22px",fontSize:15,display:"inline-flex",alignItems:"center",gap:8 } as React.CSSProperties}>
-                Get started — it&apos;s free
+                Эхлэх — үнэгүй
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
               </Link>
-              <Link href="/login" className="btn" style={{ height:48,padding:"0 18px",fontSize:15 }}>Sign in</Link>
+              <Link href="/login" className="btn" style={{ height:48,padding:"0 18px",fontSize:15 }}>Нэвтрэх</Link>
             </div>
             <div style={{ marginTop:18,fontSize:13,color:"var(--text-muted)",display:"inline-flex",gap:14,alignItems:"center",flexWrap:"wrap" }}>
-              {["Free forever","No nags, no streaks","Light & dark"].map(t=>(
+              {["Үүрд үнэгүй","Streak байхгүй","Цайвар & харанхуй"].map(t=>(
                 <span key={t} style={{ display:"inline-flex",alignItems:"center",gap:6 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>{t}
                 </span>
@@ -133,17 +133,17 @@ export default function LandingPage() {
               <div style={{ padding:"16px 18px 14px",borderBottom:"1px solid var(--border)",display:"flex",gap:12,alignItems:"center" }}>
                 <div style={{ width:40,height:40,borderRadius:10,background:"var(--bg-subtle)",border:"1px solid var(--border)",display:"grid",placeItems:"center",fontSize:18 }}>☀️</div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:11,color:"var(--text-faint)",fontWeight:600,letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:2 }}>Room</div>
-                  <div style={{ fontSize:15,fontWeight:600 }}>Morning Pages</div>
+                  <div style={{ fontSize:11,color:"var(--text-faint)",fontWeight:600,letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:2 }}>Өрөө</div>
+                  <div style={{ fontSize:15,fontWeight:600 }}>Өглөөний бичих</div>
                 </div>
                 <div style={{ display:"inline-flex",alignItems:"center",gap:5,padding:"2px 7px",borderRadius:999,fontSize:10,fontWeight:600,color:"var(--status-online)",background:"color-mix(in oklab,var(--status-online) 14%,transparent)" }}>
                   <i style={{ width:5,height:5,borderRadius:"50%",background:"var(--status-online)",display:"block" }}/> 2 active
                 </div>
               </div>
               {[
-                { t:"25-min freewrite", d:true, c:[1,1,1,0] },
-                { t:"3 lines of gratitude", d:true, c:[1,1,0,0] },
-                { t:"One sentence intention", d:false, c:[0,1,0,0] },
+                { t:"25 минут чөлөөт бичих", d:true, c:[1,1,1,0] },
+                { t:"3 мөр талархал", d:true, c:[1,1,0,0] },
+                { t:"Нэг өгүүлбэр зорилго", d:false, c:[0,1,0,0] },
               ].map((r,i)=>(
                 <div key={i} className={`ltrow${r.d?" dn":""}`}>
                   <span className={`lcbx${r.d?" d":""}`}/>
@@ -158,7 +158,7 @@ export default function LandingPage() {
               ))}
               <div style={{ padding:"12px 18px",borderTop:"1px solid var(--border)",background:"var(--bg-subtle)",display:"flex",alignItems:"center",gap:8 }}>
                 <span className="lav" style={{ width:18,height:18,fontSize:8,marginLeft:0,boxShadow:"none",background:"#0ea5e9" }}>L</span>
-                <span style={{ fontSize:11.5,color:"var(--text-soft)" }}><b style={{ color:"var(--text)" }}>Liora</b> rolling in 2 min — kettle on ☕</span>
+                <span style={{ fontSize:11.5,color:"var(--text-soft)" }}><b style={{ color:"var(--text)" }}>Liora</b> 2 минутад ирнэ — цай буцалж байна ☕</span>
                 <span style={{ marginLeft:"auto",fontFamily:"var(--font-mono,monospace)",fontSize:10,color:"var(--text-faint)" }}>8:06</span>
               </div>
             </div>
@@ -170,15 +170,15 @@ export default function LandingPage() {
       <section style={{ padding:"100px 32px",background:"var(--bg-elevated)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)" }} id="how">
         <div style={{ maxWidth:1180,margin:"0 auto" }}>
           <div style={{ maxWidth:720,margin:"0 auto 56px",textAlign:"center" }}>
-            <div style={{ display:"inline-block",fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16 }}>How it works</div>
-            <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em" }}>Three small habits, one quiet app.</h2>
-            <p style={{ fontSize:18,lineHeight:1.5,marginTop:18,color:"var(--text-soft)" }}>Most productivity tools are lonely. Taskyy puts low-stakes shared activity at the center of getting things done.</p>
+            <div style={{ display:"inline-block",fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16 }}>Хэрхэн ажилладаг</div>
+            <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em" }}>Гурван жижиг дадал, нэг тайван апп.</h2>
+            <p style={{ fontSize:18,lineHeight:1.5,marginTop:18,color:"var(--text-soft)" }}>Ихэнх бүтээмжийн хэрэгсэл ганцаардмал. Taskyy бага эрсдэлтэй хуваалцсан үйл ажиллагааг голд нь тавьдаг.</p>
           </div>
           <div className="lhgrid">
             {[
-              { n:"01", h:"Plan your day, gently", p:"Today, plans, someday. Add a task in two taps. No deadlines that nag, no streaks that shame." },
-              { n:"02", h:"Show what you're up to", p:"Pick a status or write your own. Friends see it without you DMing them." },
-              { n:"03", h:"Do things together", p:"Make a room for the thing you keep meaning to do. Tick boxes side by side." },
+              { n:"01", h:"Өдрөө зөөлнөөр төлөвлө", p:"Өнөөдөр, төлөвлөгөө, нэгэн өдөр. Хоёр дараалт дарж таск нэмнэ. Шалгадаг дэдлайн байхгүй, ичүүлдэг streak байхгүй." },
+              { n:"02", h:"Юу хийж байгаагаа харуул", p:"Статус сонгох эсвэл өөрийнхөөрөө бич. Найзууд DM илгээхгүйгээр харна." },
+              { n:"03", h:"Хамтдаа зүйл хий", p:"Хийж байсаар ирсэн зүйлдээ өрөө үүсгэ. Хамтдаа нүдний чихэвч тэмдэглэ." },
             ].map(({ n, h, p })=>(
               <div key={n} className="lhcard">
                 <div style={{ fontFamily:"var(--font-mono,monospace)",fontSize:12,color:"var(--text-faint)",marginBottom:16 }}>{n}</div>
@@ -195,14 +195,14 @@ export default function LandingPage() {
         <div style={{ maxWidth:1180,margin:"0 auto" }}>
           <div className="lshow">
             <div>
-              <span style={{ fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16,display:"block" }}>Rooms</span>
-              <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em",maxWidth:480,marginBottom:20 }}>Reading. Running. Writing.<br/>Same thing — together.</h2>
-              <p style={{ fontSize:17,lineHeight:1.55,maxWidth:460,color:"var(--text-soft)" }}>A room is a shared checklist with a chat. Each member ticks their own boxes; you see the room come alive as the day goes.</p>
+              <span style={{ fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16,display:"block" }}>Өрөөнүүд</span>
+              <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em",maxWidth:480,marginBottom:20 }}>Унших. Гүйх. Бичих.<br/>Ижил зүйл — хамтдаа.</h2>
+              <p style={{ fontSize:17,lineHeight:1.55,maxWidth:460,color:"var(--text-soft)" }}>Өрөө нь чаттай хуваалцсан жагсаалт. Гишүүн бүр өөрийн нүдийг тэмдэглэнэ; өдөр явахад өрөө амилж байгааг харна.</p>
               <ul className="lbuls">
                 {[
-                  ["Per-member progress.", "See who is caught up, who is behind, no public shaming."],
-                  ["Built-in chat.", "Cheer each other on, no need to message separately."],
-                  ["Invite-only.", "Just you and the people who said yes."],
+                  ["Гишүүн бүрийн явц.", "Хэн нь гүйцсэн, хэн нь хоцорсныг харна, олны нүдэнд нийтэлдэггүй."],
+                  ["Суулгасан чат.", "Бие биенийгээ урамшуул, тусдаа мессеж илгээх хэрэггүй."],
+                  ["Зөвхөн урилгаар.", "Зөвхөн та болон зөвшөөрсөн хүмүүс."],
                 ].map(([b,d],i)=>(
                   <li key={i}>
                     <div className="lchk">
@@ -218,21 +218,21 @@ export default function LandingPage() {
               <div style={{ padding:"18px 20px",borderBottom:"1px solid var(--border)",display:"flex",gap:12,alignItems:"center" }}>
                 <div style={{ width:44,height:44,borderRadius:10,background:"var(--bg-subtle)",border:"1px solid var(--border)",display:"grid",placeItems:"center",fontSize:22 }}>🏃</div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:11,color:"var(--text-faint)",fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:2 }}>Room · Week 4</div>
-                  <div style={{ fontSize:16,fontWeight:600 }}>Couch to 5K</div>
-                  <div style={{ fontSize:12,color:"var(--text-muted)",marginTop:2 }}>3 members · Three runs a week</div>
+                  <div style={{ fontSize:11,color:"var(--text-faint)",fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:2 }}>Өрөө · 4-р долоо хоног</div>
+                  <div style={{ fontSize:16,fontWeight:600 }}>Диванаас 5км</div>
+                  <div style={{ fontSize:12,color:"var(--text-muted)",marginTop:2 }}>3 гишүүд · Долоо хоногт гурван гүйлт</div>
                 </div>
               </div>
               <div style={{ padding:"14px 20px",borderBottom:"1px solid var(--border)",background:"var(--bg-subtle)" }}>
                 <div style={{ display:"flex",justifyContent:"space-between",fontSize:11.5,color:"var(--text-muted)",marginBottom:6 }}>
-                  <span>Your progress this week</span><span style={{ fontFamily:"var(--font-mono,monospace)" }}>1/3</span>
+                  <span>Энэ долоо хоногийн явц</span><span style={{ fontFamily:"var(--font-mono,monospace)" }}>1/3</span>
                 </div>
                 <div style={{ height:5,borderRadius:999,background:"var(--border)",overflow:"hidden" }}><div style={{ width:"33%",height:"100%",background:"var(--accent)" }}/></div>
               </div>
               {[
-                { t:"Run 1 · 20 min easy", d:true, c:[1,1,1] },
-                { t:"Run 2 · intervals", d:false, c:[0,1,0] },
-                { t:"Run 3 · long run", d:false, c:[0,0,0] },
+                { t:"1-р гүйлт · 20 минут амар", d:true, c:[1,1,1] },
+                { t:"2-р гүйлт · интервал", d:false, c:[0,1,0] },
+                { t:"3-р гүйлт · урт гүйлт", d:false, c:[0,0,0] },
               ].map((r,i)=>(
                 <div key={i} className={`ltrow${r.d?" dn":""}`}>
                   <span className={`lcbx${r.d?" d":""}`}/>
@@ -258,9 +258,9 @@ export default function LandingPage() {
           <div style={{ display:"grid",gridTemplateColumns:"1.3fr 1fr",gap:60,alignItems:"center" }}>
             <div style={{ display:"flex",gap:16,justifyContent:"center",alignItems:"flex-end" }}>
               {[
-                { t:"MON · sourdough day", g:"linear-gradient(135deg,#fde68a,#f59e0b,#92400e)", r:"-3deg", w:180, h:180 },
-                { t:"TUE · 5km · river", g:"linear-gradient(135deg,#a7f3d0,#10b981,#064e3b)", r:"2deg", w:200, h:200, mb:18 },
-                { t:"WED · friend dinner", g:"linear-gradient(135deg,#fbcfe8,#ec4899,#831843)", r:"-1deg", w:180, h:180 },
+                { t:"ДА · хөрмийн өдөр", g:"linear-gradient(135deg,#fde68a,#f59e0b,#92400e)", r:"-3deg", w:180, h:180 },
+                { t:"МЯ · 5км · гол дагуу", g:"linear-gradient(135deg,#a7f3d0,#10b981,#064e3b)", r:"2deg", w:200, h:200, mb:18 },
+                { t:"ЛХ · найзуудтай оройн хоол", g:"linear-gradient(135deg,#fbcfe8,#ec4899,#831843)", r:"-1deg", w:180, h:180 },
               ].map((m,i)=>(
                 <div key={i} className="lmem" style={{ transform:`rotate(${m.r})`,marginBottom:m.mb||0 }}>
                   <div style={{ width:m.w,height:m.h,borderRadius:3,background:m.g }}/>
@@ -269,11 +269,11 @@ export default function LandingPage() {
               ))}
             </div>
             <div>
-              <span style={{ fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16,display:"block" }}>Daily memory</span>
-              <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em",marginBottom:20 }}>The week, looking back.</h2>
-              <p style={{ fontSize:17,lineHeight:1.55,color:"var(--text-soft)" }}>Snap a photo when you finish a task. Taskyy quietly threads them into a small visual diary you can look back on.</p>
+              <span style={{ fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16,display:"block" }}>Өдрийн дурсамж</span>
+              <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em",marginBottom:20 }}>Долоо хоног, ойлгон харах.</h2>
+              <p style={{ fontSize:17,lineHeight:1.55,color:"var(--text-soft)" }}>Таск дуусгахдаа зураг авна уу. Taskyy тэдгээрийг жижиг харааны өдрийн тэмдэглэлд чимээгүй нэмж өгдөг.</p>
               <ul className="lbuls">
-                {[["Private by default.","Memories stay yours unless you turn sharing on."],["Weekly recap.","Sunday email of what you got done — gentle, never a guilt trip."]].map(([b,d],i)=>(
+                {[["Анхдагч нь хувийн.","Хуваалцах идэвхжүүлэхгүй бол дурсамжууд таны л байна."],["Долоо хоногийн тойм.","Ням гарагийн имэйл — юу хийсэнгээ зөөлнөөр харуулна, хэзээ ч гэм буруу бий болгодоггүй."]].map(([b,d],i)=>(
                   <li key={i}><div className="lchk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg></div><div><b style={{ color:"var(--text)" }}>{b}</b> {d}</div></li>
                 ))}
               </ul>
@@ -286,18 +286,18 @@ export default function LandingPage() {
       <section style={{ padding:"100px 32px" }} id="features">
         <div style={{ maxWidth:1180,margin:"0 auto" }}>
           <div style={{ maxWidth:720,margin:"0 auto 56px",textAlign:"center" }}>
-            <div style={{ display:"inline-block",fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16 }}>Everything else</div>
-            <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em" }}>Calm by design.</h2>
-            <p style={{ fontSize:18,lineHeight:1.5,marginTop:18,color:"var(--text-soft)" }}>No streaks. No badges. No notifications that pretend to be urgent.</p>
+            <div style={{ display:"inline-block",fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16 }}>Бусад бүгд</div>
+            <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em" }}>Загварлагдсан тайван.</h2>
+            <p style={{ fontSize:18,lineHeight:1.5,marginTop:18,color:"var(--text-soft)" }}>Streak байхгүй. Медаль байхгүй. Яаралтай мэт дүр үзүүлдэг мэдэгдэл байхгүй.</p>
           </div>
           <div className="lfgrid">
             {[
-              { t:"Light & dark", d:"Two themes, both calm. Auto-switch with your system." },
-              { t:"Categories & priority", d:"Three priorities — enough structure, never overwhelming." },
-              { t:"Quick capture", d:"Hit N anywhere to add a task in two seconds." },
-              { t:"Friend DMs", d:"1:1 chat with anyone in your circle. No groups, no noise." },
-              { t:"Privacy first", d:"Every signal is opt-in. Mute or hide anything." },
-              { t:"Plans view", d:"Glance at the week ahead. Organize tomorrow before today ends." },
+              { t:"Цайвар & харанхуй", d:"Хоёр загвар, хоёул тайван. Системтэйгээ автоматаар солигдоно." },
+              { t:"Ангилал & чухлын зэрэг", d:"Гурван чухлын зэрэг — хангалттай бүтэц, хэзээ ч хэт дарамтлахгүй." },
+              { t:"Хурдан бичилт", d:"Хаана ч N дарахад хоёр секундэд таск нэмнэ." },
+              { t:"Найзтай чат", d:"Тойргийнхоо хэн нэгэнтэй 1:1 чат. Группгүй, чимээгүй." },
+              { t:"Нууцлал эхэлдэг", d:"Бүх дохио зөвшөөрлийн дагуу. Юуг ч чимэглэх эсвэл нуух боломжтой." },
+              { t:"Төлөвлөгөөний харагдац", d:"Ирэх долоо хоногт товч харах. Өнөөдөр дуусахаас өмнө маргаашаа зохион байгуул." },
             ].map(({ t, d })=>(
               <div key={t} className="lfeat">
                 <div className="lfic">
@@ -315,8 +315,8 @@ export default function LandingPage() {
       <section style={{ padding:"100px 32px",background:"var(--bg-elevated)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)" }} id="faq">
         <div style={{ maxWidth:1180,margin:"0 auto" }}>
           <div style={{ maxWidth:720,margin:"0 auto 56px",textAlign:"center" }}>
-            <div style={{ display:"inline-block",fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16 }}>FAQ</div>
-            <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em" }}>A few questions, answered.</h2>
+            <div style={{ display:"inline-block",fontSize:12,fontWeight:600,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--accent)",marginBottom:16 }}>Асуулт</div>
+            <h2 style={{ fontSize:38,fontWeight:700,letterSpacing:"-0.028em" }}>Хэдэн асуулт, хариулт.</h2>
           </div>
           <div style={{ maxWidth:760,margin:"0 auto" }}>
             {FAQS.map(({ q, a }, i)=>(
@@ -336,17 +336,17 @@ export default function LandingPage() {
       <section style={{ padding:"100px 32px 120px" }}>
         <div className="lcta">
           <h2 style={{ fontSize:44,fontWeight:700,letterSpacing:"-0.03em",maxWidth:640,margin:"0 auto 14px",position:"relative" }}>
-            Get the small things done.<br/>With people you like.
+            Жижиг зүйлсийг дуусга.<br/>Дуртай хүмүүстэйгээ.
           </h2>
           <p style={{ fontSize:18,maxWidth:520,margin:"0 auto",color:"var(--text-soft)",position:"relative" }}>
-            Sign up in 30 seconds. Add a task. Add a friend. See what happens.
+            30 секундэд бүртгүүл. Таск нэм. Найз нэм. Юу болохыг хар.
           </p>
           <div style={{ marginTop:32,display:"flex",gap:12,justifyContent:"center",position:"relative",flexWrap:"wrap" }}>
             <Link href="/register" className="btn btn-orange" style={{ height:48,padding:"0 24px",fontSize:15,display:"inline-flex",alignItems:"center",gap:8 } as React.CSSProperties}>
-              Get started — it&apos;s free
+              Эхлэх — үнэгүй
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
             </Link>
-            <Link href="/login" className="btn" style={{ height:48,padding:"0 18px",fontSize:15 }}>Sign in</Link>
+            <Link href="/login" className="btn" style={{ height:48,padding:"0 18px",fontSize:15 }}>Нэвтрэх</Link>
           </div>
         </div>
       </section>
@@ -356,12 +356,12 @@ export default function LandingPage() {
         <div className="lfcols">
           <div>
             <Link href="/" className="lbrand" style={{ marginBottom:14 }}><span className="lbmark">T</span>Taskyy</Link>
-            <p style={{ maxWidth:280,fontSize:14,color:"var(--text-muted)",marginTop:14,lineHeight:1.5 }}>Calm tasks, together.</p>
+            <p style={{ maxWidth:280,fontSize:14,color:"var(--text-muted)",marginTop:14,lineHeight:1.5 }}>Тайван таск, хамтдаа.</p>
           </div>
           {[
-            { h:"Product", l:[["#how","How it works"],["#rooms","Rooms"],["#features","Features"],["/register","Open the app"]] },
-            { h:"Company", l:[["#","About"],["#","Changelog"],["#","Contact"]] },
-            { h:"Resources", l:[["#","Privacy"],["#","Terms"],["#","Status"]] },
+            { h:"Бүтээгдэхүүн", l:[["#how","Хэрхэн ажилладаг"],["#rooms","Өрөөнүүд"],["#features","Боломжууд"],["/register","Апп нээх"]] },
+            { h:"Компани", l:[["#","Тухай"],["#","Өөрчлөлтүүд"],["#","Холбоо барих"]] },
+            { h:"Нөөц", l:[["#","Нууцлал"],["#","Нөхцөл"],["#","Статус"]] },
           ].map(({ h, l })=>(
             <div key={h} className="lfcol">
               <h5>{h}</h5>
@@ -370,7 +370,7 @@ export default function LandingPage() {
           ))}
         </div>
         <div style={{ maxWidth:1180,margin:"64px auto 0",paddingTop:24,borderTop:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12.5,color:"var(--text-muted)",flexWrap:"wrap",gap:12 }}>
-          <span>© 2026 Taskyy. All rights reserved.</span>
+          <span>© 2026 Taskyy. Бүх эрх хуулиар хамгаалагдсан.</span>
           <span style={{ display:"inline-flex",gap:16 }}>
             {["Twitter","Mastodon","Bluesky"].map(s=><a key={s} href="#" style={{ color:"var(--text-muted)" }}>{s}</a>)}
           </span>

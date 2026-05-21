@@ -54,7 +54,7 @@ function UserProfile({ username }: { username: string }) {
   if (!data) return (
     <div className="view-narrow" style={{ textAlign:"center",padding:"60px 20px",color:"var(--text-muted)" }}>
       <div style={{ fontSize:36,marginBottom:12 }}>🔍</div>
-      <div style={{ fontWeight:600,color:"var(--text)",marginBottom:6 }}>User not found</div>
+      <div style={{ fontWeight:600,color:"var(--text)",marginBottom:6 }}>Хэрэглэгч олдсонгүй</div>
     </div>
   );
 
@@ -69,7 +69,7 @@ function UserProfile({ username }: { username: string }) {
       <div className="row" style={{ marginBottom: 20 }}>
         <button className="btn btn-ghost btn-sm" style={{ gap:6 }} onClick={() => router.back()}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Back
+          Буцах
         </button>
       </div>
 
@@ -90,13 +90,13 @@ function UserProfile({ username }: { username: string }) {
                   </span>
                 )}
               </div>
-              <div className="muted" style={{ fontSize:13 }}>@{user.username} · Joined {joinedDate}</div>
+              <div className="muted" style={{ fontSize:13 }}>@{user.username} · Элссэн {joinedDate}</div>
             </div>
             {!isMe && (
               <div className="row gap-2" style={{ paddingBottom:4,flexWrap:"wrap" }}>
                 <button className="btn btn-sm" onClick={() => router.push(`/chat/${user.id}`)}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 16-8-6 18-3-7-7-3z"/></svg>
-                  Message
+                  Мессеж
                 </button>
                 <button
                   className="btn btn-sm btn-primary"
@@ -153,7 +153,7 @@ function UserProfile({ username }: { username: string }) {
           { icon:"✅", value:completedCount, label:"Дуусгасан" },
           { icon:"🔥", value:streak, label:"Streak" },
           { icon:"📋", value:publicTasks.length, label:"Нийтийн таск" },
-          { icon:"📅", value:joinedDate, label:"Элссэн" },
+          { icon:"📅", value:joinedDate, label:"Гишүүн болсон" },
         ].map(s => (
           <div key={s.label} className="card" style={{ textAlign:"center",padding:"14px 8px" }}>
             <div style={{ fontSize:20,marginBottom:4 }}>{s.icon}</div>

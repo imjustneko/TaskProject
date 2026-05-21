@@ -13,15 +13,15 @@ import type { StatusType, PresenceType } from "@/types";
 import { STATUS_META } from "@/types";
 
 const navMain = [
-  { href: "/dashboard",      label: "Home",      icon: "home" },
-  { href: "/feed",           label: "Feed",      icon: "globe" },
-  { href: "/tasks/today",    label: "Today",     icon: "sun" },
-  { href: "/tasks/plans",    label: "Plans",     icon: "calendar" },
-  { href: "/tasks/report",   label: "Report",    icon: "chart" },
-  { href: "/friends",        label: "Friends",   icon: "users" },
-  { href: "/partners",       label: "Partners",  icon: "handshake" },
-  { href: "/profile/edit",   label: "Profile",   icon: "edit" },
-  { href: "/profile/labels", label: "Labels",    icon: "tag" },
+  { href: "/dashboard",      label: "Нүүр",          icon: "home" },
+  { href: "/feed",           label: "Мэдээлэл",      icon: "globe" },
+  { href: "/tasks/today",    label: "Өнөөдөр",       icon: "sun" },
+  { href: "/tasks/plans",    label: "Төлөвлөгөө",    icon: "calendar" },
+  { href: "/tasks/report",   label: "Тайлан",        icon: "chart" },
+  { href: "/friends",        label: "Найзууд",       icon: "users" },
+  { href: "/partners",       label: "Партнер",       icon: "handshake" },
+  { href: "/profile/edit",   label: "Профайл",       icon: "edit" },
+  { href: "/profile/labels", label: "Шошго",         icon: "tag" },
 ];
 
 const STATUS_LIST: StatusType[] = ["PLAYING","COOKING","WALKING","STUDYING","READING","WORKING"];
@@ -49,10 +49,10 @@ function SvgIcon({ name, size = 15 }: { name: string; size?: number }) {
 }
 
 const PRESENCE_OPTIONS: { value: PresenceType; label: string; dot: string; color: string; desc: string }[] = [
-  { value: "ONLINE",    label: "Online",       dot: "online",    color: "#34c759", desc: "Бусдад онлайн харагдана" },
-  { value: "IDLE",      label: "Idle",         dot: "idle",      color: "#ffb340", desc: "Идэвхгүй байгаа мэт" },
-  { value: "DND",       label: "Do Not Disturb", dot: "dnd",    color: "#ff453a", desc: "Мэдэгдэл хааж байна" },
-  { value: "INVISIBLE", label: "Invisible",    dot: "invisible", color: "#8a8a90", desc: "Оффлайн мэт харагдана" },
+  { value: "ONLINE",    label: "Онлайн",           dot: "online",    color: "#34c759", desc: "Бусдад онлайн харагдана" },
+  { value: "IDLE",      label: "Идэвхгүй",         dot: "idle",      color: "#ffb340", desc: "Идэвхгүй байгаа мэт" },
+  { value: "DND",       label: "Бүү саа",           dot: "dnd",      color: "#ff453a", desc: "Мэдэгдэл хааж байна" },
+  { value: "INVISIBLE", label: "Үл үзэгдэх",       dot: "invisible", color: "#8a8a90", desc: "Оффлайн мэт харагдана" },
 ];
 
 function StatusModal({ onClose, currentStatus, currentPresence }: {
@@ -95,7 +95,7 @@ function StatusModal({ onClose, currentStatus, currentPresence }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" style={{ width: 460 }} onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>Set your status</h2>
+          <h2>Статус тохируулах</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}><SvgIcon name="x" size={15} /></button>
         </div>
 
@@ -246,7 +246,7 @@ export function Sidebar() {
     const meta = STATUS_META[user.status.type as StatusType];
     const label = user.status.customText ?? meta?.label ?? user.status.type;
     const emoji = meta?.emoji ?? "";
-    return `${emoji} ${label} · ${presenceOpt?.label ?? "Online"}`.trim();
+    return `${emoji} ${label} · ${presenceOpt?.label ?? "Онлайн"}`.trim();
   })();
 
   return (
@@ -263,13 +263,13 @@ export function Sidebar() {
           style={{ margin: "2px 2px 14px", justifyContent: "flex-start", height: 30, paddingLeft: 10, display: "flex", gap: 7 }}
         >
           <SvgIcon name="plus" size={13} />
-          New task
+          Шинэ таск
           <span style={{ marginLeft: "auto" }}>
             <span className="kbd" style={{ background: "rgba(255,255,255,0.16)", borderColor: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.82)", fontSize: 10 }}>N</span>
           </span>
         </Link>
 
-        <div className="side-section">Personal</div>
+        <div className="side-section">Хувийн</div>
         {navMain.map((n) => {
           const active = pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href));
           return (
@@ -281,7 +281,7 @@ export function Sidebar() {
         })}
 
         <div className="side-section" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span>Rooms</span>
+          <span>Өрөөнүүд</span>
           <Link href="/rooms" style={{ display: "flex", color: "var(--text-faint)", padding: 2 }}>
             <SvgIcon name="plus" size={12} />
           </Link>
@@ -289,7 +289,7 @@ export function Sidebar() {
         {rooms.length === 0 ? (
           <Link href="/rooms" className="side-link" data-active={pathname === "/rooms" ? "1" : "0"}>
             <SvgIcon name="hash" size={14} />
-            <span className="truncate">Browse rooms</span>
+            <span className="truncate">Өрөөнүүд харах</span>
           </Link>
         ) : (
           rooms.slice(0, 6).map(room => {
@@ -318,7 +318,7 @@ export function Sidebar() {
             className="side-me"
             onClick={() => setStatusOpen(true)}
             style={{ cursor: "default" }}
-            title="Click to update your status"
+            title="Статус шинэчлэхийн тулд дарна уу"
           >
             <Avatar user={userForAvatar} size={30} status onBg="subtle" />
             <div className="flex1 truncate">
@@ -333,7 +333,7 @@ export function Sidebar() {
             style={{ width: "100%", marginTop: 4, justifyContent: "flex-start", color: "var(--text-muted)", gap: 8, paddingLeft: 8 }}
           >
             <SvgIcon name="logout" size={14} />
-            Sign out
+            Гарах
           </button>
         </div>
       </aside>

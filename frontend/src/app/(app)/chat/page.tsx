@@ -20,7 +20,7 @@ export default function ChatPage() {
       {/* Left: conversation list */}
       <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", fontWeight: 600, fontSize: 14 }}>
-          Messages
+          Мессежүүд
         </div>
 
         <div style={{ flex: 1, overflowY: "auto" }}>
@@ -57,7 +57,7 @@ export default function ChatPage() {
           {friends.length > 0 && (
             <div>
               <div style={{ padding: "8px 14px 4px", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-faint)" }}>
-                Friends
+                Найзууд
               </div>
               {friends.map(f => (
                 <Link key={f.id} href={`/chat/${f.id}`} style={{
@@ -78,7 +78,7 @@ export default function ChatPage() {
           {friends.length === 0 && convos.length === 0 && (
             <div style={{ padding: "40px 20px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
               <div style={{ fontSize: 28, marginBottom: 10 }}>💬</div>
-              Add friends to start messaging
+              Мессеж бичихийн тулд найз нэмнэ үү
             </div>
           )}
         </div>
@@ -91,8 +91,8 @@ export default function ChatPage() {
         color: "var(--text-muted)", gap: 10,
       }}>
         <div style={{ fontSize: 36 }}>💬</div>
-        <div style={{ fontWeight: 600, color: "var(--text)" }}>Select a conversation</div>
-        <div style={{ fontSize: 13 }}>Choose a friend from the list to start chatting.</div>
+        <div style={{ fontWeight: 600, color: "var(--text)" }}>Яриа сонгох</div>
+        <div style={{ fontSize: 13 }}>Чат эхлүүлэхийн тулд жагсаалтаас найзаа сонгоно уу.</div>
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ function groupByDate(tasks: Task[]): { label: string; tasks: Task[] }[] {
       tasks,
     }));
 
-  if (noDate.length > 0) sorted.push({ label: "Someday", tasks: noDate });
+  if (noDate.length > 0) sorted.push({ label: "Нэгэн өдөр", tasks: noDate });
   return sorted;
 }
 
@@ -51,25 +51,25 @@ function CreatePlanModal({ open, onClose, onCreate }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-hd">
-          <h2>New plan</h2>
+          <h2>Шинэ төлөвлөгөө</h2>
           <button className="btn btn-ghost btn-sm btn-icon" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>
         <div className="col gap-4">
           <input className="input" style={{ fontSize: 15, height: 40, fontWeight: 500 }}
-            placeholder="What are you planning?" autoFocus value={title}
+            placeholder="Юу төлөвлөж байна вэ?" autoFocus value={title}
             onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === "Enter" && save()} />
           <div className="grid-2">
             <div className="field">
-              <label className="field-label">Date</label>
+              <label className="field-label">Огноо</label>
               <input className="input" type="date" value={date} onChange={e => setDate(e.target.value)}
                 min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)} />
             </div>
             <div className="field">
-              <label className="field-label">Priority</label>
+              <label className="field-label">Чухлын зэрэг</label>
               <div className="row gap-2">
-                {[{ k: "HIGH", l: "High" }, { k: "MEDIUM", l: "Med" }, { k: "LOW", l: "Low" }].map(p => (
+                {[{ k: "HIGH", l: "Өндөр" }, { k: "MEDIUM", l: "Дунд" }, { k: "LOW", l: "Бага" }].map(p => (
                   <button key={p.k} className="btn btn-sm" onClick={() => setPriority(p.k)} style={{
                     flex: 1,
                     borderColor: priority === p.k ? "var(--accent)" : "var(--border-strong)",
@@ -81,10 +81,10 @@ function CreatePlanModal({ open, onClose, onCreate }: {
             </div>
           </div>
           <div className="row" style={{ justifyContent: "flex-end", gap: 8 }}>
-            <button className="btn" onClick={onClose}>Cancel</button>
+            <button className="btn" onClick={onClose}>Болих</button>
             <button className="btn btn-accent" onClick={save} disabled={!title.trim()}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="m4 12 5 5L20 6"/></svg>
-              Add plan
+              Нэмэх
             </button>
           </div>
         </div>
@@ -110,13 +110,13 @@ export default function PlansPage() {
   return (
     <div className="view-narrow">
       <PageHeader
-        eyebrow="Plans"
-        title="Upcoming"
-        subtitle={`${total - done} task${total - done === 1 ? "" : "s"} planned`}
+        eyebrow="Төлөвлөгөө"
+        title="Ирэх"
+        subtitle={`${total - done} таск төлөвлөсөн`}
       >
         <button className="btn btn-accent" onClick={() => setShowModal(true)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          New plan
+          Шинэ төлөвлөгөө
         </button>
       </PageHeader>
 
@@ -127,9 +127,9 @@ export default function PlansPage() {
       ) : groups.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "60px 20px", color: "var(--text-muted)" }}>
           <div style={{ width: 52, height: 52, borderRadius: 14, display: "grid", placeItems: "center", background: "var(--bg-subtle)", fontSize: 24 }}>📅</div>
-          <div style={{ fontWeight: 600, color: "var(--text)" }}>No plans yet</div>
-          <div style={{ fontSize: 13, textAlign: "center", maxWidth: 280 }}>Add tasks for tomorrow, next week, or someday.</div>
-          <button className="btn btn-accent btn-sm" style={{ marginTop: 4 }} onClick={() => setShowModal(true)}>Add first plan</button>
+          <div style={{ fontWeight: 600, color: "var(--text)" }}>Төлөвлөгөө байхгүй</div>
+          <div style={{ fontSize: 13, textAlign: "center", maxWidth: 280 }}>Маргааш, ирэх долоо хоног, эсвэл нэгэн өдрийн таск нэмнэ үү.</div>
+          <button className="btn btn-accent btn-sm" style={{ marginTop: 4 }} onClick={() => setShowModal(true)}>Эхний төлөвлөгөө нэмэх</button>
         </div>
       ) : (
         <div className="col gap-6">

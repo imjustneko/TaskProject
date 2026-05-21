@@ -16,10 +16,10 @@ import type { StatusType } from "@/types";
 /* ── Time helper ── */
 function timeAgo(date: string): string {
   const s = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-  if (s < 60) return "just now";
-  if (s < 3600) return `${Math.floor(s / 60)}m`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h`;
-  return `${Math.floor(s / 86400)}d`;
+  if (s < 60) return "дөнгөж сая";
+  if (s < 3600) return `${Math.floor(s / 60)}м`;
+  if (s < 86400) return `${Math.floor(s / 3600)}ц`;
+  return `${Math.floor(s / 86400)}х`;
 }
 
 /* ── Parse message with user emojis ── */
@@ -432,7 +432,7 @@ export default function FeedPage() {
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       <div className="row" style={{ marginBottom: 16, justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.015em" }}>Feed</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.015em" }}>Мэдээлэл</h1>
           <div className="muted" style={{ fontSize: 13, marginTop: 2 }}>Нийтийн нийтлэлүүд</div>
         </div>
         <button

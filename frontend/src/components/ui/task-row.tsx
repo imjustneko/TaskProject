@@ -105,7 +105,7 @@ export function TaskRow({ task, onToggle, onOpen, onDelete, showWhen, showDate, 
           className="btn btn-ghost btn-sm btn-icon"
           style={{ opacity: 0, transition: "opacity 120ms", marginLeft: -4 }}
           onClick={e => { e.stopPropagation(); onDelete(task.id); }}
-          title="Delete"
+          title="Устгах"
           onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
           onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
         >

@@ -75,26 +75,26 @@ export default function LabelsPage() {
   const handleCreate = () => {
     if (!name.trim()) return;
     createLabel.mutate({ name: name.trim(), color }, {
-      onSuccess: () => { toast.show(`"${name}" label нэмлээ!`); setName(""); },
+      onSuccess: () => { toast.show(`"${name}" шошго нэмлээ!`); setName(""); },
       onError: (e: unknown) => {
         const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-        toast.show(typeof msg === "string" ? msg : "Label нэмж чадсангүй", "error");
+        toast.show(typeof msg === "string" ? msg : "Шошго нэмж чадсангүй", "error");
       },
     });
   };
 
   return (
     <div className="view-narrow">
-      <PageHeader eyebrow="Профайл" title="Labels" subtitle="Таскаа өнгөт label-аар ангилаарай." />
+      <PageHeader eyebrow="Профайл" title="Шошго" subtitle="Таскаа өнгөт шошгоор ангилаарай." />
 
       {/* Create */}
       <div className="card" style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Шинэ label нэмэх</div>
+        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Шинэ шошго нэмэх</div>
         <div className="row gap-3" style={{ marginBottom: 12 }}>
           <div style={{ width: 36, height: 36, borderRadius: 8, background: color, flexShrink: 0, border: "1px solid var(--border)" }} />
           <input
             className="input"
-            placeholder="Label нэр…"
+            placeholder="Шошгоны нэр…"
             value={name}
             onChange={e => setName(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleCreate()}

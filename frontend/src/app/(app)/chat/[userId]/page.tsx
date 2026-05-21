@@ -43,17 +43,17 @@ function DMChat({ userId }: { userId: string }) {
             </div>
           </>
         ) : (
-          <div style={{ fontWeight: 600, fontSize: 14 }}>Direct message</div>
+          <div style={{ fontWeight: 600, fontSize: 14 }}>Шууд мессеж</div>
         )}
       </div>
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 4 }}>
         {isLoading ? (
-          <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>Loading messages…</div>
+          <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>Мессеж ачаалж байна…</div>
         ) : messages.length === 0 ? (
           <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13, marginTop: "auto" }}>
-            No messages yet. Say hi! 👋
+            Мессеж байхгүй. Мэндчил! 👋
           </div>
         ) : (
           messages.map((msg, i) => {
@@ -95,7 +95,7 @@ function DMChat({ userId }: { userId: string }) {
       }}>
         <input
           className="input"
-          placeholder="Message…"
+          placeholder="Мессеж…"
           value={text}
           onChange={e => setText(e.target.value)}
           style={{ flex: 1 }}

@@ -7,10 +7,10 @@ import { STATUS_META } from "@/types";
 import type { StatusType } from "@/types";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Home", "/feed": "Feed",
-  "/tasks/today": "Today", "/tasks/plans": "Plans", "/tasks/report": "Report",
-  "/friends": "Friends", "/partners": "Partners", "/rooms": "Rooms",
-  "/profile/edit": "Profile", "/profile/labels": "Labels",
+  "/dashboard": "Нүүр", "/feed": "Мэдээлэл",
+  "/tasks/today": "Өнөөдөр", "/tasks/plans": "Төлөвлөгөө", "/tasks/report": "Тайлан",
+  "/friends": "Найзууд", "/partners": "Партнер", "/rooms": "Өрөөнүүд",
+  "/profile/edit": "Профайл", "/profile/labels": "Шошго",
 };
 
 export function Navbar() {
@@ -19,8 +19,8 @@ export function Navbar() {
   const { user } = useAuthStore();
 
   const title = PAGE_TITLES[pathname] ?? (
-    pathname.startsWith("/rooms/") ? "Room" :
-    pathname.startsWith("/users/") ? "Profile" : "Taskyy"
+    pathname.startsWith("/rooms/") ? "Өрөө" :
+    pathname.startsWith("/users/") ? "Профайл" : "Taskyy"
   );
 
   const statusMeta = user?.status ? STATUS_META[user.status.type as StatusType] : null;
@@ -57,7 +57,7 @@ export function Navbar() {
           </svg>
           <input
             className="input"
-            placeholder="Search…"
+            placeholder="Хайх…"
             style={{ height: 28, fontSize: 12.5, paddingLeft: 28, borderRadius: 8 }}
           />
         </div>
@@ -66,7 +66,7 @@ export function Navbar() {
         <button
           className="btn btn-ghost btn-sm btn-icon"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          title={resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
+          title={resolvedTheme === "dark" ? "Цайвар горим" : "Харанхуй горим"}
         >
           {resolvedTheme === "dark" ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
