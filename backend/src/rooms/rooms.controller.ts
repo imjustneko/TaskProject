@@ -13,9 +13,8 @@ class UpdateRoomDto {
   @IsOptional() @IsString() imageUrl?: string;
 }
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
 import type { Request as ExpressRequest } from 'express';
+import { CloudinaryStorage } from '../cloudinary.storage';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -115,12 +114,7 @@ export class RoomsController {
 
   @Post(':id/emojis')
   @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: join(process.cwd(), 'uploads', 'emojis'),
-      filename: (_, file, cb) => {
-        cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`);
-      },
-    }),
+    storage: new CloudinaryStorage('emojis'),
     limits: { fileSize: 256 * 1024 },
     fileFilter: (_, file, cb) => {
       if (file.mimetype.startsWith('image/')) cb(null, true);
@@ -135,10 +129,7 @@ export class RoomsController {
   ) {
     if (!file) throw new BadRequestException('No file uploaded');
     if (!name?.trim()) throw new BadRequestException('Emoji name required');
-    const port = process.env.PORT ?? 3001;
-    const baseUrl = `${req.protocol}://${req.hostname}:${port}`;
-    const imageUrl = `${baseUrl}/uploads/emojis/${file.filename}`;
-    return this.rooms.addEmoji(id, req.user.id, name.trim().toLowerCase().replace(/\s+/g, '_'), imageUrl);
+    return this.rooms.addEmoji(id, req.user.id, name.trim().toLowerCase().replace(/\s+/g, '_'), file.path);
   }
 
   @Delete(':id/emojis/:emojiId')

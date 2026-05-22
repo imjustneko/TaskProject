@@ -4,13 +4,12 @@ import {
   HttpCode, HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
 import type { Request as ExpressRequest } from 'express';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { SafeUser } from './users.service';
+import { CloudinaryStorage } from '../cloudinary.storage';
 
 interface AuthRequest extends ExpressRequest { user: SafeUser }
 
@@ -31,13 +30,7 @@ export class UsersController {
 
   @Post('me/avatar')
   @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: join(process.cwd(), 'uploads', 'avatars'),
-      filename: (_, file, cb) => {
-        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${unique}${extname(file.originalname)}`);
-      },
-    }),
+    storage: new CloudinaryStorage('avatars'),
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_, file, cb) => {
       if (file.mimetype.startsWith('image/')) cb(null, true);
@@ -49,10 +42,7 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('No file uploaded');
-    const port = process.env.PORT ?? 3001;
-    const baseUrl = `${req.protocol}://${req.hostname}:${port}`;
-    const avatarUrl = `${baseUrl}/uploads/avatars/${file.filename}`;
-    return this.users.updateProfile(req.user.id, { avatarUrl });
+    return this.users.updateProfile(req.user.id, { avatarUrl: file.path });
   }
 
   @Get('me/emojis')
@@ -62,12 +52,7 @@ export class UsersController {
 
   @Post('me/emojis')
   @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: join(process.cwd(), 'uploads', 'emojis'),
-      filename: (_, file, cb) => {
-        cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`);
-      },
-    }),
+    storage: new CloudinaryStorage('emojis'),
     limits: { fileSize: 256 * 1024 },
     fileFilter: (_, file, cb) => {
       if (file.mimetype.startsWith('image/')) cb(null, true);
@@ -81,10 +66,7 @@ export class UsersController {
   ) {
     if (!file) throw new BadRequestException('No file uploaded');
     if (!name?.trim()) throw new BadRequestException('Emoji name required');
-    const port = process.env.PORT ?? 3001;
-    const baseUrl = `${req.protocol}://${req.hostname}:${port}`;
-    const imageUrl = `${baseUrl}/uploads/emojis/${file.filename}`;
-    return this.users.addEmoji(req.user.id, name.trim().toLowerCase().replace(/\s+/g, '_'), imageUrl);
+    return this.users.addEmoji(req.user.id, name.trim().toLowerCase().replace(/\s+/g, '_'), file.path);
   }
 
   @Delete('me/emojis/:id')

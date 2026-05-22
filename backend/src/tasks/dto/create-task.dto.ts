@@ -1,6 +1,6 @@
 import {
   IsString, IsOptional, IsBoolean, IsEnum, IsArray,
-  IsDateString, MinLength, MaxLength,
+  IsDateString, IsUrl, MinLength, MaxLength,
 } from 'class-validator';
 import { Priority } from '@prisma/client';
 
@@ -31,6 +31,11 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(Priority)
   priority?: Priority;
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  imageUrl?: string;
 
   @IsOptional()
   @IsBoolean()

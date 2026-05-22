@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { use, useState, useRef, useEffect } from "react";
 import { useDMs, useSendDM } from "@/hooks/useMessages";
 import { useAuthStore } from "@/stores/authStore";
 import { Avatar } from "@/components/ui/avatar";
 import { useT } from "@/hooks/useT";
 
-export default async function DMPage({ params }: PageProps<"/chat/[userId]">) {
-  const { userId } = await params;
+export default function DMPage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = use(params);
   return <DMChat userId={userId} />;
 }
 

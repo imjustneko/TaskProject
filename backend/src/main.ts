@@ -8,11 +8,13 @@ import * as fs from 'fs';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn', 'log', 'debug'] });
 
-  for (const sub of ['avatars', 'emojis']) {
-    const dir = join(process.cwd(), 'uploads', sub);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (process.env.NODE_ENV !== 'production') {
+    for (const sub of ['avatars', 'emojis']) {
+      const dir = join(process.cwd(), 'uploads', sub);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    }
+    app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
   }
-  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
   app.setGlobalPrefix('api');
 

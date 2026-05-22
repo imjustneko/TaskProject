@@ -24,6 +24,7 @@ interface CreateTaskInput {
   category?: string;
   priority?: Priority;
   isPublic?: boolean;
+  imageUrl?: string;
   labelIds?: string[];
 }
 
