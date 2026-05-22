@@ -98,9 +98,9 @@ function CreatePlanModal({ open, onClose, onCreate }: {
 export default function PlansPage() {
   const { data: tasks = [], isLoading } = usePlansTasks();
   const toast = useToast();
-  const { t } = useT();
+  const { t, tf } = useT();
   const toggle = useToggleTask((task: Task) => {
-    toast.show(`"${task.title}" дууссан!`);
+    toast.show(tf("task_done_toast", task.title));
   });
   const remove = useDeleteTask();
   const create = useCreateTask();

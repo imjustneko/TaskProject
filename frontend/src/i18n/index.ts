@@ -414,6 +414,33 @@ export const translations = {
     land_hero_sub:     "Tasks, shared rooms, and friend activity — all in one calm place.",
     land_cta1:         "Start free",
     land_cta2:         "See how it works",
+
+    // ── Auth brand panel ──
+    reg_brand_headline: "Join Taskyy.",
+    reg_brand_sub:      "Manage tasks, connect with friends, do things together.",
+    brand_tagline:      "Calm productivity.",
+    pw_min_hint:        "At least 8 characters",
+
+    // ── Toast messages ──
+    status_cleared:     "Status cleared",
+    profile_saved:      "Profile saved!",
+    avatar_updated:     "Photo updated!",
+    avatar_upload_err:  "Could not upload",
+    avatar_removed:     "Photo removed",
+    task_done_toast:    (title: string) => `"${title}" done! ✓`,
+    task_failed_toast:  (title: string) => `"${title}" failed ✗`,
+    task_skipped_toast: (title: string) => `"${title}" skipped →`,
+    task_added_toast:   (title: string) => `"${title}" added!`,
+    google_soon:        "Google sign-in coming soon! Use email for now.",
+    apple_soon:         "Apple sign-in coming soon! Use email for now.",
+    google_reg_soon:    "Google sign-up coming soon! Use email for now.",
+    apple_reg_soon:     "Apple sign-up coming soon! Use email for now.",
+    forgot_pw_toast:    "Password reset coming soon — email support@taskyy.app",
+
+    // ── Direct messages ──
+    direct_msg:         "Direct message",
+    dm_loading:         "Loading messages…",
+    dm_empty:           "No messages yet. Say hi! 👋",
   },
 
   mn: {
@@ -831,6 +858,33 @@ export const translations = {
     land_hero_sub:     "Таск, хуваалцсан өрөө, найзуудын үйл ажиллагааг харах тайван газар.",
     land_cta1:         "Үнэгүй эхлэх",
     land_cta2:         "Хэрхэн ажилладаг вэ",
+
+    // ── Auth brand panel ──
+    reg_brand_headline: "Taskyy-д нэгдэх.",
+    reg_brand_sub:      "Таск удирдах, найзтайгаа холбогдох, хамт үйл ажиллагаа явуулах.",
+    brand_tagline:      "Тайван бүтээмжийн төлөө",
+    pw_min_hint:        "Наймаас дээш тэмдэгт",
+
+    // ── Toast messages ──
+    status_cleared:     "Статус арилав",
+    profile_saved:      "Профайл хадгалагдлаа!",
+    avatar_updated:     "Зураг шинэчлэгдлээ!",
+    avatar_upload_err:  "Оруулж чадсангүй",
+    avatar_removed:     "Зураг устгагдлаа",
+    task_done_toast:    (title: string) => `"${title}" дууссан! ✓`,
+    task_failed_toast:  (title: string) => `"${title}" болоогүй ✗`,
+    task_skipped_toast: (title: string) => `"${title}" алгасав →`,
+    task_added_toast:   (title: string) => `"${title}" таск нэмлээ!`,
+    google_soon:        "Google нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
+    apple_soon:         "Apple нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
+    google_reg_soon:    "Google бүртгүүлэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
+    apple_reg_soon:     "Apple бүртгүүлэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
+    forgot_pw_toast:    "Нууц үг сэргээх удахгүй нэмэгдэнэ — support@taskyy.app-д хандана уу",
+
+    // ── Direct messages ──
+    direct_msg:         "Шууд мессеж",
+    dm_loading:         "Мессеж ачаалж байна…",
+    dm_empty:           "Мессеж байхгүй. Мэндчил! 👋",
   },
 } as const;
 

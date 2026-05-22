@@ -90,7 +90,7 @@ function TodayTaskRow({ task, logs, onToggle }: {
   logs: { taskId: string; status: LogStatus }[];
   onToggle: (id: string) => void;
 }) {
-  const { t } = useT();
+  const { t, tf } = useT();
   const setStatus = useSetDailyStatus();
   const clearStatus = useClearDailyStatus();
   const toast = useToast();
@@ -100,13 +100,13 @@ function TodayTaskRow({ task, logs, onToggle }: {
 
   const set = (s: LogStatus) => {
     if (status === s) {
-      clearStatus.mutate(task.id, { onSuccess: () => toast.show("Статус арилав") });
+      clearStatus.mutate(task.id, { onSuccess: () => toast.show(t("status_cleared")) });
     } else {
       setStatus.mutate({ taskId: task.id, status: s }, {
         onSuccess: () => toast.show(
-          s === "DONE" ? `"${task.title}" дууссан! ✓`
-          : s === "FAILED" ? `"${task.title}" болоогүй ✗`
-          : `"${task.title}" алгасав →`
+          s === "DONE" ? tf("task_done_toast", task.title)
+          : s === "FAILED" ? tf("task_failed_toast", task.title)
+          : tf("task_skipped_toast", task.title)
         ),
       });
     }
@@ -275,7 +275,7 @@ export default function TodayTasksPage() {
   const toast = useToast();
   const { t, tf } = useT();
   const toggle = useToggleTask((task: Task) => {
-    toast.show(`"${task.title}" дууссан!`);
+    toast.show(tf("task_done_toast", task.title));
   });
   const [showModal, setShowModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);

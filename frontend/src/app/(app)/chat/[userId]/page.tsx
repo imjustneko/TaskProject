@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useDMs, useSendDM } from "@/hooks/useMessages";
 import { useAuthStore } from "@/stores/authStore";
 import { Avatar } from "@/components/ui/avatar";
+import { useT } from "@/hooks/useT";
 
 export default async function DMPage({ params }: PageProps<"/chat/[userId]">) {
   const { userId } = await params;
@@ -12,6 +13,7 @@ export default async function DMPage({ params }: PageProps<"/chat/[userId]">) {
 
 function DMChat({ userId }: { userId: string }) {
   const { user: me } = useAuthStore();
+  const { t } = useT();
   const { data: messages = [], isLoading } = useDMs(userId);
   const send = useSendDM(userId);
   const [text, setText] = useState("");
@@ -43,17 +45,17 @@ function DMChat({ userId }: { userId: string }) {
             </div>
           </>
         ) : (
-          <div style={{ fontWeight: 600, fontSize: 14 }}>Шууд мессеж</div>
+          <div style={{ fontWeight: 600, fontSize: 14 }}>{t("direct_msg")}</div>
         )}
       </div>
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 4 }}>
         {isLoading ? (
-          <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>Мессеж ачаалж байна…</div>
+          <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>{t("dm_loading")}</div>
         ) : messages.length === 0 ? (
           <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13, marginTop: "auto" }}>
-            Мессеж байхгүй. Мэндчил! 👋
+            {t("dm_empty")}
           </div>
         ) : (
           messages.map((msg, i) => {
@@ -95,7 +97,7 @@ function DMChat({ userId }: { userId: string }) {
       }}>
         <input
           className="input"
-          placeholder="Мессеж…"
+          placeholder={t("message_ph")}
           value={text}
           onChange={e => setText(e.target.value)}
           style={{ flex: 1 }}

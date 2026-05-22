@@ -101,7 +101,7 @@ function ComposeBox() {
           {showImg && (
             <div style={{ marginTop: 8 }}>
               <input className="input" style={{ fontSize: 13, height: 34 }}
-                placeholder="Зургийн URL хаяг…" value={imgUrl} onChange={e => setImgUrl(e.target.value)} />
+                placeholder="Image URL…" value={imgUrl} onChange={e => setImgUrl(e.target.value)} />
               {imgUrl && (
                 <div style={{ marginTop: 8, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -175,7 +175,7 @@ function ComposeBox() {
           <div className="row" style={{ marginTop: 10, justifyContent: "space-between" }}>
             <div className="row gap-1">
               {/* Image */}
-              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setShowImg(v=>!v)} title="Зураг нэмэх"
+              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setShowImg(v=>!v)} title="Add image"
                 style={{ color: showImg?"var(--accent)":"var(--text-muted)" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/>
@@ -447,7 +447,7 @@ export default function FeedPage() {
         <button
           className="btn btn-ghost btn-sm btn-icon"
           onClick={() => refetch()}
-          title="Шинэчлэх"
+          title="Refresh"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>

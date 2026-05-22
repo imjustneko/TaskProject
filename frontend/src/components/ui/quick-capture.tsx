@@ -16,7 +16,7 @@ export function QuickCapture() {
   const createTask = useCreateTask();
   const { data: labels = [] } = useLabels();
   const toast = useToast();
-  const { t } = useT();
+  const { t, tf } = useT();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const PRIORITIES = [
@@ -48,7 +48,7 @@ export function QuickCapture() {
         date: date || undefined,
         labelIds: selectedLabels,
       } as Parameters<typeof createTask.mutate>[0],
-      { onSuccess: () => { toast.show(`"${title}" таск нэмлээ!`); setOpen(false); } }
+      { onSuccess: () => { toast.show(tf("task_added_toast", title)); setOpen(false); } }
     );
   };
 

@@ -50,7 +50,7 @@ export default function ProfileEditPage() {
     onSuccess: (updated) => {
       updateUser(updated);
       setDirty(false);
-      toast.show("Профайл хадгалагдлаа!");
+      toast.show(t("profile_saved"));
     },
   });
 
@@ -60,13 +60,13 @@ export default function ProfileEditPage() {
       form.append("file", file);
       return api.post("/users/me/avatar", form).then(r => r.data);
     },
-    onSuccess: (updated) => { updateUser(updated); toast.show("Зураг шинэчлэгдлээ!"); },
-    onError: () => { toast.show("Оруулж чадсангүй", "error"); setAvatarPreview(null); },
+    onSuccess: (updated) => { updateUser(updated); toast.show(t("avatar_updated")); },
+    onError: () => { toast.show(t("avatar_upload_err"), "error"); setAvatarPreview(null); },
   });
 
   const removeAvatar = useMutation({
     mutationFn: () => api.patch("/users/me", { avatarUrl: null }).then(r => r.data),
-    onSuccess: (updated) => { updateUser(updated); setAvatarPreview(null); toast.show("Зураг устгагдлаа"); },
+    onSuccess: (updated) => { updateUser(updated); setAvatarPreview(null); toast.show(t("avatar_removed")); },
   });
 
   const setStatusMutation = useMutation({

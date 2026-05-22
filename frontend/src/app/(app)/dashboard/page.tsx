@@ -21,10 +21,12 @@ function ChevronRight({ size = 11 }: { size?: number }) {
 
 // ── Streak card — ambient glow + week bars ────────────────────────────────
 function StreakCard({ current, best }: { current: number; best: number }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const today = new Date().getDay();
   const todayIdx = today === 0 ? 6 : today - 1;
-  const labels = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"];
+  const labels = lang === "mn"
+    ? ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"]
+    : ["M", "T", "W", "T", "F", "S", "S"];
   // estimate weekly from streak (simplified visual)
   const weekly = labels.map((_, i) => {
     if (i > todayIdx) return 0;

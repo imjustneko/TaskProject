@@ -92,20 +92,20 @@ export default function LoginPage() {
             fontSize: 36, fontWeight: 700, letterSpacing: "-0.025em",
             lineHeight: 1.15, color: "#2a1a14", maxWidth: 440,
           }}>
-            Ажлаа дуусга,<br />хамтдаа.
+            {t("land_hero_title").split("\n").map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}
           </div>
           <div style={{
             fontSize: 15, color: "#6b4530", marginTop: 14,
             maxWidth: 400, lineHeight: 1.6,
           }}>
-            Өдрийн таск, хуваалцсан өрөө, найзуудын үйл ажиллагааг харах тайван газар.
+            {t("land_hero_sub")}
           </div>
 
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 10, maxWidth: 380 }}>
             {[
-              { e: "☀️", t: "Өглөөний бичих", s: "3 найз одоо бичиж байна" },
-              { e: "📖", t: "Аажим уншилт · Demon Copperhead", s: "10-р бүлэг Пүрэвт дуусна" },
-              { e: "🏃", t: "Диванаас 5км", s: "Priya 2-р гүйлтийг дуусгалаа" },
+              { e: "☀️", t: "Morning Pages", s: "3 friends writing now" },
+              { e: "📖", t: "Slow Reading · Demon Copperhead", s: "Chapter 10 done by Thursday" },
+              { e: "🏃", t: "Couch to 5K", s: "Priya finished run 2" },
             ].map((c, i) => (
               <div key={i} style={{
                 display: "flex", gap: 12, alignItems: "center",
@@ -131,7 +131,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ marginTop: "auto", fontSize: 12, color: "#8a6648", paddingTop: 32 }}>
-          © Taskyy 2026 · Тайван бүтээмжийн төлөө
+          © Taskyy 2026 · {t("brand_tagline")}
         </div>
       </div>
 
@@ -188,7 +188,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
               />
               <div style={{ fontSize: 12, color: "var(--accent)", marginTop: 4, textAlign: "right", cursor: "pointer" }}
-                onClick={() => showToast("Нууц үг сэргээх удахгүй нэмэгдэнэ — support@taskyy.app-д хандана уу")}>
+                onClick={() => showToast(t("forgot_pw_toast"))}>
                 {t("forgot_pw")}
               </div>
             </div>
@@ -223,7 +223,7 @@ export default function LoginPage() {
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center", position: "relative" }}
-              onClick={() => showToast("Google нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.")}
+              onClick={() => showToast(t("google_soon"))}
             >
               <GoogleIcon />
               {t("continue_google")}
@@ -231,7 +231,7 @@ export default function LoginPage() {
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center" }}
-              onClick={() => showToast("Apple нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.")}
+              onClick={() => showToast(t("apple_soon"))}
             >
               <AppleIcon />
               {t("continue_apple")}

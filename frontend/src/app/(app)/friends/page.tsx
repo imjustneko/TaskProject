@@ -206,7 +206,7 @@ export default function FriendsPage() {
                 {!isPartner && (
                   <button
                     className="btn btn-sm"
-                    title="Accountability partner болох"
+                    title="Become accountability partner"
                     onClick={() => sendPartnerReq.mutate(f.id, {
                       onSuccess: () => toast.show(tf("partner_req_sent", f.displayName)),
                       onError: (e: unknown) => {
