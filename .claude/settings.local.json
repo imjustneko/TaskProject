@@ -58,7 +58,11 @@
       "Bash(git stash *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(git -C \"a:/Projects/Different Project/TaskProject\" ls-files backend/dist/)",
+      "Bash(git -C \"a:/Projects/Different Project/TaskProject\" rm -r --cached backend/dist/)",
+      "Bash(git -C \"a:/Projects/Different Project/TaskProject\" status --short)",
+      "Bash(git -C \"a:/Projects/Different Project/TaskProject\" add backend/.gitignore backend/package.json .node-version)"
     ]
   }
 }
