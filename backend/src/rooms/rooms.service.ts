@@ -1,7 +1,7 @@
 import {
   Injectable, NotFoundException, ForbiddenException, ConflictException,
 } from '@nestjs/common';
-import { RoomRole } from '@prisma/client';
+import { RoomRole, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 
@@ -114,7 +114,7 @@ export class RoomsService {
     if (!member || member.role !== RoomRole.OWNER) throw new ForbiddenException('Only the owner can edit this room');
     return this.prisma.room.update({
       where: { id: roomId },
-      data: dto,
+      data: dto as Prisma.RoomUpdateInput,
       include: ROOM_INCLUDE,
     });
   }
