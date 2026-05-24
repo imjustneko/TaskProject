@@ -8,16 +8,16 @@ import { Navbar } from "@/components/layout/navbar";
 import { QuickCapture } from "@/components/ui/quick-capture";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, _hasHydrated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, _hasHydrated, router]);
 
-  if (!isAuthenticated) {
+  if (!_hasHydrated || !isAuthenticated) {
     return (
       <div style={{ display: "grid", placeItems: "center", height: "100vh", background: "var(--bg)" }}>
         <div style={{
