@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAuthStore } from "@/stores/authStore";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api",
@@ -18,11 +19,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+let redirectingToLogin = false;
+
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("taskyy-auth");
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      !redirectingToLogin
+    ) {
+      redirectingToLogin = true;
+      useAuthStore.getState().logout();
       window.location.href = "/login";
     }
     return Promise.reject(error);
