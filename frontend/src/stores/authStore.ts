@@ -20,10 +20,16 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       _hasHydrated: false,
-      setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
+      setAuth: (user, token) => {
+        if (typeof window !== "undefined") (window as any).__authToken = token;
+        set({ user, token, isAuthenticated: true });
+      },
       updateUser: (partial) =>
         set((s) => ({ user: s.user ? { ...s.user, ...partial } : null })),
-      logout: () => set({ user: null, token: null, isAuthenticated: false }),
+      logout: () => {
+        if (typeof window !== "undefined") (window as any).__authToken = null;
+        set({ user: null, token: null, isAuthenticated: false });
+      },
       setHasHydrated: (v) => set({ _hasHydrated: v }),
     }),
     {

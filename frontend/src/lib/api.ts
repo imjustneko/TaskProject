@@ -7,7 +7,20 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
+  if (typeof window === "undefined") return config;
+
+  // window.__authToken is set by authStore.setAuth (works across module instances)
+  let token: string | null = (window as any).__authToken ?? null;
+
+  // On page refresh __authToken won't be set yet — fall back to localStorage
+  if (!token) {
+    try {
+      const raw = localStorage.getItem("taskyy-auth");
+      token = JSON.parse(raw ?? "null")?.state?.token ?? null;
+      if (token) (window as any).__authToken = token;
+    } catch {}
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
