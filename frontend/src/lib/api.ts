@@ -9,10 +9,8 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   if (typeof window === "undefined") return config;
 
-  // window.__authToken is set by authStore.setAuth (works across module instances)
   let token: string | null = (window as any).__authToken ?? null;
 
-  // On page refresh __authToken won't be set yet — fall back to localStorage
   if (!token) {
     try {
       const raw = localStorage.getItem("taskyy-auth");
@@ -20,6 +18,8 @@ api.interceptors.request.use((config) => {
       if (token) (window as any).__authToken = token;
     } catch {}
   }
+
+  console.log("[API]", config.method?.toUpperCase(), config.url, "| token:", token ? token.slice(0, 30) + "..." : "NULL");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
