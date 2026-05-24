@@ -7,14 +7,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const raw = localStorage.getItem("taskyy-auth");
-    if (raw) {
-      const state = JSON.parse(raw)?.state;
-      if (state?.token) {
-        config.headers.Authorization = `Bearer ${state.token}`;
-      }
-    }
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
