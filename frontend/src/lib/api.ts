@@ -19,7 +19,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-let redirectingToLogin = false;
+let handlingLogout = false;
 
 api.interceptors.response.use(
   (res) => res,
@@ -27,11 +27,12 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       typeof window !== "undefined" &&
-      !redirectingToLogin
+      !handlingLogout
     ) {
-      redirectingToLogin = true;
+      handlingLogout = true;
       useAuthStore.getState().logout();
-      window.location.href = "/login";
+      // Let (app)/layout.tsx useEffect handle the soft redirect
+      setTimeout(() => { handlingLogout = false; }, 2000);
     }
     return Promise.reject(error);
   }
