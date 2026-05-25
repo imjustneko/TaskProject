@@ -133,6 +133,23 @@ export class UsersService {
     return { user: safeUser, completedCount, streak, publicTasks };
   }
 
+  async generateUniqueUsername(email: string, displayName?: string | null): Promise<string> {
+    const base = (email.split('@')[0] ?? displayName ?? 'user')
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+      .slice(0, 18) || 'user';
+
+    let candidate = base.length >= 3 ? base : `${base}_user`;
+    for (let i = 1; i <= 9999; i++) {
+      const exists = await this.prisma.user.findUnique({ where: { username: candidate } });
+      if (!exists) return candidate;
+      candidate = `${base}${i}`;
+    }
+    return `user_${Date.now().toString(36)}`;
+  }
+
   async updateProfile(
     id: string,
     data: { displayName?: string; bio?: string; avatarUrl?: string | null },

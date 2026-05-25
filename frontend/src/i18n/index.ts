@@ -421,6 +421,12 @@ export const translations = {
     brand_tagline:      "Calm productivity.",
     pw_min_hint:        "At least 8 characters",
 
+    // ── Validation ──
+    email_invalid:      "Please enter a valid email address",
+    username_available: "✓ Available",
+    username_taken:     "Already taken",
+    checking:           "Checking…",
+
     // ── Toast messages ──
     status_cleared:     "Status cleared",
     profile_saved:      "Profile saved!",
@@ -431,10 +437,6 @@ export const translations = {
     task_failed_toast:  (title: string) => `"${title}" failed ✗`,
     task_skipped_toast: (title: string) => `"${title}" skipped →`,
     task_added_toast:   (title: string) => `"${title}" added!`,
-    google_soon:        "Google sign-in coming soon! Use email for now.",
-    apple_soon:         "Apple sign-in coming soon! Use email for now.",
-    google_reg_soon:    "Google sign-up coming soon! Use email for now.",
-    apple_reg_soon:     "Apple sign-up coming soon! Use email for now.",
     forgot_pw_toast:    "Password reset coming soon — email support@taskyy.app",
 
     // ── Direct messages ──
@@ -865,6 +867,12 @@ export const translations = {
     brand_tagline:      "Тайван бүтээмжийн төлөө",
     pw_min_hint:        "Наймаас дээш тэмдэгт",
 
+    // ── Validation ──
+    email_invalid:      "Зөв имэйл хаяг оруулна уу",
+    username_available: "✓ Боломжтой",
+    username_taken:     "Аль хэдийн ашиглагдсан",
+    checking:           "Шалгаж байна…",
+
     // ── Toast messages ──
     status_cleared:     "Статус арилав",
     profile_saved:      "Профайл хадгалагдлаа!",
@@ -875,10 +883,6 @@ export const translations = {
     task_failed_toast:  (title: string) => `"${title}" болоогүй ✗`,
     task_skipped_toast: (title: string) => `"${title}" алгасав →`,
     task_added_toast:   (title: string) => `"${title}" таск нэмлээ!`,
-    google_soon:        "Google нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
-    apple_soon:         "Apple нэвтрэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
-    google_reg_soon:    "Google бүртгүүлэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
-    apple_reg_soon:     "Apple бүртгүүлэлт удахгүй нэмэгдэнэ! Одоо имэйл ашиглана уу.",
     forgot_pw_toast:    "Нууц үг сэргээх удахгүй нэмэгдэнэ — support@taskyy.app-д хандана уу",
 
     // ── Direct messages ──

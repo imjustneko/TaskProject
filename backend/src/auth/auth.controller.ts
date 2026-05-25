@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Body,
+  Query,
   UseGuards,
   Request,
   HttpCode,
@@ -11,6 +12,7 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { GoogleAuthDto, AppleAuthDto } from './dto/oauth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -26,6 +28,23 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto) {
     return this.auth.login(dto);
+  }
+
+  @Get('check-username')
+  async checkUsername(@Query('username') username: string) {
+    return this.auth.checkUsernameAvailable(username ?? '');
+  }
+
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(@Body() dto: GoogleAuthDto) {
+    return this.auth.googleLogin(dto.token);
+  }
+
+  @Post('apple')
+  @HttpCode(HttpStatus.OK)
+  async appleLogin(@Body() dto: AppleAuthDto) {
+    return this.auth.appleLogin(dto.idToken, dto.displayName);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,7 +1,10 @@
 import { IsEmail, IsString, MinLength, MaxLength, Matches } from 'class-validator';
 
 export class RegisterDto {
-  @IsEmail({}, { message: 'Invalid email address' })
+  @IsEmail({ require_tld: true }, { message: 'Please enter a valid email address' })
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+    message: 'Please enter a valid email address',
+  })
   email: string;
 
   @IsString()

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useLogin } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { useLogin, useGoogleOAuth, useOAuthMutation } from "@/hooks/useAuth";
 import { useT } from "@/hooks/useT";
 
 function GoogleIcon() {
@@ -41,12 +41,50 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   );
 }
 
+declare global {
+  interface Window {
+    AppleID?: {
+      auth: {
+        init: (config: object) => void;
+        signIn: () => Promise<{ authorization: { id_token: string }; user?: { name?: { firstName?: string; lastName?: string } } }>;
+      };
+    };
+  }
+}
+
 export default function LoginPage() {
   const login = useLogin();
+  const { login: googleLogin, isPending: googlePending } = useGoogleOAuth();
+  const appleMutation = useOAuthMutation();
   const { t } = useT();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+    script.async = true;
+    script.onload = () => {
+      window.AppleID?.auth.init({
+        clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
+        scope: "name email",
+        redirectURI: window.location.origin,
+        usePopup: true,
+      });
+    };
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
+  const handleAppleLogin = async () => {
+    try {
+      const data = await window.AppleID?.auth.signIn();
+      if (!data) return;
+      const displayName = [data.user?.name?.firstName, data.user?.name?.lastName].filter(Boolean).join(" ");
+      appleMutation.mutate({ provider: "apple", idToken: data.authorization.id_token, displayName });
+    } catch {}
+  };
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -219,22 +257,35 @@ export default function LoginPage() {
           </div>
 
           {/* Social login */}
+          {(login.error || appleMutation.error) && (
+            <div style={{
+              marginBottom: 12, padding: "10px 14px", borderRadius: 8,
+              background: "color-mix(in oklab, var(--status-busy) 12%, transparent)",
+              color: "var(--status-busy)", fontSize: 13,
+              border: "1px solid color-mix(in oklab, var(--status-busy) 22%, transparent)",
+            }}>
+              {((login.error || appleMutation.error) as { response?: { data?: { message?: string } } })
+                ?.response?.data?.message ?? t("login_error")}
+            </div>
+          )}
           <div className="col gap-2">
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center", position: "relative" }}
-              onClick={() => showToast(t("google_soon"))}
+              onClick={() => googleLogin()}
+              disabled={googlePending}
             >
               <GoogleIcon />
-              {t("continue_google")}
+              {googlePending ? t("logging_in") : t("continue_google")}
             </button>
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center" }}
-              onClick={() => showToast(t("apple_soon"))}
+              onClick={handleAppleLogin}
+              disabled={appleMutation.isPending}
             >
               <AppleIcon />
-              {t("continue_apple")}
+              {appleMutation.isPending ? t("logging_in") : t("continue_apple")}
             </button>
           </div>
 

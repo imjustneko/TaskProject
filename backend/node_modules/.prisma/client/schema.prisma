@@ -84,7 +84,9 @@ model User {
   email        String   @unique
   username     String   @unique
   displayName  String
-  passwordHash String
+  passwordHash String?
+  googleId     String?  @unique
+  appleId      String?  @unique
   avatarUrl    String?
   bio          String?
   role         Role     @default(USER)
