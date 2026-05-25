@@ -73,11 +73,8 @@ export function useOAuthMutation() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (data: { provider: "google"; token: string } | { provider: "apple"; idToken: string; displayName: string }) => {
-      if (data.provider === "google") {
-        return api.post<AuthResponse>("/auth/google", { token: data.token }).then((r) => r.data);
-      }
-      return api.post<AuthResponse>("/auth/apple", { idToken: data.idToken, displayName: data.displayName }).then((r) => r.data);
+    mutationFn: (data: { provider: "google"; token: string }) => {
+      return api.post<AuthResponse>("/auth/google", { token: data.token }).then((r) => r.data);
     },
     onSuccess: ({ user, access_token }) => {
       setAuth(user, access_token);
