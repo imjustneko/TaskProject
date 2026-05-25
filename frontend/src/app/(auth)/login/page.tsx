@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useLogin, useGoogleOAuth, useOAuthMutation } from "@/hooks/useAuth";
+import { useLogin, useOAuthMutation } from "@/hooks/useAuth";
 import { useT } from "@/hooks/useT";
 
 function GoogleIcon() {
@@ -52,37 +52,69 @@ declare global {
   }
 }
 
+declare global {
+  interface Window {
+    google?: { accounts: { oauth2: { initTokenClient: (cfg: object) => { requestAccessToken: () => void } } } };
+    AppleID?: { auth: { init: (cfg: object) => void; signIn: () => Promise<{ authorization: { id_token: string }; user?: { name?: { firstName?: string; lastName?: string } } }> } };
+  }
+}
+
 export default function LoginPage() {
   const login = useLogin();
-  const { login: googleLogin, isPending: googlePending } = useGoogleOAuth();
-  const appleMutation = useOAuthMutation();
+  const oauthMutation = useOAuthMutation();
   const { t } = useT();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-    script.async = true;
-    script.onload = () => {
-      window.AppleID?.auth.init({
-        clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
-        scope: "name email",
-        redirectURI: window.location.origin,
-        usePopup: true,
-      });
+    const scripts: HTMLScriptElement[] = [];
+
+    const gScript = document.createElement("script");
+    gScript.src = "https://accounts.google.com/gsi/client";
+    gScript.async = true;
+    document.head.appendChild(gScript);
+    scripts.push(gScript);
+
+    const aScript = document.createElement("script");
+    aScript.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+    aScript.async = true;
+    aScript.onload = () => {
+      if (process.env.NEXT_PUBLIC_APPLE_CLIENT_ID) {
+        window.AppleID?.auth.init({
+          clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
+          scope: "name email",
+          redirectURI: window.location.origin,
+          usePopup: true,
+        });
+      }
     };
-    document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
+    document.head.appendChild(aScript);
+    scripts.push(aScript);
+
+    return () => { scripts.forEach((s) => s.parentNode?.removeChild(s)); };
   }, []);
 
+  const handleGoogleLogin = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) { showToast("Google Client ID not configured"); return; }
+    const client = window.google?.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: "email profile",
+      callback: (res: { access_token?: string }) => {
+        if (res.access_token) oauthMutation.mutate({ provider: "google", token: res.access_token });
+      },
+    });
+    client?.requestAccessToken();
+  };
+
   const handleAppleLogin = async () => {
+    if (!process.env.NEXT_PUBLIC_APPLE_CLIENT_ID) { showToast("Apple Sign-In not configured"); return; }
     try {
       const data = await window.AppleID?.auth.signIn();
       if (!data) return;
       const displayName = [data.user?.name?.firstName, data.user?.name?.lastName].filter(Boolean).join(" ");
-      appleMutation.mutate({ provider: "apple", idToken: data.authorization.id_token, displayName });
+      oauthMutation.mutate({ provider: "apple", idToken: data.authorization.id_token, displayName });
     } catch {}
   };
 
@@ -257,14 +289,14 @@ export default function LoginPage() {
           </div>
 
           {/* Social login */}
-          {(login.error || appleMutation.error) && (
+          {oauthMutation.error && (
             <div style={{
               marginBottom: 12, padding: "10px 14px", borderRadius: 8,
               background: "color-mix(in oklab, var(--status-busy) 12%, transparent)",
               color: "var(--status-busy)", fontSize: 13,
               border: "1px solid color-mix(in oklab, var(--status-busy) 22%, transparent)",
             }}>
-              {((login.error || appleMutation.error) as { response?: { data?: { message?: string } } })
+              {(oauthMutation.error as { response?: { data?: { message?: string } } })
                 ?.response?.data?.message ?? t("login_error")}
             </div>
           )}
@@ -272,20 +304,20 @@ export default function LoginPage() {
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center", position: "relative" }}
-              onClick={() => googleLogin()}
-              disabled={googlePending}
+              onClick={handleGoogleLogin}
+              disabled={oauthMutation.isPending}
             >
               <GoogleIcon />
-              {googlePending ? t("logging_in") : t("continue_google")}
+              {oauthMutation.isPending ? t("logging_in") : t("continue_google")}
             </button>
             <button
               className="btn btn-lg"
               style={{ width: "100%", gap: 10, justifyContent: "center" }}
               onClick={handleAppleLogin}
-              disabled={appleMutation.isPending}
+              disabled={oauthMutation.isPending}
             >
               <AppleIcon />
-              {appleMutation.isPending ? t("logging_in") : t("continue_apple")}
+              {oauthMutation.isPending ? t("logging_in") : t("continue_apple")}
             </button>
           </div>
 

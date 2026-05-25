@@ -2,7 +2,6 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useGoogleLogin } from "@react-oauth/google";
 import api from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import type { User } from "@/types";
@@ -61,18 +60,6 @@ export function useOAuthMutation() {
       router.push("/dashboard");
     },
   });
-}
-
-export function useGoogleOAuth() {
-  const oauthMutation = useOAuthMutation();
-
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      oauthMutation.mutate({ provider: "google", token: tokenResponse.access_token });
-    },
-  });
-
-  return { login, isPending: oauthMutation.isPending, error: oauthMutation.error };
 }
 
 export function useLogout() {
