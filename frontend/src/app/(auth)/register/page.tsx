@@ -6,6 +6,22 @@ import { useRegister, useOAuthMutation } from "@/hooks/useAuth";
 import { useT } from "@/hooks/useT";
 import api from "@/lib/api";
 
+function Toast({ message, onClose }: { message: string; onClose: () => void }) {
+  return (
+    <div style={{
+      position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+      background: "var(--text)", color: "var(--bg-elevated)",
+      padding: "10px 18px", borderRadius: 8, fontSize: 13, fontWeight: 500,
+      boxShadow: "var(--shadow-pop)", zIndex: 999,
+      display: "flex", alignItems: "center", gap: 12,
+      whiteSpace: "nowrap",
+    }}>
+      {message}
+      <button onClick={onClose} style={{ background: "none", border: 0, color: "inherit", opacity: 0.6, cursor: "pointer", padding: 0, fontSize: 16, lineHeight: 1 }}>×</button>
+    </div>
+  );
+}
+
 function validateEmail(email: string): boolean {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 }
@@ -30,6 +46,12 @@ export default function RegisterPage() {
   const [emailError, setEmailError] = useState("");
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     const scripts: HTMLScriptElement[] = [];
@@ -61,7 +83,7 @@ export default function RegisterPage() {
 
   const handleGoogleRegister = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) return;
+    if (!clientId) { showToast(t("oauth_not_configured")); return; }
     const client = window.google?.accounts.oauth2.initTokenClient({
       client_id: clientId,
       scope: "email profile",
@@ -73,7 +95,7 @@ export default function RegisterPage() {
   };
 
   const handleAppleRegister = async () => {
-    if (!process.env.NEXT_PUBLIC_APPLE_CLIENT_ID) return;
+    if (!process.env.NEXT_PUBLIC_APPLE_CLIENT_ID) { showToast(t("oauth_not_configured")); return; }
     try {
       const data = await window.AppleID?.auth.signIn();
       if (!data) return;
@@ -317,6 +339,8 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+
+      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
     </div>
   );
 }

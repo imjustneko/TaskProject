@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useLogin, useOAuthMutation } from "@/hooks/useAuth";
+import { useLogin, useOAuthMutation, useResendVerification } from "@/hooks/useAuth";
 import { useT } from "@/hooks/useT";
 
 function GoogleIcon() {
@@ -43,17 +43,6 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
 
 declare global {
   interface Window {
-    AppleID?: {
-      auth: {
-        init: (config: object) => void;
-        signIn: () => Promise<{ authorization: { id_token: string }; user?: { name?: { firstName?: string; lastName?: string } } }>;
-      };
-    };
-  }
-}
-
-declare global {
-  interface Window {
     google?: { accounts: { oauth2: { initTokenClient: (cfg: object) => { requestAccessToken: () => void } } } };
     AppleID?: { auth: { init: (cfg: object) => void; signIn: () => Promise<{ authorization: { id_token: string }; user?: { name?: { firstName?: string; lastName?: string } } }> } };
   }
@@ -62,10 +51,26 @@ declare global {
 export default function LoginPage() {
   const login = useLogin();
   const oauthMutation = useOAuthMutation();
+  const resend = useResendVerification();
   const { t } = useT();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+  const [resent, setResent] = useState(false);
+
+  const loginErrMsg: string | undefined =
+    (login.error as { response?: { data?: { message?: string } } })?.response?.data?.message;
+  const isUnverified = loginErrMsg === "EMAIL_NOT_VERIFIED";
+
+  const handleResendFromLogin = () => {
+    if (!email || resend.isPending) return;
+    resend.mutate(email, {
+      onSuccess: () => {
+        setResent(true);
+        showToast(t("verify_resent"));
+      },
+    });
+  };
 
   useEffect(() => {
     const scripts: HTMLScriptElement[] = [];
@@ -226,8 +231,26 @@ export default function LoginPage() {
               color: "var(--status-busy)", fontSize: 13,
               border: "1px solid color-mix(in oklab, var(--status-busy) 22%, transparent)",
             }}>
-              {(login.error as { response?: { data?: { message?: string } } })
-                ?.response?.data?.message ?? t("login_error")}
+              {isUnverified ? (
+                <div>
+                  <div>{t("unverified_error")}</div>
+                  {email && (
+                    <button
+                      onClick={handleResendFromLogin}
+                      disabled={resend.isPending || resent}
+                      style={{
+                        marginTop: 8, background: "none", border: "none",
+                        color: "var(--status-busy)", textDecoration: "underline",
+                        cursor: "pointer", padding: 0, fontSize: 12, fontWeight: 500,
+                      }}
+                    >
+                      {resent ? t("verify_resent") : resend.isPending ? t("verify_resending") : t("unverified_resend")}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                loginErrMsg ?? t("login_error")
+              )}
             </div>
           )}
 

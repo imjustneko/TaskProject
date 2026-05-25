@@ -27,7 +27,6 @@ export function useLogin() {
 }
 
 export function useRegister() {
-  const { setAuth } = useAuthStore();
   const router = useRouter();
 
   return useMutation({
@@ -36,11 +35,36 @@ export function useRegister() {
       username: string;
       displayName: string;
       password: string;
-    }) => api.post<AuthResponse>("/auth/register", data).then((r) => r.data),
+    }) =>
+      api
+        .post<{ status: "verify_email"; email: string } | AuthResponse>("/auth/register", data)
+        .then((r) => r.data),
+    onSuccess: (data) => {
+      if ("status" in data && data.status === "verify_email") {
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      }
+    },
+  });
+}
+
+export function useVerifyEmail() {
+  const { setAuth } = useAuthStore();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (token: string) =>
+      api.post<AuthResponse>("/auth/verify-email", { token }).then((r) => r.data),
     onSuccess: ({ user, access_token }) => {
       setAuth(user, access_token);
       router.push("/dashboard");
     },
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      api.post("/auth/resend-verification", { email }).then((r) => r.data),
   });
 }
 

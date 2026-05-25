@@ -422,10 +422,25 @@ export const translations = {
     pw_min_hint:        "At least 8 characters",
 
     // ── Validation ──
-    email_invalid:      "Please enter a valid email address",
-    username_available: "✓ Available",
-    username_taken:     "Already taken",
-    checking:           "Checking…",
+    email_invalid:       "Please enter a valid email address",
+    username_available:  "✓ Available",
+    username_taken:      "Already taken",
+    checking:            "Checking…",
+    oauth_not_configured:"Not configured yet — use email",
+
+    // ── Email verification ──
+    verify_title:        "Check your email",
+    verify_subtitle:     (email: string) => `We sent a verification link to ${email}`,
+    verify_hint:         "Click the link in your email to activate your account. Check your spam folder too.",
+    verify_resend:       "Resend email",
+    verify_resending:    "Sending…",
+    verify_resent:       "Email sent!",
+    verify_back_login:   "Back to sign in",
+    verify_success:      "Email verified! Signing you in…",
+    verify_invalid:      "This link is invalid or has expired.",
+    verify_page_title:   "Verify your email",
+    unverified_error:    "Please verify your email first.",
+    unverified_resend:   "Resend verification email",
 
     // ── Toast messages ──
     status_cleared:     "Status cleared",
@@ -868,10 +883,25 @@ export const translations = {
     pw_min_hint:        "Наймаас дээш тэмдэгт",
 
     // ── Validation ──
-    email_invalid:      "Зөв имэйл хаяг оруулна уу",
-    username_available: "✓ Боломжтой",
-    username_taken:     "Аль хэдийн ашиглагдсан",
-    checking:           "Шалгаж байна…",
+    email_invalid:       "Зөв имэйл хаяг оруулна уу",
+    username_available:  "✓ Боломжтой",
+    username_taken:      "Аль хэдийн ашиглагдсан",
+    checking:            "Шалгаж байна…",
+    oauth_not_configured:"Тохируулагдаагүй байна — имэйл ашиглана уу",
+
+    // ── Email verification ──
+    verify_title:        "Имэйлээ шалгана уу",
+    verify_subtitle:     (email: string) => `${email} хаяг руу баталгаажуулах холбоос илгээлээ`,
+    verify_hint:         "Имэйл дэх холбоосыг дарж бүртгэлээ идэвхжүүлнэ үү. Spam хавтсыг ч шалгаарай.",
+    verify_resend:       "Имэйл дахин илгээх",
+    verify_resending:    "Илгээж байна…",
+    verify_resent:       "Илгээлээ!",
+    verify_back_login:   "Нэвтрэх хуудас руу буцах",
+    verify_success:      "Имэйл баталгаажлаа! Нэвтэрч байна…",
+    verify_invalid:      "Холбоос хүчингүй эсвэл хугацаа дууссан байна.",
+    verify_page_title:   "Имэйл баталгаажуулах",
+    unverified_error:    "Эхлээд имэйлээ баталгаажуулна уу.",
+    unverified_resend:   "Баталгаажуулах имэйл дахин илгээх",
 
     // ── Toast messages ──
     status_cleared:     "Статус арилав",
