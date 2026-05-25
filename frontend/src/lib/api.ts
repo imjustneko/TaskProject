@@ -19,8 +19,6 @@ api.interceptors.request.use((config) => {
     } catch {}
   }
 
-  console.log("[API]", config.method?.toUpperCase(), config.url, "| token:", token ? token.slice(0, 30) + "..." : "NULL");
-
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -21,7 +21,6 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       _hasHydrated: false,
       setAuth: (user, token) => {
-        console.log("[Auth] setAuth called, token:", token ? token.slice(0, 30) + "..." : "NULL");
         if (typeof window !== "undefined") (window as any).__authToken = token;
         set({ user, token, isAuthenticated: true });
       },

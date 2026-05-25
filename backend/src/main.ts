@@ -6,7 +6,7 @@ import { join } from 'path';
 import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn', 'log', 'debug'] });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn', 'log'] });
 
   if (process.env.NODE_ENV !== 'production') {
     for (const sub of ['avatars', 'emojis']) {
