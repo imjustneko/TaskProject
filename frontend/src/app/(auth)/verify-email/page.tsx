@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useVerifyEmail, useResendVerification } from "@/hooks/useAuth";
 import { useT } from "@/hooks/useT";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const { t, tf } = useT();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -130,5 +130,13 @@ export default function VerifyEmailPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
