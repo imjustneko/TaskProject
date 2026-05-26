@@ -1,19 +1,66 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { useLangStore } from "@/stores/langStore";
 import { useT } from "@/hooks/useT";
+import { useNotifications, useMarkNotificationRead, useMarkAllRead } from "@/hooks/useNotifications";
 import { STATUS_META } from "@/types";
-import type { StatusType } from "@/types";
+import type { NotificationType, StatusType } from "@/types";
+
+function relTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60_000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h / 24)}d`;
+}
+
+const NOTIF_ICONS: Record<NotificationType, string> = {
+  FRIEND_REQUEST:  "👋",
+  FRIEND_ACCEPTED: "🤝",
+  ROOM_INVITE:     "🚪",
+  TASK_REMINDER:   "⏰",
+  MENTION:         "@",
+};
 
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const pathname = usePathname();
   const { user } = useAuthStore();
   const { lang, toggle } = useLangStore();
-  const { t } = useT();
+  const { t, tf } = useT();
+
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const { data: notifications = [] } = useNotifications();
+  const markRead = useMarkNotificationRead();
+  const markAll = useMarkAllRead();
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false);
+      }
+    };
+    if (notifOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [notifOpen]);
+
+  const notifText = (type: NotificationType, fromName: string): string => {
+    if (type === "FRIEND_REQUEST") return tf("notif_friend_req", fromName);
+    if (type === "FRIEND_ACCEPTED") return tf("notif_friend_acc", fromName);
+    if (type === "ROOM_INVITE") return tf("notif_room_invite", fromName);
+    if (type === "MENTION") return tf("notif_mention", fromName);
+    return t("notif_reminder");
+  };
 
   const titleMap: Record<string, string> = {
     "/dashboard":      t("nav_home"),
@@ -70,6 +117,99 @@ export function Navbar() {
             placeholder={t("search")}
             style={{ height: 28, fontSize: 12.5, paddingLeft: 28, borderRadius: 8 }}
           />
+        </div>
+
+        {/* Notification bell */}
+        <div ref={notifRef} style={{ position: "relative" }}>
+          <button
+            className="btn btn-ghost btn-sm btn-icon"
+            onClick={() => setNotifOpen(o => !o)}
+            title={t("notif_title")}
+            style={{ position: "relative" }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            {unreadCount > 0 && (
+              <span style={{
+                position: "absolute", top: 2, right: 2,
+                minWidth: 14, height: 14, borderRadius: 999,
+                background: "var(--accent)", color: "#fff",
+                fontSize: 9, fontWeight: 700, lineHeight: "14px",
+                textAlign: "center", padding: "0 3px",
+                pointerEvents: "none",
+              }}>
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {notifOpen && (
+            <div style={{
+              position: "absolute", top: "calc(100% + 8px)", right: 0,
+              width: 320, maxHeight: 420, overflowY: "auto",
+              background: "var(--bg-elevated)", border: "1px solid var(--border)",
+              borderRadius: 12, boxShadow: "var(--shadow-3)", zIndex: 200,
+            }}>
+              {/* Header */}
+              <div className="row" style={{ padding: "12px 14px 10px", borderBottom: "1px solid var(--border)" }}>
+                <span style={{ fontSize: 13, fontWeight: 600, flex: 1 }}>{t("notif_title")}</span>
+                {unreadCount > 0 && (
+                  <button
+                    className="btn btn-ghost"
+                    style={{ fontSize: 11.5, padding: "2px 6px", height: "auto" }}
+                    onClick={() => markAll.mutate()}
+                    disabled={markAll.isPending}
+                  >
+                    {t("notif_mark_all")}
+                  </button>
+                )}
+              </div>
+
+              {/* List */}
+              {notifications.length === 0 ? (
+                <div className="muted" style={{ padding: "24px 14px", textAlign: "center", fontSize: 13 }}>
+                  {t("notif_empty")}
+                </div>
+              ) : (
+                notifications.map(n => {
+                  const fromName = n.from?.displayName ?? "Someone";
+                  return (
+                    <button
+                      key={n.id}
+                      className="btn btn-ghost"
+                      onClick={() => { if (!n.isRead) markRead.mutate(n.id); }}
+                      style={{
+                        width: "100%", borderRadius: 0, padding: "10px 14px",
+                        display: "flex", alignItems: "flex-start", gap: 10,
+                        background: n.isRead ? "transparent" : "var(--accent-tint)",
+                        borderBottom: "1px solid var(--border)",
+                        textAlign: "left",
+                      }}
+                    >
+                      <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0, marginTop: 1 }}>
+                        {NOTIF_ICONS[n.type]}
+                      </span>
+                      <div className="flex1" style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 12.5, lineHeight: 1.4, fontWeight: n.isRead ? 400 : 500 }}>
+                          {notifText(n.type, fromName)}
+                        </div>
+                        <div className="muted" style={{ fontSize: 11, marginTop: 3 }}>
+                          {relTime(n.createdAt)}
+                        </div>
+                      </div>
+                      {!n.isRead && (
+                        <span style={{
+                          width: 6, height: 6, borderRadius: "50%",
+                          background: "var(--accent)", flexShrink: 0, marginTop: 5,
+                        }} />
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          )}
         </div>
 
         {/* Language toggle */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { Avatar } from "@/components/ui/avatar";
@@ -32,9 +33,11 @@ function Toggle({ value }: { value: boolean }) {
 }
 
 export default function ProfileEditPage() {
-  const { user, updateUser } = useAuthStore();
+  const router = useRouter();
+  const { user, updateUser, logout } = useAuthStore();
   const toast = useToast();
   const { t } = useT();
+
   const [name, setName] = useState(user?.displayName ?? "");
   const [bio, setBio] = useState(user?.bio ?? "");
   const [dirty, setDirty] = useState(false);
@@ -43,6 +46,16 @@ export default function ProfileEditPage() {
   const [hoverAvatar, setHoverAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  // Change password
+  const [showChangePw, setShowChangePw] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [pwError, setPwError] = useState<string | null>(null);
+
+  // Delete account
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
 
   const updateProfile = useMutation({
     mutationFn: (data: { displayName: string; bio?: string }) =>
@@ -80,11 +93,42 @@ export default function ProfileEditPage() {
     onSuccess: () => { updateUser({ status: undefined }); setActiveStatus(null); setCustomText(""); },
   });
 
+  const changePassword = useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) =>
+      api.patch("/users/me/password", data),
+    onSuccess: () => {
+      toast.show(t("change_pw_success"));
+      setShowChangePw(false);
+      setCurrentPw("");
+      setNewPw("");
+      setPwError(null);
+    },
+    onError: (err: any) => {
+      const code = err?.response?.data?.message;
+      if (code === "OAUTH_ACCOUNT") setPwError(t("change_pw_oauth"));
+      else setPwError(t("change_pw_wrong"));
+    },
+  });
+
+  const deleteAccount = useMutation({
+    mutationFn: () => api.delete("/users/me"),
+    onSuccess: () => {
+      logout();
+      router.push("/");
+    },
+  });
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarPreview(URL.createObjectURL(file));
     uploadAvatar.mutate(file);
+  };
+
+  const handleChangePw = () => {
+    setPwError(null);
+    if (!currentPw || !newPw) return;
+    changePassword.mutate({ currentPassword: currentPw, newPassword: newPw });
   };
 
   const avatarUrl = avatarPreview ?? user?.avatarUrl;
@@ -112,7 +156,6 @@ export default function ProfileEditPage() {
               onClick={() => fileInputRef.current?.click()}
             >
               <Avatar user={userForAvatar} size={112} status onBg="elevated" />
-              {/* Upload overlay */}
               <div style={{
                 position: "absolute", inset: 0, borderRadius: "50%",
                 background: "rgba(0,0,0,0.52)",
@@ -269,6 +312,45 @@ export default function ProfileEditPage() {
             </div>
           </div>
 
+          {/* Change password card */}
+          <div className="card">
+            <div className="card-hd" style={{ cursor: "default" }} onClick={() => setShowChangePw(o => !o)}>
+              <h3>{t("change_pw_title")}</h3>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: showChangePw ? "rotate(180deg)" : "none", transition: "transform 160ms", color: "var(--text-muted)", marginLeft: "auto" }}>
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </div>
+            {showChangePw && (
+              <div className="col gap-3" style={{ paddingTop: 4 }}>
+                <div className="field">
+                  <label className="field-label">{t("current_pw")}</label>
+                  <input className="input" type="password" value={currentPw}
+                    onChange={e => { setCurrentPw(e.target.value); setPwError(null); }} />
+                </div>
+                <div className="field">
+                  <label className="field-label">{t("new_pw")}</label>
+                  <input className="input" type="password" value={newPw}
+                    onChange={e => { setNewPw(e.target.value); setPwError(null); }} />
+                </div>
+                {pwError && (
+                  <div style={{ fontSize: 12.5, color: "var(--status-busy)", padding: "6px 10px", borderRadius: 8, background: "rgba(255,69,58,0.08)" }}>
+                    {pwError}
+                  </div>
+                )}
+                <button
+                  className="btn btn-accent btn-sm"
+                  style={{ alignSelf: "flex-start" }}
+                  onClick={handleChangePw}
+                  disabled={changePassword.isPending || !currentPw || !newPw}
+                >
+                  {changePassword.isPending ? t("change_pw_saving") : t("change_pw_btn")}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Danger zone */}
           <div className="card">
             <div className="card-hd"><h3>{t("danger_zone")}</h3></div>
             <div className="row gap-4">
@@ -276,7 +358,13 @@ export default function ProfileEditPage() {
                 <div style={{ fontSize: 13.5, fontWeight: 500, marginBottom: 2 }}>{t("delete_account")}</div>
                 <div className="muted" style={{ fontSize: 12, lineHeight: 1.45 }}>{t("delete_account_hint")}</div>
               </div>
-              <button className="btn btn-sm" style={{ color: "var(--status-busy)", borderColor: "rgba(255,69,58,0.3)", flexShrink: 0 }}>{t("delete_btn")}</button>
+              <button
+                className="btn btn-sm"
+                style={{ color: "var(--status-busy)", borderColor: "rgba(255,69,58,0.3)", flexShrink: 0 }}
+                onClick={() => setShowDelete(true)}
+              >
+                {t("delete_btn")}
+              </button>
             </div>
           </div>
         </div>
@@ -300,6 +388,44 @@ export default function ProfileEditPage() {
             disabled={updateProfile.isPending}>
             {updateProfile.isPending ? t("saving") : t("save")}
           </button>
+        </div>
+      )}
+
+      {/* Delete confirm modal */}
+      {showDelete && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 500,
+          background: "rgba(0,0,0,0.55)", display: "grid", placeItems: "center",
+        }} onClick={e => { if (e.target === e.currentTarget) { setShowDelete(false); setDeleteText(""); } }}>
+          <div className="card" style={{ width: 380, padding: 24, gap: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{t("delete_account")}</div>
+            <div className="muted" style={{ fontSize: 13, lineHeight: 1.5, marginBottom: 18 }}>
+              {t("delete_account_hint")}
+            </div>
+            <div className="field" style={{ marginBottom: 16 }}>
+              <label className="field-label">{t("delete_confirm_hint")}</label>
+              <input
+                className="input"
+                value={deleteText}
+                onChange={e => setDeleteText(e.target.value)}
+                placeholder="DELETE"
+                autoFocus
+              />
+            </div>
+            <div className="row gap-2" style={{ justifyContent: "flex-end" }}>
+              <button className="btn btn-ghost" onClick={() => { setShowDelete(false); setDeleteText(""); }}>
+                {t("cancel")}
+              </button>
+              <button
+                className="btn"
+                style={{ background: "var(--status-busy)", color: "#fff", borderColor: "transparent" }}
+                disabled={deleteText !== "DELETE" || deleteAccount.isPending}
+                onClick={() => deleteAccount.mutate()}
+              >
+                {deleteAccount.isPending ? t("loading") : t("delete_confirm_btn")}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

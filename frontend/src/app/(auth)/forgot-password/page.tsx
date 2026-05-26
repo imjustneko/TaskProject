@@ -6,7 +6,7 @@ import { useForgotPassword } from "@/hooks/useAuth";
 import { useT } from "@/hooks/useT";
 
 export default function ForgotPasswordPage() {
-  const { t } = useT();
+  const { t, tf } = useT();
   const forgotPw = useForgotPassword();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
               <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
               <h1 style={{ fontSize: 22, marginBottom: 10 }}>{t("forgot_pw_sent_title")}</h1>
               <div className="muted" style={{ fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
-                {t("forgot_pw_sent_hint")(email)}
+                {tf("forgot_pw_sent_hint", email)}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <button

@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useDailyLogs, useStreak } from "@/hooks/useTasks";
 import { useT } from "@/hooks/useT";
 import { PageHeader } from "@/components/ui/page-header";
+import api from "@/lib/api";
 
 function isoDate(d: Date) { return d.toISOString().slice(0, 10); }
 
@@ -15,6 +17,25 @@ function buildCalendar(from: Date, to: Date) {
 
 export default function ReportPage() {
   const { t, lang } = useT();
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get("/tasks/export", {
+        params: { from: isoDate(from), to: isoDate(to) },
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(new Blob([res.data], { type: "text/csv" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `tasks-${isoDate(from)}-${isoDate(to)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const WEEKDAY_LABELS = lang === "mn"
     ? ["Да","Мя","Лх","Пү","Ба","Бя","Ня"]
@@ -111,7 +132,22 @@ export default function ReportPage() {
 
   return (
     <div className="view-narrow">
-      <PageHeader eyebrow={t("report_eyebrow")} title={t("report_title")} subtitle={subtitleText} />
+      <div className="row" style={{ alignItems: "flex-start", gap: 12, marginBottom: 24 }}>
+        <div className="flex1">
+          <PageHeader eyebrow={t("report_eyebrow")} title={t("report_title")} subtitle={subtitleText} />
+        </div>
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={handleExport}
+          disabled={exporting}
+          style={{ marginTop: 6, flexShrink: 0 }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          {exporting ? t("export_downloading") : t("export_btn")}
+        </button>
+      </div>
 
       {/* Summary cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>

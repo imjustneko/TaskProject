@@ -984,6 +984,33 @@ export const translations = {
     direct_msg:         "Шууд мессеж",
     dm_loading:         "Мессеж ачаалж байна…",
     dm_empty:           "Мессеж байхгүй. Мэндчил! 👋",
+
+    // ── Notifications ──
+    notif_title:        "Мэдэгдэл",
+    notif_empty:        "Бүх зүйл шинэчлэгдсэн байна!",
+    notif_mark_all:     "Бүгдийг уншсан гэж тэмдэглэх",
+    notif_friend_req:   (name: string) => `${name} найзын хүсэлт илгээлээ`,
+    notif_friend_acc:   (name: string) => `${name} таны найзын хүсэлтийг зөвшөөрлөө`,
+    notif_room_invite:  (name: string) => `${name} өрөөнд уригдлаа`,
+    notif_mention:      (name: string) => `${name} таныг дурдлаа`,
+    notif_reminder:     "Таскийн сануулга",
+
+    // ── Change password ──
+    change_pw_title:    "Нууц үг солих",
+    current_pw:         "Одоогийн нууц үг",
+    new_pw:             "Шинэ нууц үг",
+    change_pw_btn:      "Нууц үг шинэчлэх",
+    change_pw_saving:   "Шинэчилж байна…",
+    change_pw_success:  "Нууц үг шинэчлэгдлээ!",
+    change_pw_wrong:    "Одоогийн нууц үг буруу байна",
+    change_pw_oauth:    "Таны бүртгэл Google-ээр нэвтэрдэг тул нууц үг байхгүй",
+
+    // ── Delete account ──
+    delete_confirm_hint: "Баталгаажуулахын тулд DELETE гэж бичнэ үү",
+    delete_confirm_btn:  "Бүртгэлийг бүрмөсөн устгах",
+
+    // ── Export ──
+    export_downloading:  "Татаж авч байна…",
   },
 } as const;
 
