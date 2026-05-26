@@ -242,9 +242,10 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
-              <div style={{ fontSize: 12, color: "var(--accent)", marginTop: 4, textAlign: "right", cursor: "pointer" }}
-                onClick={() => showToast(t("forgot_pw_toast"))}>
-                {t("forgot_pw")}
+              <div style={{ fontSize: 12, textAlign: "right", marginTop: 4 }}>
+                <Link href="/forgot-password" style={{ color: "var(--accent)", textDecoration: "none" }}>
+                  {t("forgot_pw")}
+                </Link>
               </div>
             </div>
 

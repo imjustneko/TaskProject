@@ -125,6 +125,34 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
+  async forgotPassword(email: string): Promise<{ sent: boolean }> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    // Always return success to avoid user enumeration
+    if (!user || !user.passwordHash) return { sent: false };
+
+    await this.prisma.passwordReset.deleteMany({ where: { userId: user.id } });
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const reset = await this.prisma.passwordReset.create({
+      data: { userId: user.id, expiresAt },
+    });
+
+    await this.email.sendPasswordResetEmail(user.email, reset.token);
+    return { sent: true };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const record = await this.prisma.passwordReset.findUnique({ where: { token } });
+    if (!record) throw new BadRequestException('Invalid or expired reset link');
+    if (record.expiresAt < new Date()) throw new BadRequestException('Reset link has expired');
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await this.prisma.user.update({
+      where: { id: record.userId },
+      data: { passwordHash },
+    });
+    await this.prisma.passwordReset.delete({ where: { id: record.id } });
+  }
+
   async refresh(refreshToken: string): Promise<AuthTokens> {
     let payload: { sub?: string };
     try {

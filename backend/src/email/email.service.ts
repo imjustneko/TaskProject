@@ -19,6 +19,38 @@ export class EmailService {
     return this.resend !== null;
   }
 
+  async sendPasswordResetEmail(to: string, token: string): Promise<void> {
+    const link = `${this.appUrl}/reset-password?token=${token}`;
+
+    if (!this.resend) {
+      console.log(`[Email] Password reset link for ${to}: ${link}`);
+      return;
+    }
+
+    await this.resend.emails.send({
+      from: this.from,
+      to,
+      subject: 'Reset your Taskyy password',
+      html: `
+        <div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:40px 32px;background:#fff;">
+          <div style="margin-bottom:28px;">
+            <span style="display:inline-block;width:36px;height:36px;background:#f97316;border-radius:9px;text-align:center;line-height:36px;font-weight:700;font-size:16px;color:#fff;">T</span>
+          </div>
+          <h2 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#1a1a1a;">Reset your password</h2>
+          <p style="margin:0 0 28px;font-size:15px;color:#555;line-height:1.55;">
+            Click the button below to set a new password. This link expires in 1 hour.
+          </p>
+          <a href="${link}" style="display:inline-block;padding:13px 28px;background:#f97316;color:#fff;border-radius:9px;text-decoration:none;font-weight:600;font-size:15px;">
+            Reset password →
+          </a>
+          <p style="margin:28px 0 0;font-size:12px;color:#aaa;">
+            If you didn't request a password reset, you can safely ignore this email.
+          </p>
+        </div>
+      `,
+    });
+  }
+
   async sendVerificationEmail(to: string, token: string): Promise<void> {
     const link = `${this.appUrl}/verify-email?token=${token}`;
 

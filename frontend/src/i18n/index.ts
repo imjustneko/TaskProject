@@ -454,6 +454,25 @@ export const translations = {
     task_added_toast:   (title: string) => `"${title}" added!`,
     forgot_pw_toast:    "Password reset coming soon — email support@taskyy.app",
 
+    // ── Password reset ──
+    forgot_pw_title:      "Forgot your password?",
+    forgot_pw_subtitle:   "Enter your email and we'll send a reset link.",
+    forgot_pw_btn:        "Send reset link",
+    forgot_pw_sending:    "Sending…",
+    forgot_pw_sent_title: "Check your email",
+    forgot_pw_sent_hint:  (email: string) => `We sent a reset link to ${email}. Check your spam folder too.`,
+    forgot_pw_back:       "Back to sign in",
+    forgot_pw_try_again:  "Try again",
+    reset_pw_title:       "Set new password",
+    reset_pw_subtitle:    "Choose a strong password for your account.",
+    new_password_label:   "New password",
+    confirm_pw_label:     "Confirm new password",
+    reset_pw_btn:         "Reset password",
+    reset_pw_saving:      "Resetting…",
+    reset_pw_success:     "Password updated! Sign in with your new password.",
+    reset_pw_invalid:     "This link is invalid or has expired.",
+    reset_pw_back:        "Back to sign in",
+
     // ── Direct messages ──
     direct_msg:         "Direct message",
     dm_loading:         "Loading messages…",
@@ -914,6 +933,25 @@ export const translations = {
     task_skipped_toast: (title: string) => `"${title}" алгасав →`,
     task_added_toast:   (title: string) => `"${title}" таск нэмлээ!`,
     forgot_pw_toast:    "Нууц үг сэргээх удахгүй нэмэгдэнэ — support@taskyy.app-д хандана уу",
+
+    // ── Password reset ──
+    forgot_pw_title:      "Нууц үг мартсан уу?",
+    forgot_pw_subtitle:   "Имэйл хаягаа оруулахад сэргээх холбоос илгээнэ.",
+    forgot_pw_btn:        "Сэргээх холбоос илгээх",
+    forgot_pw_sending:    "Илгээж байна…",
+    forgot_pw_sent_title: "Имэйлээ шалгана уу",
+    forgot_pw_sent_hint:  (email: string) => `${email} хаяг руу сэргээх холбоос илгээлээ. Spam хавтсыг ч шалгаарай.`,
+    forgot_pw_back:       "Нэвтрэх хуудас руу буцах",
+    forgot_pw_try_again:  "Дахин оролдох",
+    reset_pw_title:       "Шинэ нууц үг тохируулах",
+    reset_pw_subtitle:    "Бүртгэлдээ хүчтэй нууц үг сонгоно уу.",
+    new_password_label:   "Шинэ нууц үг",
+    confirm_pw_label:     "Нууц үг баталгаажуулах",
+    reset_pw_btn:         "Нууц үг сэргээх",
+    reset_pw_saving:      "Хадгалж байна…",
+    reset_pw_success:     "Нууц үг шинэчлэгдлээ! Шинэ нууц үгээрээ нэвтрэнэ үү.",
+    reset_pw_invalid:     "Холбоос хүчингүй эсвэл хугацаа дууссан байна.",
+    reset_pw_back:        "Нэвтрэх хуудас руу буцах",
 
     // ── Direct messages ──
     direct_msg:         "Шууд мессеж",

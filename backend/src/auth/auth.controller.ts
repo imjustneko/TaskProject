@@ -49,6 +49,21 @@ export class AuthController {
     return this.auth.refresh(refreshToken);
   }
 
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body('email') email: string) {
+    return this.auth.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(
+    @Body('token') token: string,
+    @Body('password') password: string,
+  ) {
+    return this.auth.resetPassword(token, password);
+  }
+
   @Get('check-username')
   async checkUsername(@Query('username') username: string) {
     return this.auth.checkUsernameAvailable(username ?? '');

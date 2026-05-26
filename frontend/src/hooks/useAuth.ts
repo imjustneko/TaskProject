@@ -83,6 +83,20 @@ export function useOAuthMutation() {
   });
 }
 
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      api.post<{ sent: boolean }>("/auth/forgot-password", { email }).then((r) => r.data),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: ({ token, password }: { token: string; password: string }) =>
+      api.post("/auth/reset-password", { token, password }).then((r) => r.data),
+  });
+}
+
 export function useLogout() {
   const { logout } = useAuthStore();
   const router = useRouter();
