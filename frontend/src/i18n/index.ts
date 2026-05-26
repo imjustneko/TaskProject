@@ -505,6 +505,23 @@ export const translations = {
 
     // ── Export ──
     export_downloading:  "Downloading…",
+
+    // ── Onboarding ──
+    ob_step1_title: "Welcome to Taskyy!",
+    ob_step1_desc:  "Track your daily tasks, connect with friends, and keep your streak alive — all in one place.",
+    ob_step2_title: "Manage your tasks",
+    ob_step2_desc:  "Add tasks for today, set priorities and time, then mark them done. Your streak grows every day you finish.",
+    ob_step3_title: "Add friends",
+    ob_step3_desc:  "Search for friends and connect. See what they're working on in your shared feed.",
+    ob_step4_title: "Join a room",
+    ob_step4_desc:  "Rooms are shared spaces for doing activities together — studying, walking, working. Join one or create your own.",
+    ob_step5_title: "You're all set!",
+    ob_step5_desc:  "Everything is ready. Add your first task and start building your streak today.",
+    ob_next:        "Next",
+    ob_start:       "Let's go!",
+    ob_skip:        "Skip",
+    ob_maybe_later: "Maybe later",
+    ob_step_of:     (step: number, total: number) => `${step} / ${total}`,
   },
 
   mn: {
@@ -1013,6 +1030,23 @@ export const translations = {
 
     // ── Export ──
     export_downloading:  "Татаж авч байна…",
+
+    // ── Onboarding ──
+    ob_step1_title: "Taskyy-д тавтай морил!",
+    ob_step1_desc:  "Өдрийн таскаа удирд, найзуудтайгаа холбогдож, streak-ийгээ тасалдуулалгүй хадгал.",
+    ob_step2_title: "Таскаа удирд",
+    ob_step2_desc:  "Өнөөдрийн таскаа нэм, тэргүүлэх ач холбогдол болон цаг тохируул, дуусгасны дараа тэмдэглэ. Дуусгах тутамд streak өснө.",
+    ob_step3_title: "Найзуудаа нэм",
+    ob_step3_desc:  "Найзуудаа хайж олж нэм. Хуваалцсан мэдээллийн урсгалаас тэдний явцыг харна уу.",
+    ob_step4_title: "Өрөөнд нэгд",
+    ob_step4_desc:  "Өрөөнүүд нь хамтдаа үйл ажиллагаа явуулах орон зай — суралцах, алхах, ажиллах. Нэгдэж болно эсвэл өөрөө үүсгэнэ үү.",
+    ob_step5_title: "Бүгд бэлэн!",
+    ob_step5_desc:  "Бүх зүйл бэлэн байна. Эхний таскаа нэмж, өнөөдрөөс streak эхлүүл.",
+    ob_next:        "Дараах",
+    ob_start:       "Эхлэх!",
+    ob_skip:        "Алгасах",
+    ob_maybe_later: "Дараа нь",
+    ob_step_of:     (step: number, total: number) => `${step} / ${total}`,
   },
 } as const;
 

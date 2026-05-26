@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
 import { QuickCapture } from "@/components/ui/quick-capture";
+import { OnboardingModal } from "@/components/ui/onboarding-modal";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, _hasHydrated } = useAuthStore();
@@ -41,6 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <QuickCapture />
+      <OnboardingModal />
     </div>
   );
 }
