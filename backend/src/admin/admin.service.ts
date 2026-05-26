@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AppGateway } from '../gateway/app.gateway';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gateway: AppGateway,
+  ) {}
 
   async getStats() {
     const [totalUsers, activeUsers, totalTasks, completedTasks, totalRooms] =
@@ -48,11 +52,13 @@ export class AdminService {
   }
 
   async blockUser(userId: string) {
-    return this.prisma.user.update({
+    const result = await this.prisma.user.update({
       where: { id: userId },
       data: { isBlocked: true },
       select: { id: true, isBlocked: true },
     });
+    this.gateway.disconnectUser(userId);
+    return result;
   }
 
   async unblockUser(userId: string) {
