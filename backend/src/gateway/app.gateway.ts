@@ -62,6 +62,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (!this.userSockets.has(user.id)) this.userSockets.set(user.id, new Set());
       this.userSockets.get(user.id)!.add(client.id);
+
+      this.server.emit('user:online', { userId: user.id });
     } catch {
       client.disconnect();
     }

@@ -28,6 +28,22 @@ export class UsersController {
     return this.users.updateProfile(req.user.id, dto);
   }
 
+  @Patch('me/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  changePassword(
+    @Request() req: AuthRequest,
+    @Body('currentPassword') currentPassword: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    return this.users.changePassword(req.user.id, currentPassword, newPassword);
+  }
+
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteMe(@Request() req: AuthRequest) {
+    return this.users.deleteAccount(req.user.id);
+  }
+
   @Post('me/avatar')
   @UseInterceptors(FileInterceptor('file', {
     storage: new CloudinaryStorage('avatars'),
