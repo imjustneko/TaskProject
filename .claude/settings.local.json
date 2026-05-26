@@ -63,7 +63,10 @@
       "Bash(git -C \"a:/Projects/Different Project/TaskProject\" rm -r --cached backend/dist/)",
       "Bash(git -C \"a:/Projects/Different Project/TaskProject\" status --short)",
       "Bash(git -C \"a:/Projects/Different Project/TaskProject\" add backend/.gitignore backend/package.json .node-version)",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "Bash(ls -la \"Onboarding Design\")",
+      "Bash(dir \"Onboarding Design\")",
+      "Bash(ls *)"
     ]
   }
 }
