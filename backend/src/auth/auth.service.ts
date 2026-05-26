@@ -125,6 +125,23 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
+  async refresh(refreshToken: string): Promise<AuthTokens> {
+    let payload: { sub?: string };
+    try {
+      payload = this.jwt.verify(refreshToken, {
+        secret: this.config.getOrThrow('JWT_REFRESH_SECRET'),
+      }) as { sub: string };
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    if (!payload.sub) throw new UnauthorizedException('Invalid refresh token');
+    const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+    if (!user || user.isBlocked) throw new UnauthorizedException();
+
+    return this.generateTokens(user);
+  }
+
   async checkUsernameAvailable(username: string): Promise<{ available: boolean }> {
     const exists = await this.prisma.user.findUnique({ where: { username } });
     return { available: !exists };

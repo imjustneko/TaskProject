@@ -75,3 +75,12 @@ export function useDeleteAdminUser() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin"] }),
   });
 }
+
+export function useSetUserRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, role }: { userId: string; role: "USER" | "ADMIN" }) =>
+      api.patch(`/admin/users/${userId}/role`, { role }).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "users"] }),
+  });
+}

@@ -19,8 +19,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: { email: string; password: string }) =>
       api.post<AuthResponse>("/auth/login", data).then((r) => r.data),
-    onSuccess: ({ user, access_token }) => {
-      setAuth(user, access_token);
+    onSuccess: ({ user, access_token, refresh_token }) => {
+      setAuth(user, access_token, refresh_token);
       router.push("/dashboard");
     },
   });
@@ -54,8 +54,8 @@ export function useVerifyEmail() {
   return useMutation({
     mutationFn: (token: string) =>
       api.post<AuthResponse>("/auth/verify-email", { token }).then((r) => r.data),
-    onSuccess: ({ user, access_token }) => {
-      setAuth(user, access_token);
+    onSuccess: ({ user, access_token, refresh_token }) => {
+      setAuth(user, access_token, refresh_token);
       router.push("/dashboard");
     },
   });
@@ -76,8 +76,8 @@ export function useOAuthMutation() {
     mutationFn: (data: { provider: "google"; token: string }) => {
       return api.post<AuthResponse>("/auth/google", { token: data.token }).then((r) => r.data);
     },
-    onSuccess: ({ user, access_token }) => {
-      setAuth(user, access_token);
+    onSuccess: ({ user, access_token, refresh_token }) => {
+      setAuth(user, access_token, refresh_token);
       router.push("/dashboard");
     },
   });

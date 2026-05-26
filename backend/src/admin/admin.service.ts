@@ -67,6 +67,14 @@ export class AdminService {
     await this.prisma.user.delete({ where: { id: userId } });
   }
 
+  async setRole(userId: string, role: 'USER' | 'ADMIN') {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { role },
+      select: { id: true, role: true },
+    });
+  }
+
   async getRecentUsers(limit = 5) {
     return this.prisma.user.findMany({
       select: {

@@ -43,6 +43,12 @@ export class AuthController {
     return this.auth.resendVerification(dto.email);
   }
 
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body('refresh_token') refreshToken: string) {
+    return this.auth.refresh(refreshToken);
+  }
+
   @Get('check-username')
   async checkUsername(@Query('username') username: string) {
     return this.auth.checkUsernameAvailable(username ?? '');

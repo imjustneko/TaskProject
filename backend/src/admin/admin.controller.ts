@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Patch, Delete, Param,
+  Controller, Get, Patch, Delete, Param, Body,
   UseGuards, Query,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
@@ -27,6 +27,11 @@ export class AdminController {
   @Get('users/recent')
   recent() {
     return this.admin.getRecentUsers();
+  }
+
+  @Patch('users/:id/role')
+  setRole(@Param('id') id: string, @Body('role') role: 'USER' | 'ADMIN') {
+    return this.admin.setRole(id, role);
   }
 
   @Patch('users/:id/block')

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAdminUsers, useBlockUser, useUnblockUser, useDeleteAdminUser } from "@/hooks/useAdmin";
+import { useAdminUsers, useBlockUser, useUnblockUser, useDeleteAdminUser, useSetUserRole } from "@/hooks/useAdmin";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -15,6 +15,7 @@ export default function AdminUsersPage() {
   const block = useBlockUser();
   const unblock = useUnblockUser();
   const del = useDeleteAdminUser();
+  const setRole = useSetUserRole();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const users = data?.users ?? [];
@@ -84,6 +85,15 @@ export default function AdminUsersPage() {
                       ) : (
                         <button className="btn btn-sm btn-ghost" onClick={() => block.mutate(u.id)} disabled={block.isPending} style={{ color:"var(--status-idle)" }}>
                           Block
+                        </button>
+                      )}
+                      {u.role === "ADMIN" ? (
+                        <button className="btn btn-sm btn-ghost" onClick={() => setRole.mutate({ userId: u.id, role: "USER" })} disabled={setRole.isPending} style={{ color:"var(--text-muted)" }}>
+                          Remove Admin
+                        </button>
+                      ) : (
+                        <button className="btn btn-sm btn-ghost" onClick={() => setRole.mutate({ userId: u.id, role: "ADMIN" })} disabled={setRole.isPending} style={{ color:"var(--accent)" }}>
+                          Make Admin
                         </button>
                       )}
                       {confirmDelete === u.id ? (
