@@ -153,6 +153,14 @@ export function useStreak() {
   });
 }
 
+export function useSparkline() {
+  return useQuery({
+    queryKey: ["tasks", "sparkline"],
+    queryFn: () =>
+      api.get<{ date: string; done: number }[]>("/tasks/sparkline").then((r) => r.data),
+  });
+}
+
 export function useClearDailyStatus() {
   const qc = useQueryClient();
   return useMutation({

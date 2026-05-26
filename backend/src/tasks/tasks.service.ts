@@ -181,6 +181,30 @@ export class TasksService {
     });
   }
 
+  async getSparkline(userId: string, days = 14): Promise<{ date: string; done: number }[]> {
+    const from = startOfDay(new Date());
+    from.setDate(from.getDate() - (days - 1));
+
+    const completed = await this.prisma.task.findMany({
+      where: { userId, isCompleted: true, completedAt: { gte: from } },
+      select: { completedAt: true },
+    });
+
+    const map = new Map<string, number>();
+    for (let i = 0; i < days; i++) {
+      const d = new Date(from);
+      d.setDate(d.getDate() + i);
+      map.set(d.toISOString().slice(0, 10), 0);
+    }
+    for (const { completedAt } of completed) {
+      if (!completedAt) continue;
+      const key = completedAt.toISOString().slice(0, 10);
+      if (map.has(key)) map.set(key, (map.get(key) ?? 0) + 1);
+    }
+
+    return [...map.entries()].map(([date, done]) => ({ date, done }));
+  }
+
   async getStats(userId: string) {
     const [total, completed, today] = await Promise.all([
       this.prisma.task.count({ where: { userId } }),

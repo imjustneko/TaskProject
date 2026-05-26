@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTodayAllTasks, useToggleTask, useTaskStats, usePlansTasks, useStreak } from "@/hooks/useTasks";
+import { useTodayAllTasks, useToggleTask, useTaskStats, usePlansTasks, useStreak, useSparkline } from "@/hooks/useTasks";
 import { useFriends } from "@/hooks/useFriends";
 import { usePartners } from "@/hooks/usePartners";
 import { useAuthStore } from "@/stores/authStore";
@@ -103,16 +103,26 @@ function StreakCard({ current, best }: { current: number; best: number }) {
 }
 
 // ── Stats card — hero + sparkline ─────────────────────────────────────────
-function StatsCard({ total, completed, today }: { total: number; completed: number; today: number }) {
+function StatsCard({
+  total, completed, today, sparkline,
+}: {
+  total: number;
+  completed: number;
+  today: number;
+  sparkline?: { date: string; done: number }[];
+}) {
   const { t } = useT();
   const W = 220, H = 36, P = 2;
-  // simplified sparkline using stats
-  const series = Array.from({ length: 14 }, (_, i) => {
-    if (i === 13) return today / Math.max(1, total) * 0.6 + Math.random() * 0.2;
-    return 0.2 + Math.random() * 0.6;
-  });
+
+  const raw = sparkline ?? [];
+  const max = Math.max(...raw.map(d => d.done), 1);
+  // Normalize to 0–1; if no data yet show a flat zero line
+  const series = raw.length > 0
+    ? raw.map(d => d.done / max)
+    : Array.from({ length: 14 }, () => 0);
+
   const points = series.map((v, i) => {
-    const x = P + (i / (series.length - 1)) * (W - 2 * P);
+    const x = P + (i / Math.max(series.length - 1, 1)) * (W - 2 * P);
     const y = H - P - v * (H - 2 * P);
     return [x, y];
   });
@@ -146,7 +156,29 @@ function StatsCard({ total, completed, today }: { total: number; completed: numb
             </defs>
             <path d={area} fill="url(#sparkFill)" />
             <path d={path} fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx={points[points.length - 1][0]} cy={points[points.length - 1][1]} r="2.5" fill="var(--accent)" />
+            {/* Hover hit areas with native SVG tooltip */}
+            {raw.length > 0 && points.map(([x, y], i) => {
+              const d = raw[i];
+              const label = `${d.date}: ${d.done} done`;
+              const slotW = (W - 2 * P) / Math.max(series.length - 1, 1);
+              return (
+                <g key={d.date}>
+                  <rect
+                    x={x - slotW / 2} y={0}
+                    width={slotW} height={H}
+                    fill="transparent" style={{ cursor: "default" }}
+                  >
+                    <title>{label}</title>
+                  </rect>
+                  <circle cx={x} cy={y} r="2" fill="var(--accent)" opacity={i === points.length - 1 ? 1 : 0.5}>
+                    <title>{label}</title>
+                  </circle>
+                </g>
+              );
+            })}
+            {raw.length === 0 && (
+              <circle cx={points[points.length - 1][0]} cy={points[points.length - 1][1]} r="2.5" fill="var(--accent)" />
+            )}
           </svg>
         </div>
       </div>
@@ -229,6 +261,7 @@ export default function DashboardPage() {
   const { data: plansTasks = [] } = usePlansTasks();
   const { data: stats } = useTaskStats();
   const { data: streak } = useStreak();
+  const { data: sparkline } = useSparkline();
   const { data: friends = [] } = useFriends();
   const { data: partners = [] } = usePartners();
   const toggle = useToggleTask();
@@ -310,7 +343,7 @@ export default function DashboardPage() {
         <div className="col gap-5">
           {streak !== undefined && <StreakCard current={streak.current} best={streak.best} />}
 
-          {stats && <StatsCard total={stats.total} completed={stats.completed} today={stats.today} />}
+          {stats && <StatsCard total={stats.total} completed={stats.completed} today={stats.today} sparkline={sparkline} />}
 
           <PartnersWidget partners={partners} />
 

@@ -41,6 +41,11 @@ export class TasksController {
     return this.tasks.getStats(req.user.id);
   }
 
+  @Get('sparkline')
+  sparkline(@Request() req: AuthRequest) {
+    return this.tasks.getSparkline(req.user.id);
+  }
+
   @Get('streak')
   streak(@Request() req: AuthRequest) {
     return this.tasks.getStreak(req.user.id);
