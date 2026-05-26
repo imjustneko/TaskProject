@@ -4,6 +4,7 @@ import {
 } from '@nestjs/common';
 import { FriendStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 const USER_SELECT = {
   id: true, username: true, displayName: true,
@@ -12,7 +13,10 @@ const USER_SELECT = {
 
 @Injectable()
 export class FriendsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notif: NotificationsService,
+  ) {}
 
   async sendRequest(requesterId: string, recipientId: string) {
     if (requesterId === recipientId) {
@@ -33,10 +37,17 @@ export class FriendsService {
         throw new ConflictException('Request already sent');
       throw new ConflictException('Cannot send request');
     }
-    return this.prisma.friend.create({
+    const friendship = await this.prisma.friend.create({
       data: { requesterId, recipientId },
       include: { recipient: { select: USER_SELECT } },
     });
+    await this.notif.create({
+      userId: recipientId,
+      type: 'FRIEND_REQUEST',
+      fromId: requesterId,
+      referenceId: friendship.id,
+    });
+    return friendship;
   }
 
   async acceptRequest(requestId: string, userId: string) {
@@ -46,11 +57,18 @@ export class FriendsService {
     if (req.status !== FriendStatus.PENDING)
       throw new BadRequestException('Request is no longer pending');
 
-    return this.prisma.friend.update({
+    const updated = await this.prisma.friend.update({
       where: { id: requestId },
       data: { status: FriendStatus.ACCEPTED },
       include: { requester: { select: USER_SELECT } },
     });
+    await this.notif.create({
+      userId: req.requesterId,
+      type: 'FRIEND_ACCEPTED',
+      fromId: userId,
+      referenceId: requestId,
+    });
+    return updated;
   }
 
   async declineRequest(requestId: string, userId: string) {

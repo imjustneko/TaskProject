@@ -15,6 +15,7 @@ import { AdminModule } from './admin/admin.module';
 import { PostsModule } from './posts/posts.module';
 import { LabelsModule } from './labels/labels.module';
 import { PartnersModule } from './partners/partners.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { PartnersModule } from './partners/partners.module';
     PostsModule,
     LabelsModule,
     PartnersModule,
+    NotificationsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

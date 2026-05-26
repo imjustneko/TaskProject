@@ -477,6 +477,33 @@ export const translations = {
     direct_msg:         "Direct message",
     dm_loading:         "Loading messages…",
     dm_empty:           "No messages yet. Say hi! 👋",
+
+    // ── Notifications ──
+    notif_title:        "Notifications",
+    notif_empty:        "You're all caught up!",
+    notif_mark_all:     "Mark all read",
+    notif_friend_req:   (name: string) => `${name} sent you a friend request`,
+    notif_friend_acc:   (name: string) => `${name} accepted your friend request`,
+    notif_room_invite:  (name: string) => `${name} invited you to a room`,
+    notif_mention:      (name: string) => `${name} mentioned you`,
+    notif_reminder:     "Task reminder",
+
+    // ── Change password ──
+    change_pw_title:    "Change password",
+    current_pw:         "Current password",
+    new_pw:             "New password",
+    change_pw_btn:      "Update password",
+    change_pw_saving:   "Updating…",
+    change_pw_success:  "Password updated!",
+    change_pw_wrong:    "Current password is incorrect",
+    change_pw_oauth:    "Your account uses Google sign-in — no password to change",
+
+    // ── Delete account ──
+    delete_confirm_hint: "Type DELETE to confirm",
+    delete_confirm_btn:  "Permanently delete account",
+
+    // ── Export ──
+    export_downloading:  "Downloading…",
   },
 
   mn: {
