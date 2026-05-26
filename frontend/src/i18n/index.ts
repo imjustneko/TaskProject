@@ -325,6 +325,7 @@ export const translations = {
     add_friend_btn:    "Add friend",
     friend_req_sent:   "Friend request sent!",
     req_failed:        "Could not send request",
+    req_pending:       "Pending",
 
     // ── Chat ──
     messages_title:    "Messages",
@@ -832,6 +833,7 @@ export const translations = {
     add_friend_btn:    "+ Найз нэмэх",
     friend_req_sent:   "Найзын хүсэлт илгээв!",
     req_failed:        "Хүсэлт илгээж чадсангүй",
+    req_pending:       "Хүлээгдэж байна",
 
     // ── Chat ──
     messages_title:    "Мессежүүд",

@@ -38,6 +38,7 @@ function SendIcon({ size = 13 }: { size?: number }) {
 export default function FriendsPage() {
   const [q, setQ] = useState("");
   const [tab, setTab] = useState<"all" | "online">("all");
+  const [sentIds, setSentIds] = useState<Set<string>>(new Set());
   const debouncedQ = useDebounce(q, 400);
   const { t, tf } = useT();
 
@@ -129,13 +130,28 @@ export default function FriendsPage() {
                     <div style={{ fontSize: 13.5, fontWeight: 500 }}>{u.displayName}</div>
                     <div className="muted" style={{ fontSize: 12 }}>@{u.username}</div>
                   </div>
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={() => sendReq.mutate(u.id)}
-                    disabled={sendReq.isPending}
-                  >
-                    {t("add_friend_btn")}
-                  </button>
+                  {sentIds.has(u.id) ? (
+                    <button className="btn btn-sm" disabled>
+                      {t("req_pending")}
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => sendReq.mutate(u.id, {
+                        onSuccess: () => {
+                          setSentIds(prev => new Set(prev).add(u.id));
+                          toast.show(t("friend_req_sent"));
+                        },
+                        onError: (e: unknown) => {
+                          const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+                          toast.show(typeof msg === "string" ? msg : t("req_failed"), "error");
+                        },
+                      })}
+                      disabled={sendReq.isPending}
+                    >
+                      {t("add_friend_btn")}
+                    </button>
+                  )}
                 </div>
               ))
             )}
