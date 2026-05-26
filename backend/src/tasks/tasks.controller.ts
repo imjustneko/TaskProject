@@ -1,7 +1,8 @@
 import {
   Controller, Get, Post, Patch, Delete,
-  Body, Param, UseGuards, Request, Query,
+  Body, Param, UseGuards, Request, Query, Res, Header,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -44,6 +45,19 @@ export class TasksController {
   @Get('sparkline')
   sparkline(@Request() req: AuthRequest) {
     return this.tasks.getSparkline(req.user.id);
+  }
+
+  @Get('export')
+  async export(
+    @Request() req: AuthRequest,
+    @Query('from') from: string,
+    @Query('to') to: string,
+    @Res() res: Response,
+  ) {
+    const csv = await this.tasks.exportCsv(req.user.id, from, to);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="taskyy-export-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(csv);
   }
 
   @Get('streak')

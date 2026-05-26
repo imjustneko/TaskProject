@@ -181,6 +181,26 @@ export class TasksService {
     });
   }
 
+  async exportCsv(userId: string, fromStr: string, toStr: string): Promise<string> {
+    const from = fromStr ? new Date(fromStr) : (() => { const d = new Date(); d.setDate(d.getDate() - 111); return startOfDay(d); })();
+    const to = toStr ? new Date(toStr) : endOfDay(new Date());
+    const logs = await this.prisma.taskLog.findMany({
+      where: { userId, date: { gte: from, lte: to } },
+      include: { task: { select: { title: true } } },
+      orderBy: { date: 'desc' },
+    });
+    const rows = [['Date', 'Task', 'Status', 'Note']];
+    for (const l of logs) {
+      rows.push([
+        l.date.toISOString().slice(0, 10),
+        `"${(l.task.title ?? '').replace(/"/g, '""')}"`,
+        l.status,
+        `"${(l.note ?? '').replace(/"/g, '""')}"`,
+      ]);
+    }
+    return rows.map(r => r.join(',')).join('\n');
+  }
+
   async getSparkline(userId: string, days = 14): Promise<{ date: string; done: number }[]> {
     const from = startOfDay(new Date());
     from.setDate(from.getDate() - (days - 1));
